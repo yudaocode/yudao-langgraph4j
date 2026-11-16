@@ -1,30 +1,25 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<?xml version='1.0' encoding='UTF-8'?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>org.bsc.langgraph4j</groupId>
+        <groupId>cn.iocoder.langgraph4j</groupId>
         <artifactId>langgraph4j-parent</artifactId>
-        <version>1.9.9</version>
+        <version>3.0.0-SNAPSHOT</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
-
     <artifactId>langgraph4j-spring-ai</artifactId>
     <packaging>jar</packaging>
-
     <name>langgraph4j::springai</name>
     <description>Spring AI integration utilities</description>
-
     <properties>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
-
     <dependencyManagement>
         <dependencies>
             <dependency>
-                <groupId>org.springframework.ai</groupId>
+                <groupId>cn.iocoder.spring-ai</groupId>
                 <artifactId>spring-ai-bom</artifactId>
                 <version>${spring-ai.version}</version>
                 <type>pom</type>
@@ -32,14 +27,11 @@
             </dependency>
         </dependencies>
     </dependencyManagement>
-
-
     <dependencies>
-
         <dependency>
             <groupId>org.bsc.langgraph4j</groupId>
             <artifactId>langgraph4j-core</artifactId>
-            <version>${project.version}</version>
+            <version>${langgraph4j.official.version}</version>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
@@ -47,51 +39,42 @@
             <version>2.21.1</version>
             <scope>provided</scope>
         </dependency>
-
         <dependency>
-            <groupId>org.springframework.ai</groupId>
+            <groupId>cn.iocoder.spring-ai</groupId>
             <artifactId>spring-ai-commons</artifactId>
             <version>${spring-ai.version}</version>
         </dependency>
-
         <dependency>
-            <groupId>org.springframework.ai</groupId>
+            <groupId>cn.iocoder.spring-ai</groupId>
             <artifactId>spring-ai-model</artifactId>
             <version>${spring-ai.version}</version>
         </dependency>
-
         <dependency>
-            <groupId>org.springframework.ai</groupId>
+            <groupId>cn.iocoder.spring-ai</groupId>
             <artifactId>spring-ai-client-chat</artifactId>
             <version>${spring-ai.version}</version>
         </dependency>
-
         <dependency>
-            <groupId>org.springframework.ai</groupId>
+            <groupId>cn.iocoder.spring-ai</groupId>
             <artifactId>spring-ai-ollama</artifactId>
             <scope>test</scope>
         </dependency>
-
         <dependency>
-            <groupId>org.springframework.ai</groupId>
+            <groupId>cn.iocoder.spring-ai</groupId>
             <artifactId>spring-ai-google-genai</artifactId>
             <scope>test</scope>
         </dependency>
-
         <dependency>
-            <groupId>org.springframework.ai</groupId>
+            <groupId>cn.iocoder.spring-ai</groupId>
             <artifactId>spring-ai-openai</artifactId>
             <scope>test</scope>
         </dependency>
-
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter</artifactId>
             <scope>test</scope>
         </dependency>
-
     </dependencies>
-
     <build>
         <plugins>
             <plugin>
@@ -103,8 +86,6 @@
                     </excludes>
                 </configuration>
             </plugin>
-
         </plugins>
     </build>
-
 </project>

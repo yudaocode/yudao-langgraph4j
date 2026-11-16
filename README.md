@@ -1,3 +1,65 @@
+# yudao-langgraph4j 兼容版
+
+保留 LangGraph4j 的 Java 包名与 API，支持 Spring Boot 2/3/4 的组合。Java 8 分支尽量回迁较高版本；Java 17+ 优先复用官方核心和 LangChain4j adapter，仅维护 Spring AI 适配层。上游源码基线为 1.9.9（`bbce202845fe99660fcee29a7dd7a5acb4100199`）。
+
+| 分支 | Spring Boot / 运行 JDK | Graph core / LangChain4j adapter | LangChain4j | Spring AI / Graph Spring AI adapter |
+| --- | --- | --- | --- | --- |
+| `main` | 4.x / 17、25 | 官方 `org.bsc.langgraph4j` 1.9.9 | 官方 `dev.langchain4j` 1.23.0 | 芋道 `cn.iocoder.spring-ai` / `cn.iocoder.langgraph4j` 4.0.0-SNAPSHOT |
+| `main-jdk17` | 3.x / 17、25 | 官方 `org.bsc.langgraph4j` 1.9.9 | 官方 `dev.langchain4j` 1.23.0 | 芋道 `cn.iocoder.spring-ai` / `cn.iocoder.langgraph4j` 3.0.0-SNAPSHOT |
+| `main-jdk8` | 2.x / 8 | 芋道 `cn.iocoder.langgraph4j` 2.0.0-SNAPSHOT | 芋道 `cn.iocoder.langchain4j` 2.0.0-SNAPSHOT | 芋道 `cn.iocoder.spring-ai` / `cn.iocoder.langgraph4j` 2.0.0-SNAPSHOT |
+
+当前分支：`main-jdk17`，兼容版版本号：`3.0.0-SNAPSHOT`。上述 `-SNAPSHOT` 当前需从源码安装；尚未发布 Maven Central，后续发布统一使用 `cn.iocoder.*` 坐标，不覆盖官方 artifact。
+
+## 如何使用
+
+在应用的 `dependencyManagement` 中导入当前分支 BOM：
+
+```xml
+<dependencyManagement>
+    <dependencies>
+        <dependency>
+            <groupId>cn.iocoder.langgraph4j</groupId>
+            <artifactId>langgraph4j-bom</artifactId>
+            <version>3.0.0-SNAPSHOT</version>
+            <type>pom</type>
+            <scope>import</scope>
+        </dependency>
+    </dependencies>
+</dependencyManagement>
+```
+
+按模型框架选择 adapter；BOM 已管理核心、adapter 与匹配的模型框架版本：
+
+```xml
+<!-- Spring AI 路线 -->
+<dependency>
+    <groupId>cn.iocoder.langgraph4j</groupId>
+    <artifactId>langgraph4j-spring-ai</artifactId>
+</dependency>
+<!-- LangChain4j 路线；按需选择，也可同时使用两条路线 -->
+<dependency>
+    <groupId>org.bsc.langgraph4j</groupId>
+    <artifactId>langgraph4j-langchain4j</artifactId>
+</dependency>
+```
+
+模型 provider 仍需按需添加，例如 Spring AI 路线的 `cn.iocoder.spring-ai:spring-ai-openai`；LangChain4j 路线在 Java 8 用 `cn.iocoder.langchain4j:langchain4j-open-ai`，Java 17+ 用 `dev.langchain4j:langchain4j-open-ai`。对应版本由 BOM 管理。使用一种路线时无需添加另一种 adapter。
+
+Boot 2 使用官方 `spring-boot-starter-parent` 时，还需设置以下属性，避免父 POM 直接管理的旧版本覆盖兼容要求：
+
+```xml
+<properties>
+    <httpclient5.version>5.6.5</httpclient5.version>
+    <httpcore5.version>5.4.4</httpcore5.version>
+    <logback.version>1.2.13</logback.version>
+</properties>
+```
+
+默认验证范围、源码构建顺序、完整消费者示例见 [COMPATIBILITY.md](COMPATIBILITY.md) 和 [Boot 消费者](compatibility-tests/boot-consumer)。当前不将仓库里全部可选 saver、studio、samples 列为兼容完成；API key / 外部模型服务未参与本轮验证。
+
+---
+
+<!-- 以下保留官方 README 原文 -->
 
 #  ![avatar](https://avatars.githubusercontent.com/u/212100817?s=60&v=4)️ Welcome to LangGraph4j
 
