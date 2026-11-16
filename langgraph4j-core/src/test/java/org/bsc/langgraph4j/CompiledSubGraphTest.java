@@ -86,9 +86,9 @@ public class CompiledSubGraphTest implements LG4JTestUtil {
                     return;
                 }
 
-                isSubgraphRequested( nodeId, config, result ).ifPresentOrElse(
-                        item -> log.info("subgraph requested: [{}]", item),
-                        () -> log.info("{} end", nodeId));
+                var requested = isSubgraphRequested(nodeId, config, result);
+                if (requested.isPresent()) log.info("subgraph requested: [{}]", requested.get());
+                else log.info("{} end", nodeId);
             });
         }
     }

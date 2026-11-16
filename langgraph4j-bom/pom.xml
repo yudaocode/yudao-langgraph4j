@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version='1.0' encoding='UTF-8'?>
 <!--
   ~ MIT License
   ~
@@ -22,187 +22,68 @@
   ~ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
   ~ SOFTWARE.
 -->
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>org.bsc.langgraph4j</groupId>
+        <groupId>cn.iocoder.langgraph4j</groupId>
         <artifactId>langgraph4j-parent</artifactId>
-        <version>1.9.9</version>
+        <version>2.0.0-SNAPSHOT</version>
+        <relativePath>../pom.xml</relativePath>
     </parent>
-
     <artifactId>langgraph4j-bom</artifactId>
     <packaging>pom</packaging>
-
     <name>LangGraph4j::bom</name>
     <description>Bill of Materials POM (BOM) for the LangGraph4j modules</description>
-
-    <url>https://github.com/langgraph4j/langgraph4j</url>
-
-    <scm>
-        <connection>scm:git: https://github.com/langgraph4j/langgraph4j.git</connection>
-        <developerConnection>scm:git: https://github.com/langgraph4j/langgraph4j.git</developerConnection>
-        <url>https://github.com/langgraph4j/langgraph4j</url>
+    <url>https://github.com/yudaocode/yudao-langgraph4j</url>
+    <scm child.scm.connection.inherit.append.path="false" child.scm.developerConnection.inherit.append.path="false" child.scm.url.inherit.append.path="false">
+        <connection>scm:git:https://github.com/yudaocode/yudao-langgraph4j.git</connection>
+        <developerConnection>scm:git:ssh://git@github.com/yudaocode/yudao-langgraph4j.git</developerConnection>
+        <url>https://github.com/yudaocode/yudao-langgraph4j/tree/main-jdk8</url>
         <tag>HEAD</tag>
     </scm>
-
     <dependencyManagement>
         <dependencies>
             <dependency>
-                <groupId>org.bsc.langgraph4j</groupId>
+                <groupId>cn.iocoder.langchain4j</groupId>
+                <artifactId>langchain4j-bom</artifactId>
+                <version>2.0.0-SNAPSHOT</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>cn.iocoder.spring-ai</groupId>
+                <artifactId>spring-ai-bom</artifactId>
+                <version>2.0.0-SNAPSHOT</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>cn.iocoder.langgraph4j</groupId>
                 <artifactId>langgraph4j-core</artifactId>
-                <version>${project.version}</version>
+                <version>2.0.0-SNAPSHOT</version>
             </dependency>
-            
             <dependency>
-                <groupId>org.bsc.langgraph4j</groupId>
-                <artifactId>langgraph4j-dsl</artifactId>
-                <version>${project.version}</version>
+                <groupId>cn.iocoder.langgraph4j</groupId>
+                <artifactId>async-generator</artifactId>
+                <version>2.0.0-SNAPSHOT</version>
             </dependency>
-
-            <!-- AG UI Integration -->
             <dependency>
-                <groupId>org.bsc.langgraph4j</groupId>
-                <artifactId>langgraph4j-ag-ui-json</artifactId>
-                <version>${project.version}</version>
+                <groupId>cn.iocoder.langgraph4j</groupId>
+                <artifactId>langgraph4j-java8-compat</artifactId>
+                <version>2.0.0-SNAPSHOT</version>
             </dependency>
-
             <dependency>
-                <groupId>org.bsc.langgraph4j</groupId>
-                <artifactId>langgraph4j-ag-ui-sdk</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>org.bsc.langgraph4j</groupId>
-                <artifactId>langgraph4j-ag-ui-springboot</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-
-            <!--Open Telemetry -->
-            <dependency>
-                <groupId>org.bsc.langgraph4j</groupId>
-                <artifactId>langgraph4j-opentelemetry</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-
-            <!-- LangGraph4j Integrate with LangChain4j -->
-            <dependency>
-                <groupId>org.bsc.langgraph4j</groupId>
+                <groupId>cn.iocoder.langgraph4j</groupId>
                 <artifactId>langgraph4j-langchain4j</artifactId>
-                <version>${project.version}</version>
+                <version>2.0.0-SNAPSHOT</version>
             </dependency>
             <dependency>
-                <groupId>org.bsc.langgraph4j</groupId>
-                <artifactId>langgraph4j-langchain4j-agentexecutor</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <!-- Deprecated coordinates, retained for consumers migrating via Maven relocation. -->
-            <dependency>
-                <groupId>org.bsc.langgraph4j</groupId>
-                <artifactId>langgraph4j-agent-executor</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-
-            <!-- LangGraph4j Integrate with Spring AI -->
-            <dependency>
-                <groupId>org.bsc.langgraph4j</groupId>
+                <groupId>cn.iocoder.langgraph4j</groupId>
                 <artifactId>langgraph4j-spring-ai</artifactId>
-                <version>${project.version}</version>
+                <version>2.0.0-SNAPSHOT</version>
             </dependency>
-            <dependency>
-                <groupId>org.bsc.langgraph4j</groupId>
-                <artifactId>langgraph4j-springai-agentexecutor</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-
-            <!-- checkpoint saver -->
-            <dependency>
-                <groupId>org.bsc.langgraph4j</groupId>
-                <artifactId>langgraph4j-filesystem-saver</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.bsc.langgraph4j</groupId>
-                <artifactId>langgraph4j-postgres-saver</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.bsc.langgraph4j</groupId>
-                <artifactId>langgraph4j-mysql-saver</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.bsc.langgraph4j</groupId>
-                <artifactId>langgraph4j-oracle-saver</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.bsc.langgraph4j</groupId>
-                <artifactId>langgraph4j-redis-saver</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.bsc.langgraph4j</groupId>
-                <artifactId>langgraph4j-dynamodb-saver</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.bsc.langgraph4j</groupId>
-                <artifactId>langgraph4j-cockroachdb-saver</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.bsc.langgraph4j</groupId>
-                <artifactId>langgraph4j-mongodb-saver</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>org.bsc.langgraph4j</groupId>
-                <artifactId>langgraph4j-hazelcast-saver</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>org.bsc.langgraph4j</groupId>
-                <artifactId>langgraph4j-sqlite-saver</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-
-            <!-- studio -->
-            <dependency>
-                <groupId>org.bsc.langgraph4j</groupId>
-                <artifactId>langgraph4j-studio</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.bsc.langgraph4j</groupId>
-                <artifactId>langgraph4j-studio-jetty</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.bsc.langgraph4j</groupId>
-                <artifactId>langgraph4j-studio-quarkus</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.bsc.langgraph4j</groupId>
-                <artifactId>langgraph4j-studio-springboot</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-
-            <!-- javelit - only work with jdk 21 and above -->
-            <dependency>
-                <groupId>org.bsc.langgraph4j</groupId>
-                <artifactId>langgraph4j-javelit</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-
         </dependencies>
     </dependencyManagement>
-
     <build>
         <plugins>
             <plugin>
@@ -218,7 +99,7 @@
                         </goals>
                         <configuration>
                             <updatePomFile>true</updatePomFile>
-                            <flattenMode>ossrh</flattenMode>
+                            <flattenMode>bom</flattenMode>
                             <pomElements>
                                 <distributionManagement>remove</distributionManagement>
                                 <dependencyManagement>keep</dependencyManagement>
@@ -226,6 +107,7 @@
                                 <scm>keep</scm>
                                 <url>keep</url>
                                 <organization>resolve</organization>
+                                <properties>keep</properties>
                             </pomElements>
                         </configuration>
                     </execution>
@@ -240,5 +122,4 @@
             </plugin>
         </plugins>
     </build>
-
 </project>

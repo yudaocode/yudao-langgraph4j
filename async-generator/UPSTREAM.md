@@ -1,0 +1,1 @@
+MIT-licensed java-async-generator v5.2.0, commit57224aa17a98eb9ac030ffab109ae7fbda30a297. Main sources and complete tagged unit tests retained. Original package org.bsc.async and authors remain. Java8 compatibility build uses the fork group cn.iocoder.langgraph4j; no replacement is published under org.bsc.async.

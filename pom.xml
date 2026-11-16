@@ -1,14 +1,18 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<?xml version='1.0' encoding='UTF-8'?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" child.project.url.inherit.append.path="false">
     <modelVersion>4.0.0</modelVersion>
-
-    <groupId>org.bsc.langgraph4j</groupId>
+    <parent>
+        <groupId>cn.iocoder.langchain4j</groupId>
+        <artifactId>langchain4j-parent</artifactId>
+        <version>2.0.0-SNAPSHOT</version>
+        <relativePath/>
+    </parent>
+    <groupId>cn.iocoder.langgraph4j</groupId>
     <artifactId>langgraph4j-parent</artifactId>
-    <version>1.9.9</version>
+    <version>2.0.0-SNAPSHOT</version>
     <packaging>pom</packaging>
-
     <name>langgraph4j::parent</name>
-    <url>https://github.com/langgraph4j/langgraph4j</url>
+    <url>https://github.com/yudaocode/yudao-langgraph4j</url>
     <description>A library for building stateful, multi-agents applications with LLMs</description>
     <licenses>
         <license>
@@ -27,60 +31,54 @@
             <name>lambochen</name>
             <email>lambochen@yeah.net</email>
         </developer>
+        <developer>
+            <id>yudaocode</id>
+            <name>芋道源码</name>
+            <url>https://github.com/yudaocode</url>
+        </developer>
     </developers>
-    <scm>
-        <connection>scm:git: https://github.com/bsorrentino/langgraph4j.git</connection>
-        <developerConnection>scm:git: https://github.com/bsorrentino/langgraph4j.git</developerConnection>
-        <url>https://github.com/bsorrentino/langgraph4j</url>
+    <scm child.scm.connection.inherit.append.path="false" child.scm.developerConnection.inherit.append.path="false" child.scm.url.inherit.append.path="false">
+        <connection>scm:git:https://github.com/yudaocode/yudao-langgraph4j.git</connection>
+        <developerConnection>scm:git:ssh://git@github.com/yudaocode/yudao-langgraph4j.git</developerConnection>
+        <url>https://github.com/yudaocode/yudao-langgraph4j/tree/main-jdk8</url>
         <tag>HEAD</tag>
     </scm>
     <issueManagement>
         <system>github</system>
-        <url>https://github.com/bsorrentino/langgraph4j/issues</url>
+        <url>https://github.com/yudaocode/yudao-langgraph4j/issues</url>
     </issueManagement>
-
     <properties>
-        <maven.compiler.source>17</maven.compiler.source>
-        <maven.compiler.target>17</maven.compiler.target>
+        <maven.compiler.source>8</maven.compiler.source>
+        <maven.compiler.target>8</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <langchain4j.version>1.23.0</langchain4j.version>
-        <langchain4j.beta>1.23.0-beta33</langchain4j.beta>
-        <spring-ai.version>2.0.1</spring-ai.version>
+        <langchain4j.version>2.0.0-SNAPSHOT</langchain4j.version>
+        <langchain4j.beta>2.0.0-SNAPSHOT</langchain4j.beta>
+        <spring-ai.version>2.0.0-SNAPSHOT</spring-ai.version>
         <ag-ui.version>0.1.1</ag-ui.version>
         <flatten-maven-plugin.version>1.5.0</flatten-maven-plugin.version>
+        <maven.compiler.release>8</maven.compiler.release>
+        <langgraph4j.official.version>1.9.9</langgraph4j.official.version>
     </properties>
-
-
     <distributionManagement>
         <site>
             <id>${project.artifactId}-site</id>
             <url>${project.baseUri}</url>
         </site>
     </distributionManagement>
-
-
     <dependencyManagement>
         <dependencies>
             <dependency>
-                <groupId>org.jspecify</groupId>
-                <artifactId>jspecify</artifactId>
-                <version>1.0.0</version>
-                <scope>provided</scope>
-            </dependency>
-
-            <dependency>
                 <groupId>org.slf4j</groupId>
                 <artifactId>slf4j-api</artifactId>
-                <version>2.0.9</version>
+                <version>1.7.36</version>
             </dependency>
-
             <dependency>
                 <groupId>org.slf4j</groupId>
                 <artifactId>slf4j-jdk14</artifactId>
-                <version>2.0.9</version> <!-- Use the latest version -->
+                <version>1.7.36</version>
+                <!-- Use the latest version -->
             </dependency>
-
             <dependency>
                 <groupId>org.junit</groupId>
                 <artifactId>junit-bom</artifactId>
@@ -90,7 +88,6 @@
             </dependency>
         </dependencies>
     </dependencyManagement>
-
     <reporting>
         <excludeDefaults>true</excludeDefaults>
         <plugins>
@@ -120,7 +117,6 @@
             </plugin>
         </plugins>
     </reporting>
-
     <build>
         <pluginManagement>
             <plugins>
@@ -138,40 +134,36 @@
                     <artifactId>maven-deploy-plugin</artifactId>
                     <version>3.1.1</version>
                 </plugin>
-
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-jar-plugin</artifactId>
                     <version>3.3.0</version>
                 </plugin>
-
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-surefire-plugin</artifactId>
-                    <version>3.2.5</version>
+                    <version>3.6.1</version>
                     <configuration>
                         <systemPropertyVariables>
                             <api.version>1.44</api.version>
                         </systemPropertyVariables>
+                        <jvm>${compat.test.jvm}</jvm>
                     </configuration>
                 </plugin>
-
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-compiler-plugin</artifactId>
                     <version>3.13.0</version>
                     <configuration>
-                        <release>17</release>
+                        <release>8</release>
                     </configuration>
                 </plugin>
-
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-site-plugin</artifactId>
                     <version>4.0.0-M16</version>
-
                     <dependencies>
-                    <!--
+                        <!--
                         <dependency>
                             <groupId>org.apache.maven.doxia</groupId>
                             <artifactId>doxia-module-markdown</artifactId>
@@ -183,18 +175,14 @@
                     <configuration>
                     </configuration>
                 </plugin>
-
                 <plugin>
                     <groupId>org.codehaus.mojo</groupId>
                     <artifactId>build-helper-maven-plugin</artifactId>
                     <version>3.0.0</version>
                 </plugin>
             </plugins>
-
         </pluginManagement>
-
         <plugins>
-
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-site-plugin</artifactId>
@@ -202,112 +190,14 @@
                     <tempWebappDirectory>${project.build.directory}/staging</tempWebappDirectory>
                 </configuration>
             </plugin>
-
-            <plugin>
-                <groupId>org.sonatype.central</groupId>
-                <artifactId>central-publishing-maven-plugin</artifactId>
-                <version>0.8.0</version>
-                <extensions>true</extensions>
-                <configuration>
-                    <publishingServerId>sonatype-central</publishingServerId>
-                    <autoPublish>true</autoPublish>
-                    <waitUntil>published</waitUntil>
-                </configuration>
-            </plugin>
-
         </plugins>
     </build>
-
     <modules>
+        <module>langgraph4j-java8-compat</module>
+        <module>async-generator</module>
         <module>langgraph4j-core</module>
-        <module>langgraph4j-dsl</module>
         <module>langgraph4j-bom</module>
-
-        <!-- Integrating LangGraph4j with AG-UI -->
-        <module>ag-ui/langgraph4j-ag-ui-json</module>
-        <module>ag-ui/langgraph4j-ag-ui-sdk</module>
-        <module>ag-ui/langgraph4j-ag-ui-springboot</module>
-
-        <!-- Integrating LangGraph4j with LangChain4j -->
         <module>langchain4j/langchain4j-core</module>
-        <module>langchain4j/langchain4j-agent</module>
-        <module>langchain4j/langchain4j-agent-relocation</module>
-
-        <!-- Integrating LangGraph4j with Spring AI -->
         <module>spring-ai/spring-ai-core</module>
-        <module>spring-ai/spring-ai-agent</module>
-        <module>spring-ai/spring-ai-agent-archetype</module>
-
-        <!-- LangGraph4j studio and implementations-->
-        <module>studio/base</module>
-        <module>studio/jetty</module>
-        <module>studio/springboot</module>
-        <!-- module>studio/quarkus</module -->
-
-        <!-- LangGraph4j savers -->
-        <module>langgraph4j-filesystem-saver</module>
-        <module>langgraph4j-postgres-saver</module>
-        <module>langgraph4j-oracle-saver</module>
-        <module>langgraph4j-mysql-saver</module>
-        <module>langgraph4j-redis-saver</module>
-        <module>langgraph4j-dynamodb-saver</module>
-        <module>langgraph4j-cockroachdb-saver</module>
-        <module>langgraph4j-mongodb-saver</module>
-        <module>langgraph4j-hazelcast-saver</module>
-        <module>langgraph4j-sqlite-saver</module>
-
-        <!-- LangGraph4j OpenTelemetry integration -->
-        <module>langgraph4j-opentelemetry</module>
-
-        <!-- LangGraph4j how-tos and examples, new examples repository: https://github.com/langgraph4j/langgraph4j-examples -->
-        <module>how-tos</module>
-
     </modules>
-
-    <profiles>
-        <profile>
-            <id>javelit</id>
-            <activation>
-                <jdk>[21,)</jdk>
-            </activation>
-            <modules>
-                <module>javelit</module>
-            </modules>
-        </profile>
-        <profile>
-            <id>release</id>
-            <build>
-                <plugins>
-                    <!--
-                    =====================================================================================================
-                    mvn -Prelease source:jar javadoc:jar install central-publishing:publish -Dgpg.passphrase=thephrase
-                    =====================================================================================================
-                    -->
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-gpg-plugin</artifactId>
-                        <version>3.2.4</version>
-                        <executions>
-                            <execution>
-                                <id>sign-artifacts</id>
-                                <phase>verify</phase>
-                                <goals>
-                                    <goal>sign</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                        <configuration>
-                            <keyname>bartolomeo.sorrentino@gmail.com</keyname>
-                            <gpgArguments>
-                                <arg>--pinentry-mode</arg>
-                                <arg>loopback</arg>
-                            </gpgArguments>
-                        </configuration>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-
-    </profiles>
-
 </project>

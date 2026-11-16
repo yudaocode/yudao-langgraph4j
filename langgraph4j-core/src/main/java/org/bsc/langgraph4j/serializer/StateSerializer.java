@@ -44,7 +44,10 @@ public abstract class StateSerializer<State extends AgentState> implements Seria
 
     public final State readDataFromReader( Reader reader ) throws IOException, ClassNotFoundException {
         final var stringWriter = new StringWriter();
-        reader.transferTo(stringWriter);
+        char[] buffer = new char[8192];
+        for (int read; (read = reader.read(buffer)) >= 0;) {
+            stringWriter.write(buffer, 0, read);
+        }
         return readDataFromString(stringWriter.toString());
     }
 

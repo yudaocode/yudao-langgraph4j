@@ -88,8 +88,8 @@ class UpdateStateResumeTest {
         // values must be visible in the checkpoint right away ...
         assertEquals(10, app.getState(resumeConfig).state().count());
         // ... and must NOT be propagated for resume: the checkpoint already holds them
-        assertTrue(resumeConfig.metadata(RunnableConfig.SUBGRAPH_RESUME_UPDATE_DATA,
-                        new TypeRef<Map<String, Object>>() {}).isEmpty(),
+        assertFalse(resumeConfig.metadata(RunnableConfig.SUBGRAPH_RESUME_UPDATE_DATA,
+                        new TypeRef<Map<String, Object>>() {}).isPresent(),
                 "resume update data must not be set when resuming into a regular node");
 
         // resume: the update must be applied exactly once

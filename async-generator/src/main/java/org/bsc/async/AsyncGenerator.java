@@ -1,0 +1,814 @@
+package org.bsc.async;
+
+import org.bsc.async.executor.DefaultExecutor;
+import org.bsc.async.internal.UnmodifiableDeque;
+
+import java.lang.ref.Cleaner;
+import java.util.*;
+import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.BiFunction;
+import java.util.function.BinaryOperator;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
+
+import static java.util.Objects.requireNonNull;
+import static java.util.Optional.ofNullable;
+import static java.util.concurrent.CompletableFuture.completedFuture;
+
+/**
+ * An asynchronous generator interface that allows generating asynchronous elements.
+ *
+ * @param <E> the type of elements. The generator will emit {@link  java.util.concurrent.CompletableFuture CompletableFutures&lt;E&gt;} elements
+ */
+public interface AsyncGenerator<E> extends Iterable<E> {
+
+    interface HasResultValue {
+
+        Optional<Object> resultValue();
+    }
+
+    interface IsCancellable  {
+        Object CANCELLED = new Object() {
+            @Override
+            public String toString() {
+                return "CANCELLED";
+            }
+        };
+
+        /**
+         * Checks if the asynchronous generation has been cancelled.
+         * <p>
+         * The default implementation always returns {@code false}.
+         * Implementations that support cancellation should override this method.
+         *
+         * @return {@code true} if the generator has been cancelled, {@code false} otherwise.
+         */
+        boolean isCancelled();
+
+        /**
+         * method that request to cancel generator
+         */
+        boolean cancel(boolean mayInterruptIfRunning);
+
+
+    }
+
+    interface Cancellable<E> extends AsyncGenerator<E>, IsCancellable {
+
+    }
+
+    static Optional<Object> resultValue(AsyncGenerator<?> generator) {
+        if (generator instanceof HasResultValue withResult) {
+            return withResult.resultValue();
+        }
+        return Optional.empty();
+    }
+
+    static Optional<Object> resultValue(Iterator<?> iterator) {
+        if (iterator instanceof HasResultValue withResult) {
+            return withResult.resultValue();
+        }
+        return Optional.empty();
+    }
+
+    /**
+     * Abstract base class for AsyncGenerator implementations.
+     * <p>
+     * This class manages an internal ExecutorService for asynchronous operations.
+     * It implements {@link AutoCloseable} to ensure proper resource cleanup.
+     * <p>
+     * <b>Usage with try-with-resources:</b>
+     * <pre>{@code
+     * try (AsyncGenerator<String> generator = AsyncGenerator.from(list)) {
+     *     generator.forEachAsync(System.out::println);
+     * }
+     * }</pre>
+     * <p>
+     * <b>Note:</b> Even if {@code close()} is not called explicitly, the internal Cleaner
+     * mechanism will ensure the ExecutorService is properly shutdown when this instance
+     * is garbage collected. However, explicit cleanup via {@code close()} or {@code cancel()}
+     * is recommended for deterministic resource management.
+     *
+     * @param <E> the type of elements
+     */
+    abstract class Base<E> implements AsyncGenerator<E>, AutoCloseable {
+
+        private static final Cleaner CLEANER = Cleaner.create();
+
+        private final AtomicBoolean closed = new AtomicBoolean(false);
+        private Cleaner.Cleanable cleanable;
+
+        Executor executor;
+
+        /**
+         * Creates a new Base instance and registers it with the Cleaner for automatic cleanup.
+         */
+        protected Base() {
+
+        }
+
+        @Override
+        public synchronized Executor executor() {
+            if (closed.get()) throw new IllegalStateException("Generator is closed");
+
+            if( executor == null ) {
+                executor = DefaultExecutor.builder().name("AsyncGenerator").build();
+                if( executor instanceof ExecutorService executorService) {
+                    this.cleanable = CLEANER.register(this, new CleanupAction(executorService, closed));
+                }
+            }
+            return executor;
+        }
+
+        /**
+         * Closes this AsyncGenerator and releases its resources.
+         * <p>
+         * This method shuts down the internal ExecutorService. After calling this method,
+         * the generator should not be used for further operations.
+         * <p>
+         * This method is idempotent - calling it multiple times has no additional effect.
+         *
+         */
+        @Override
+        public synchronized void close() {
+            // CleanupAction owns the atomic transition and executor shutdown.
+            if (cleanable != null) cleanable.clean();
+            else closed.set(true);
+        }
+
+        /**
+         * Checks if this generator has been closed.
+         *
+         * @return {@code true} if the generator has been closed, {@code false} otherwise
+         */
+        public boolean isClosed() {
+            return closed.get();
+        }
+
+        /**
+         * Internal cleanup action for the Cleaner mechanism.
+         * <p>
+         * This class holds references to the ExecutorService and closed flag without
+         * capturing the outer Base instance, avoiding circular references that would
+         * prevent garbage collection.
+         */
+        private record CleanupAction(ExecutorService executor, AtomicBoolean closed) implements Runnable {
+
+            @Override
+                    public void run() {
+                        if (closed.compareAndSet(false, true)) {
+                            executor.shutdown();
+                        }
+                    }
+                }
+    }
+
+    abstract class BaseCancellable<E> extends Base<E> implements Cancellable<E> {
+
+        private final AtomicBoolean cancelled = new AtomicBoolean(false);
+
+        @Override
+        public boolean isCancelled() {
+            return cancelled.get();
+        }
+
+        /**
+         * Requests cancellation of the generator.
+         * <p>
+         * This method sets the cancelled flag and closes the executor to release resources.
+         * If {@code mayInterruptIfRunning} is {@code true}, the executor will be shut down
+         * immediately, interrupting any running tasks.
+         *
+         * @param mayInterruptIfRunning if {@code true}, interrupt running tasks
+         * @return {@code true} if cancellation was successful, {@code false} if already cancelled
+         */
+        @Override
+        public boolean cancel(boolean mayInterruptIfRunning) {
+            if (cancelled.compareAndSet(false, true)) {
+                close();
+                if (mayInterruptIfRunning && executor instanceof ExecutorService executorService) {
+                    if (!executorService.isTerminated()) {
+                        executorService.shutdownNow();
+                    }
+                }
+                return true;
+            }
+            return false;
+        }
+
+    }
+
+    /**
+     * An asynchronous generator decorator that allows retrieving the result value of the asynchronous operation, if any.
+     *
+     * @param <E> the type of elements in the generator
+     */
+    class WithResult<E> extends BaseCancellable<E> implements HasResultValue {
+
+        protected final AsyncGenerator<E> delegate;
+        private Object resultValue;
+
+        public WithResult(AsyncGenerator<E> delegate) {
+            this.delegate = delegate;
+        }
+
+        public AsyncGenerator<E> delegate() {
+            return delegate;
+        }
+
+        @Override
+        public Executor executor() {
+            return delegate.executor();
+        }
+
+        /**
+         * Retrieves the result value of the generator, if any.
+         *
+         * @return an {@link Optional} containing the result value if present, or an empty Optional if not
+         */
+        public Optional<Object> resultValue() {
+            return ofNullable(resultValue);
+        }
+
+        @Override
+        public Data<E> next() {
+            final Data<E> result = (isCancelled()) ? Data.done(CANCELLED) : delegate.next();
+
+            if (result.isDone()) {
+                resultValue = result.resultValue();
+            }
+            return result;
+        }
+
+        @Override
+        public boolean cancel(boolean mayInterruptIfRunning) {
+            if( super.cancel( mayInterruptIfRunning ) ) {
+
+                if (delegate instanceof IsCancellable isCancellable) {
+                    return isCancellable.cancel(mayInterruptIfRunning);
+                } else if (mayInterruptIfRunning) {
+                    if (delegate.executor() instanceof ExecutorService service) {
+                        if (!(service.isShutdown() || service.isTerminated())) {
+                            service.shutdownNow();
+                            return true;
+                        }
+                    }
+                }
+            }
+            return false;
+        }
+    }
+
+    /**
+     * An asynchronous generator decorator that allows to generators composition embedding other generators.
+     *
+     * @param <E> the type of elements in the generator
+     */
+    class WithEmbed<E> extends BaseCancellable<E> implements HasResultValue {
+        protected final Deque<Embed<E>> generatorStack = new ArrayDeque<>(2);
+        private final Deque<Optional<Object>> returnValueStack = new ArrayDeque<>(2);
+        private final Embed<E> firstEmbed;
+
+        public WithEmbed(AsyncGenerator<E> delegate, EmbedCompletionHandler onGeneratorDoneWithResult) {
+            firstEmbed = new Embed<>(delegate, onGeneratorDoneWithResult);
+            generatorStack.push(firstEmbed);
+        }
+
+        public WithEmbed(AsyncGenerator<E> delegate) {
+            this(delegate, null);
+        }
+
+        private void reset() {
+            returnValueStack.clear();
+            generatorStack.clear();
+            generatorStack.push(firstEmbed);
+        }
+
+        @Override
+        public final Executor executor() {
+            if (generatorStack.isEmpty()) {
+                throw new IllegalStateException("no generator found!");
+            }
+            return generatorStack.peek().generator.executor();
+        }
+
+        public Deque<Optional<Object>> resultValues() {
+            return new UnmodifiableDeque<>(returnValueStack);
+        }
+
+        public Optional<Object> resultValue() {
+            return ofNullable(returnValueStack.peek()).flatMap( Function.identity());
+        }
+
+        private void clearPreviousReturnsValuesIfAny() {
+            // Check if the return values are which ones from previous run
+            if (returnValueStack.size() > 1 && returnValueStack.size() == generatorStack.size()) {
+                returnValueStack.clear();
+            }
+        }
+
+        protected boolean isLastGenerator() {
+            return generatorStack.size() == 1;
+        }
+
+        @Override
+        public Data<E> next() {
+            if (generatorStack.isEmpty()) { // GUARD
+                throw new IllegalStateException("no generator found!");
+            }
+            if( isCancelled() ) {
+                generatorStack.clear();
+                return Data.done(CANCELLED);
+            }
+
+            final Embed<E> embed = requireNonNull(generatorStack.peek(), "embed generator cannot be null");
+
+            final Data<E> result = embed.generator.next();
+
+
+            if (result.isDone()) {
+                clearPreviousReturnsValuesIfAny();
+                returnValueStack.push( ofNullable(result.resultValue()) );
+                if (embed.onCompletion != null /* && result.resultValue != null */) {
+                    try {
+                        embed.onCompletion.accept(result.resultValue());
+                    } catch (Exception e) {
+                        return Data.error(e);
+                    }
+                }
+                final var isLast = isLastGenerator();
+                generatorStack.pop();
+                if (isLast) {
+                    return result;
+                }
+                return next();
+            }
+            if (result.embed() != null) {
+                if (generatorStack.size() >= 2) {
+                    return Data.error(new UnsupportedOperationException("Currently recursive nested generators are not supported!"));
+                }
+                generatorStack.push(result.embed());
+                return next();
+            }
+
+            return result;
+        }
+
+        @Override
+        public boolean cancel(boolean mayInterruptIfRunning) {
+            if( super.cancel(mayInterruptIfRunning) ) {
+                for (var embed : generatorStack) {
+                    if (embed.generator instanceof Cancellable<?> isCancellable) {
+                        isCancellable.cancel(mayInterruptIfRunning);
+                    }
+                }
+                return true;
+            }
+            return false;
+        }
+
+        @Override
+        public Iterator<E> iterator() {
+            reset();
+            return super.iterator();
+        }
+
+        @Override
+        public CompletableFuture<Object> forEachAsync(Consumer<E> consumer) {
+            reset();
+            return super.forEachAsync(consumer);
+        }
+
+        @Override
+        public <R> CompletableFuture<R> reduce(R result, BiFunction<R, E, R> reducer) {
+            reset();
+            return super.reduce(result, reducer);
+        }
+
+        @Override
+        public <R> CompletableFuture<R> reduceAsync(R result, BiFunction<R, E, R> reducer) {
+            reset();
+            return super.reduceAsync(result, reducer);
+        }
+
+        @Override
+        public CompletableFuture<ReduceResult<E>> reduce(BinaryOperator<E> reducer) {
+            reset();
+            return super.reduce(reducer);
+        }
+
+        @Override
+        public CompletableFuture<ReduceResult<E>> reduceAsync(BinaryOperator<E> reducer) {
+            reset();
+            return super.reduceAsync(reducer);
+        }
+
+        @Override
+        public CompletableFuture<Object> toCompletableFuture() {
+            reset();
+            return super.toCompletableFuture();
+        }
+
+        @Override
+        public CompletableFuture<Object> toCompletableFutureAsync() {
+            reset();
+            return super.toCompletableFutureAsync();
+        }
+    }
+
+    @FunctionalInterface
+    interface EmbedCompletionHandler {
+        void accept(Object t) throws Exception;
+    }
+
+    record Embed<E>(
+            AsyncGenerator<E> generator,
+            EmbedCompletionHandler onCompletion
+    ) implements HasResultValue {
+
+        public Embed {
+            requireNonNull(generator, "generator cannot be null");
+        }
+
+        @Override
+        public Optional<Object> resultValue() {
+            return AsyncGenerator.resultValue(generator);
+        }
+    }
+
+    /**
+     * Represents a data element in the AsyncGenerator.
+     *
+     * @param <E> the type of the data element
+     */
+    record Data<E>(
+            CompletableFuture<E> future,
+            AsyncGenerator.Embed<E> embed,
+            Object resultValue) {
+
+        public boolean isDone() {
+            return (future == null && embed == null);
+        }
+
+        public boolean isError() {
+            return future != null && future.isCompletedExceptionally();
+        }
+
+        public static <E> Data<E> of(CompletableFuture<E> future) {
+            return new Data<>(requireNonNull(future, "future task cannot be null"), null, null);
+        }
+
+        public static <E> Data<E> of(E data) {
+            return new Data<>(completedFuture(data), null, null);
+        }
+
+        public static <E> Data<E> composeWith(AsyncGenerator<E> generator, AsyncGenerator.EmbedCompletionHandler onCompletion) {
+            return new Data<>(null, new AsyncGenerator.Embed<>(generator, onCompletion), null);
+        }
+
+        public static <E> Data<E> done() {
+            return new Data<>(null, null, null);
+        }
+
+        public static <E> Data<E> done(Object resultValue) {
+            return new Data<>(null, null, resultValue);
+        }
+
+        public static <E> Data<E> error(Throwable exception) {
+            return Data.of(CompletableFuture.failedFuture(exception));
+        }
+
+    }
+
+    /**
+     * Retrieves the next asynchronous element.
+     *
+     * @return the next element from the generator
+     */
+    Data<E> next();
+
+    Executor executor();
+
+    /**
+     * Maps the elements of this generator to a new asynchronous generator.
+     *
+     * @param mapFunction the function to map elements to a new asynchronous counterpart
+     * @param <U>         the type of elements in the new generator
+     * @return a generator with mapped elements
+     */
+    default <U> AsyncGenerator<U> map(Function<E, U> mapFunction) {
+        return new Mapper<>(this, mapFunction);
+    }
+
+    /**
+     * Maps the elements of this generator to a new asynchronous generator, and flattens the resulting nested generators.
+     *
+     * @param mapFunction the function to map elements to a new asynchronous counterpart
+     * @param <U>         the type of elements in the new generator
+     * @return a generator with mapped and flattened elements
+     */
+    default <U> AsyncGenerator<U> flatMap(Function<E, CompletableFuture<U>> mapFunction) {
+        return new FlatMapper<>(this, mapFunction);
+    }
+
+
+
+    /**
+     * Asynchronously iterates over the elements of the AsyncGenerator and applies the given consumer to each element.
+     *
+     * @param consumer the consumer function to be applied to each element
+     * @return a CompletableFuture representing the completion of the iteration process.
+     */
+    default CompletableFuture<Object> forEachAsync(Consumer<E> consumer) {
+        return CompletableFuture.supplyAsync(() -> AsyncGeneratorJava8Support.forEach(this, consumer), executor())
+                .thenCompose(Function.identity());
+    }
+
+    record ReduceResult<E>( E result, Object resultValue )  {}
+
+
+
+
+    default <R> CompletableFuture<R> reduce(R result, BiFunction<R, E, R> reducer) {
+        return AsyncGeneratorJava8Support.reduce(this, result, reducer).thenApply( ReduceResult::result );
+    }
+
+    default <R> CompletableFuture<R> reduceAsync(R result, BiFunction<R, E, R> reducer) {
+        return CompletableFuture.supplyAsync(() -> AsyncGeneratorJava8Support.reduce(this, result, reducer), executor())
+                .thenCompose( r -> r.thenApply( ReduceResult::result ));
+    }
+
+    default  CompletableFuture<ReduceResult<E>> reduce( BinaryOperator<E> reducer) {
+        return AsyncGeneratorJava8Support.reduce(this, null, reducer);
+    }
+
+    default  CompletableFuture<ReduceResult<E>> reduceAsync( BinaryOperator<E> reducer ) {
+        return CompletableFuture.supplyAsync(() -> AsyncGeneratorJava8Support.reduce(this, null, reducer), executor())
+                .thenCompose( Function.identity());
+    }
+
+
+
+    /**
+     * Converts the AsyncGenerator to a CompletableFuture.
+     *
+     * @return a CompletableFuture representing the completion of the AsyncGenerator
+     */
+    default CompletableFuture<Object> toCompletableFuture() {
+        return AsyncGeneratorJava8Support.finish(this);
+    }
+
+    default CompletableFuture<Object> toCompletableFutureAsync() {
+        return CompletableFuture.supplyAsync(() -> AsyncGeneratorJava8Support.finish(this), executor())
+                .thenCompose( Function.identity() );
+    }
+
+    /**
+     * Returns a sequential Stream with the elements of this AsyncGenerator.
+     * Each CompletableFuture is resolved and then make available to the stream.
+     *
+     * @return a Stream of elements from the AsyncGenerator
+     */
+    default Stream<E> stream() {
+        return StreamSupport.stream(
+                Spliterators.spliteratorUnknownSize(iterator(), Spliterator.ORDERED),
+                false);
+    }
+
+    /**
+     * Returns an iterator over the elements of this AsyncGenerator.
+     * Each call to `next` retrieves the next "resolved" asynchronous element from the generator.
+     *
+     * @return an iterator over the elements of this AsyncGenerator
+     */
+    default Iterator<E> iterator() {
+        return new InternalIterator<>(this);
+    }
+
+
+    /**
+     * Returns an empty AsyncGenerator.
+     *
+     * @param <E> the type of elements
+     * @return an empty AsyncGenerator
+     */
+    static <E> AsyncGenerator<E> empty() {
+        return new Base<>() {
+            @Override
+            public Data<E> next() {
+                return Data.done();
+            }
+        };
+    }
+
+    static <E> AsyncGenerator<E> error( Throwable exception ) {
+        return new Base<>() {
+            @Override
+            public Data<E> next() {
+                return Data.error(exception);
+            }
+        };
+    }
+
+    /**
+     * Collects asynchronous elements from an iterator.
+     *
+     * @param <E>      the type of elements in the iterator
+     * @param iterator the iterator containing elements to collect
+     * @return an AsyncGenerator instance with collected elements
+     */
+    static <E> AsyncGenerator<E> from(Iterator<E> iterator) {
+        return new Base<>() {
+            @Override
+            public Data<E> next() {
+
+                if (!iterator.hasNext()) {
+                    return Data.done();
+                }
+                return Data.of(completedFuture(iterator.next()));
+            }
+        };
+    }
+
+}
+
+class InternalIterator<E> implements Iterator<E>, AsyncGenerator.HasResultValue, AsyncGenerator.IsCancellable {
+    private final AsyncGenerator<E> delegate;
+
+    private volatile AsyncGenerator.Data<E> currentFetchedData;
+
+    public InternalIterator(AsyncGenerator<E> delegate) {
+        this.delegate = delegate;
+        // currentFetchedData = delegate.next();
+    }
+
+    @Override
+    public boolean hasNext() {
+        if( isCancelled() ) {
+            return false;
+        }
+
+        final var next = delegate.next();
+        currentFetchedData = next;
+
+        return !isCancelled() && next != null && !next.isDone();
+    }
+
+    @Override
+    public E next() {
+        if( isCancelled() ) {
+            throw new CancellationException("generator is cancelled");
+        }
+
+        final var next = currentFetchedData;
+
+        if (next == null || next.isDone()) {
+            throw new NoSuchElementException("no more elements into iterator");
+        }
+
+        return next.future().join();
+    }
+
+    @Override
+    public Optional<Object> resultValue() {
+        if (delegate instanceof AsyncGenerator.HasResultValue withResult) {
+            return withResult.resultValue();
+        }
+        return Optional.empty();
+    }
+
+    @Override
+    public boolean isCancelled() {
+        if (delegate instanceof AsyncGenerator.IsCancellable isCancellable) {
+            return isCancellable.isCancelled();
+        }
+        return false;
+    }
+
+    @Override
+    public boolean cancel(boolean mayInterruptIfRunning) {
+        if (delegate instanceof AsyncGenerator.IsCancellable isCancellable) {
+            return isCancellable.cancel(mayInterruptIfRunning);
+        }
+        return false;
+    }
+}
+
+class Mapper<E, U> extends AsyncGenerator.BaseCancellable<U> implements AsyncGenerator.HasResultValue {
+
+    protected final AsyncGenerator<E> delegate;
+    final Function<E, U> mapFunction;
+
+    protected Mapper(AsyncGenerator<E> delegate, Function<E, U> mapFunction) {
+        this.delegate = requireNonNull(delegate, "delegate cannot be null");
+        this.mapFunction = requireNonNull(mapFunction, "mapFunction cannot be null");
+    }
+
+    @Override
+    public final Executor executor() {
+        return delegate.executor();
+    }
+
+    /**
+     * Retrieves the result value of the generator, if any.
+     *
+     * @return an {@link Optional} containing the result value if present, or an empty Optional if not
+     */
+    public Optional<Object> resultValue() {
+        return AsyncGenerator.resultValue(delegate);
+    }
+
+    @Override
+    public final Data<U> next() {
+        if( isCancelled() ) {
+            throw new CancellationException("generator is cancelled");
+        }
+
+        final Data<E> next = delegate.next();
+
+        if (next.isDone()) {
+            return Data.done(next.resultValue());
+        }
+        return Data.of(next.future().thenApply(mapFunction));
+    }
+
+    @Override
+    public boolean cancel(boolean mayInterruptIfRunning) {
+        if( super.cancel( mayInterruptIfRunning ) ) {
+
+            if (delegate instanceof IsCancellable isCancellable) {
+                return isCancellable.cancel(mayInterruptIfRunning);
+            } else if (mayInterruptIfRunning) {
+                if (delegate.executor() instanceof ExecutorService service) {
+                    if (!(service.isShutdown() || service.isTerminated())) {
+                        service.shutdownNow();
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+}
+
+class FlatMapper<E, U> extends AsyncGenerator.BaseCancellable<U> implements AsyncGenerator.HasResultValue {
+
+    protected final AsyncGenerator<E> delegate;
+    final Function<E, CompletableFuture<U>> mapFunction;
+
+    protected FlatMapper(AsyncGenerator<E> delegate, Function<E, CompletableFuture<U>> mapFunction) {
+        this.delegate = requireNonNull(delegate, "delegate cannot be null");
+        this.mapFunction = requireNonNull(mapFunction, "mapFunction cannot be null");
+
+    }
+
+    @Override
+    public final Executor executor() {
+        return delegate.executor();
+    }
+
+    /**
+     * Retrieves the result value of the generator, if any.
+     *
+     * @return an {@link Optional} containing the result value if present, or an empty Optional if not
+     */
+    public Optional<Object> resultValue() {
+        return AsyncGenerator.resultValue(delegate);
+    }
+
+
+    @Override
+    public final Data<U> next() {
+        if( isCancelled() ) {
+            throw new CancellationException("generator is cancelled");
+        }
+
+        final Data<E> next = delegate.next();
+
+        if (next.isDone()) {
+            return Data.done(next.resultValue());
+        }
+        return Data.of(next.future().thenCompose(mapFunction));
+    }
+
+    @Override
+    public boolean cancel(boolean mayInterruptIfRunning) {
+        if( super.cancel( mayInterruptIfRunning ) ) {
+
+            if (delegate instanceof IsCancellable isCancellable) {
+                return isCancellable.cancel(mayInterruptIfRunning);
+            } else if (mayInterruptIfRunning) {
+                if (delegate.executor() instanceof ExecutorService service) {
+                    if (!(service.isShutdown() || service.isTerminated())) {
+                        service.shutdownNow();
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+}

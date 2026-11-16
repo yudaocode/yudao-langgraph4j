@@ -659,7 +659,7 @@ public final class CompiledGraph<State extends AgentState> implements GraphDefin
                 context = new Context(startCheckpoint);
 
                 final var startCheckpointNextNodeAction = nodes.get(startCheckpoint.nextNodeId());
-                if( startCheckpointNextNodeAction instanceof SubCompiledGraphNodeAction<State> action ) {
+                if( startCheckpointNextNodeAction instanceof SubCompiledGraphNodeAction<?> action ) {
 
                     // RESUME FORM SUBGRAPH DETECTED
                     final var resumeUpdateData = optionalResumeUpdateData

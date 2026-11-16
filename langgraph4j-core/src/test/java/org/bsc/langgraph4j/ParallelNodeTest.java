@@ -23,7 +23,7 @@ import java.util.Map;
 import java.util.concurrent.*;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
-import java.util.random.RandomGenerator;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.IntStream;
 
 import static java.util.concurrent.CompletableFuture.completedFuture;
@@ -119,7 +119,7 @@ public class ParallelNodeTest {
 
     }
 
-    private final RandomGenerator generator = RandomGenerator.getDefault();
+    private final ThreadLocalRandom generator = ThreadLocalRandom.current();
 
     private Duration randomDuration() {
         return Duration.ofSeconds( generator.nextInt(1, 11) );
@@ -137,7 +137,7 @@ public class ParallelNodeTest {
                         throw new CompletionException(e);
                     }
 
-                    final var value =  "TASK [%d] COMPLETED in [%d]s BY [%s]".formatted(taskId, delay.toSeconds(), Thread.currentThread().getName() );
+                    final var value =  "TASK [%d] COMPLETED in [%d]s BY [%s]".formatted(taskId, delay.getSeconds(), Thread.currentThread().getName() );
 
                     return Map.of(
                             "task",
@@ -192,7 +192,7 @@ public class ParallelNodeTest {
                     }
 
                     throw new RuntimeException("TASK [%d] raise exception in [%d]s BY [%s]"
-                            .formatted( taskId, delay.toSeconds(), Thread.currentThread().getName() ));
+                            .formatted( taskId, delay.getSeconds(), Thread.currentThread().getName() ));
 
                 }, executor);
     }

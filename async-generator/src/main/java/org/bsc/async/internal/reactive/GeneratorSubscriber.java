@@ -1,0 +1,128 @@
+package org.bsc.async.internal.reactive;
+
+import org.bsc.async.AsyncGenerator;
+import org.bsc.async.v5.AsyncGeneratorFlow;
+
+import java.util.Optional;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Flow;
+import java.util.function.Supplier;
+
+import static java.util.Objects.requireNonNull;
+
+/**
+ * Represents a subscriber for generating asynchronous data streams.
+ *
+ * <p>This class implements the {@link Flow.Subscriber} and {@link AsyncGenerator} interfaces to handle data flow
+ * and produce asynchronous data. It is designed to subscribe to a publisher, process incoming items,
+ * and manage error and completion signals.</p>
+ *
+ * @param <T> The type of elements produced by this generator.
+ */
+public class GeneratorSubscriber<T> implements AsyncGenerator.Cancellable<T>, Flow.Subscriber<T> {
+
+    private final Supplier<Object> mapResult;
+    private Flow.Subscription subscription;
+    private final AsyncGeneratorFlow.Generator<T> delegate;
+    private final AsyncGeneratorFlow.Dispatcher<T> dispatcher;
+    public Optional<Supplier<Object>> mapResult() {
+        return Optional.ofNullable(mapResult);
+    }
+
+    /**
+     * Constructs a new instance of {@code GeneratorSubscriber}.
+     *
+     * @param <P> the type of the publisher, which must extend {@link Flow.Publisher}
+     * @param mapResult function that will set generator's result
+     * @param publisher the source publisher that will push data to this subscriber
+     * @param processor the processor used for handling asynchronous generator data
+     */
+    public <P extends Flow.Publisher<T>> GeneratorSubscriber(P publisher,
+                                                             Supplier<Object> mapResult,
+                                                             AsyncGeneratorFlow.Processor<T> processor) {
+        this.dispatcher = requireNonNull(processor, "processor cannot be null").dispatcher();
+        this.delegate = AsyncGeneratorFlow.create(processor);
+        this.mapResult = mapResult;
+        publisher.subscribe(this);
+    }
+    /**
+     * Constructs a new instance of {@code GeneratorSubscriber}.
+     *
+     * @param <P> the type of the publisher, which must extend {@link Flow.Publisher}
+     * @param publisher the source publisher that will push data to this subscriber
+     * @param processor the processor used for handling asynchronous generator data
+     */
+    public <P extends Flow.Publisher<T>> GeneratorSubscriber(P publisher, AsyncGeneratorFlow.Processor<T> processor) {
+        this( publisher, null, processor );
+    }
+
+    /**
+     * Handles the subscription event from a Flux.
+     * <p>
+     * This method is called when a subscription to the source {@link Flow} has been established.
+     * The provided {@code Flow.Subscription} can be used to manage and control the flow of data emissions.
+     *
+     * @param subscription The subscription object representing this resource owner lifecycle. Used to signal that resources being subscribed to should not be released until this subscription is disposed.
+     */
+    @Override
+    public void onSubscribe(Flow.Subscription subscription) {
+        this.subscription = subscription;
+        subscription.request(Long.MAX_VALUE);
+    }
+
+    /**
+     * Passes the received item to the delegated queue as an {@link Data} object.
+     *
+     * @param item The item to be processed and queued.
+     */
+    @Override
+    public void onNext(T item) {
+        dispatcher.dispatchAsync( Data.of( item ) );
+    }
+
+    /**
+     * Handles an error by queuing it in the delegate's queue with an errored data.
+     *
+     * @param error The Throwable that represents the error to be handled.
+     */
+    @Override
+    public void onError(Throwable error) {
+        dispatcher.dispatchAsync( Data.error(error) );
+    }
+
+    /**
+     * This method is called when the asynchronous operation is completed successfully.
+     * It notifies the delegate that no more data will be provided by adding a done marker to the queue.
+     */
+    @Override
+    public void onComplete() {
+        dispatcher.dispatchAsync( Data.done( mapResult().map(Supplier::get).orElse(null)));
+    }
+
+    /**
+     * Returns the next {@code Data<T>} object from this iteration.
+     *
+     * @return the next element in the iteration, or null if there is no such element
+     */
+    @Override
+    public Data<T> next() {
+        return delegate.next();
+    }
+
+    @Override
+    public final Executor executor() {
+        return delegate.executor();
+    }
+
+    @Override
+    public boolean isCancelled() {
+        return delegate.isCancelled();
+    }
+
+    @Override
+    public boolean cancel( boolean mayInterruptIfRunning ) {
+        requireNonNull( subscription, "subscription cannot be null");
+        subscription.cancel();
+        return delegate.cancel(mayInterruptIfRunning);
+    }
+}

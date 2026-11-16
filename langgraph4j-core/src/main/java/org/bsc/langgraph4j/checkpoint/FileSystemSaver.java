@@ -221,7 +221,7 @@ public class FileSystemSaver extends AbstractCheckpointSaver implements LG4JLogg
         } else {
             final var lastVersion = lastVersion( threadId );
 
-            if(lastVersion.isEmpty()) {
+            if(!lastVersion.isPresent()) {
                 log.warn("No versions found for threadId '{}'", threadId );
                 return Optional.empty();
             }

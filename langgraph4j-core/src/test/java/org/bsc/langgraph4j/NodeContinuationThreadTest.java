@@ -139,7 +139,7 @@ class NodeContinuationThreadTest {
         var generator = graph.stream(GraphInput.noArgs(), RunnableConfig.empty());
         var run = CompletableFuture.runAsync(() -> generator.stream().toList(), otherPool);
         while (loopThread.get() == null) {
-            Thread.onSpinWait();
+            Thread.yield();
         }
         loopThread.get().interrupt();
 
