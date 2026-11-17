@@ -44,7 +44,7 @@ public class OTELObservationLangraph4jITest implements OTELObservable {
 
             props.load(new java.io.InputStreamReader(input, StandardCharsets.UTF_8));
         }
-        System.getProperties().putAll(props);
+        props.forEach((key, value) -> System.getProperties().putIfAbsent(key, value));
 
         var autoConfig = AutoConfiguredOpenTelemetrySdk.initialize();
 

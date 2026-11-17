@@ -32,7 +32,7 @@ public class OTELObservationAutoconfigureAITest implements OTELObservable {
 
             props.load(new java.io.InputStreamReader(input, StandardCharsets.UTF_8));
         }
-        System.getProperties().putAll(props);
+        props.forEach((key, value) -> System.getProperties().putIfAbsent(key, value));
 
         var autoConfig = AutoConfiguredOpenTelemetrySdk.initialize();
 
@@ -127,9 +127,7 @@ public class OTELObservationAutoconfigureAITest implements OTELObservable {
             log.info("Application started ({})", i);
             log.warn("This is a warning with trace context ({})", i);
             //logger.error("Error occurred", new RuntimeException("Example error"));
-            log.atError()
-                    .setCause(new RuntimeException("Example error"))
-                    .log( "Error occurred ({})", i)
+            log.error("Error occurred ({})", i, new RuntimeException("Example error"))
             ;
 
             Thread.sleep( 1000 );

@@ -101,6 +101,24 @@ DynamoDB saver 已完成真实 JDK8/17/25 容器测试，按需引入（版本�
 
 使用 `org.bsc.langgraph4j.checkpoint.DynamoDBSaver` builder，传入已配置的 `DynamoDbClient` 与状态序列化器；连接地址、AWS凭据由应用提供。大状态的 S3 offload 需另引入 AWS SDK `s3` 并提供 `S3Client`。Java8 路线将 AWS SDK 统一为已验证的 `2.57.12`，默认使用 URL Connection HTTP 实现；现代路线复用官方1.9.9的依赖。本轮各 JVM 均为42项、零失败/错误、1项上游禁用（尚待core支持checkpoint lineage），数据库与S3使用本地DynamoDB/对象存储容器，不代表AWS云账号验收。
 
+## 可选 OpenTelemetry
+
+按需引入以下模块，版本由当前分支 BOM 管理：
+
+```xml
+<dependency>
+    <groupId>cn.iocoder.langgraph4j</groupId>
+    <artifactId>langgraph4j-opentelemetry</artifactId>
+</dependency>
+```
+
+JDK 8 使用本仓兼容模块；JDK 17、25 复用官方 1.9.9 制品。
+Java8 保留 OpenTelemetry SDK 1.55.0 / instrumentation 2.21.0，日志对齐 SLF4J1.7 / Logback1.2.13，HTTP sender 使用已验证的 OkHttp4.12.0。
+Boot2 parent 还需设置 `okhttp.version=4.12.0`、`kotlin.version=1.9.25`，完整组合示例见 Java8 分支的 `compatibility-tests/boot-consumer`。
+Java8 的7项本地协议/SDK测试与4项上游集成用例均通过；后4项关闭远端 exporter，实际HTTP导出和本地三信号收集由前7项覆盖。
+官方制品在 JDK17/25 分别通过同一组6项 hooks/SDK/HTTP 测试；Java8 的 Boot2 组合消费者8项通过。
+这些验证未使用远端 Collector、Jaeger 或付费模型。
+
 ---
 
 <!-- 以下保留官方 README 原文 -->

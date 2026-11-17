@@ -1,3 +1,19 @@
+# Java8 compatibility usage
+
+Use `cn.iocoder.langgraph4j:langgraph4j-opentelemetry:1.9.9-jdk8-SNAPSHOT` after importing the fork BOM.
+Build with JDK17 and run on JDK8; use original Java packages.
+The default17-module serial native8 gate passed547 cases (zero failures/errors, one upstream DynamoDB skip).
+This module passed7 local SDK/protocol cases plus4 separately enabled upstream cases with remote exporters disabled.
+OpenTelemetry SDK1.55.0/instrumentation2.21.0 are retained; Logback1.2.13/SLF4J1.7 and tested OkHttp4.12.0 match the Boot2 route.
+With a Boot2 parent, override `okhttp.version=4.12.0`, `kotlin.version=1.9.25`, and `logback.version=1.2.13`; see the combined consumer fixture.
+The internal collector's proto/protobuf dependencies are optional, as upstream.
+For a local collector, use try-with-resources and `builder().bindAddress("127.0.0.1").port(0).outputDir(path).buildAndStart()`; port0 chooses a free port, and endpoint methods return connectable local URLs.
+A default bind address still listens on IPv4 interfaces; choose an explicit address as needed.
+
+The upstream documentation follows verbatim and describes its original coordinates/runtime.
+
+---
+
 # LangGraph4j OpenTelemetry
 
 [OpenTelemetry] instrumentation for LangGraph4j workflows. This module provides hooks that emit spans, events, and logs for nodes and edges, plus helpers to attach attributes from workflow state.

@@ -19,7 +19,7 @@ import java.nio.file.StandardOpenOption;
 import static java.lang.String.format;
 import static java.util.Objects.requireNonNull;
 
-public class OTELInternalHttpCollector {
+public class OTELInternalHttpCollector implements AutoCloseable {
 
     public static final String LOGS = "/logs";
     public static final String TRACES = "/traces";
@@ -31,7 +31,7 @@ public class OTELInternalHttpCollector {
     }
 
     public OTELInternalHttpCollector(Builder builder ) throws IOException {
-        this.server =  HttpServer.create(new java.net.InetSocketAddress(builder.port), 0);
+        this.server =  HttpServer.create(new java.net.InetSocketAddress(builder.bindAddress, builder.port), 0);
 
         // Create context for JSON POST requests
         server.createContext(LOGS, (exchange ) -> {
@@ -135,7 +135,9 @@ public class OTELInternalHttpCollector {
 
     private URL endpoint( String path ) {
         try {
-            return new URL( "http", server.getAddress().getHostName(), server.getAddress().getPort(), path );
+            String host = server.getAddress().getAddress().isAnyLocalAddress()
+                    ? "127.0.0.1" : server.getAddress().getHostString();
+            return new URL("http", host, server.getAddress().getPort(), path);
         } catch (MalformedURLException e) {
             throw new RuntimeException(e);
         }
@@ -161,6 +163,12 @@ public class OTELInternalHttpCollector {
         this.server.stop(0);
     }
 
+    /** Stops the local collector and releases its listening socket. */
+    @Override
+    public void close() {
+        this.stop();
+    }
+
     private void sendResponse(HttpExchange exchange, int statusCode, String response) throws IOException {
         requireNonNull(exchange, "exchange cannot be null");
 
@@ -184,7 +192,17 @@ public class OTELInternalHttpCollector {
 
     public static class Builder {
         private int port = 4318;
+        private String bindAddress = "0.0.0.0";
         private Path outputDir;
+
+        /**
+         * Chooses the listening address; use 127.0.0.1 for a local-only collector.
+         * @since 1.9.9
+         */
+        public Builder bindAddress(String bindAddress) {
+            this.bindAddress = requireNonNull(bindAddress, "bindAddress cannot be null");
+            return this;
+        }
 
         public Builder outputDir(Path outputDir) {
             this.outputDir = outputDir;
@@ -209,8 +227,8 @@ public class OTELInternalHttpCollector {
                     throw new IllegalArgumentException("outputFile must be writeable");
                 }
             }
-            if( port<=0 ) {
-                throw new IllegalArgumentException("port must be greater than 0");
+            if( port < 0 || port > 65535 ) {
+                throw new IllegalArgumentException("port must be between 0 and 65535 (0 selects an ephemeral port)");
             }
 
             return new OTELInternalHttpCollector(this);

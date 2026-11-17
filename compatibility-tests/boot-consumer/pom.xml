@@ -5,7 +5,7 @@
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
         <version>2.7.18</version>
-        <relativePath/>
+        <relativePath />
     </parent>
     <groupId>cn.iocoder.langgraph4j.compatibility</groupId>
     <artifactId>boot-consumer</artifactId>
@@ -19,6 +19,8 @@
         <httpclient5.version>5.6.5</httpclient5.version>
         <httpcore5.version>5.4.4</httpcore5.version>
         <logback.version>1.2.13</logback.version>
+        <okhttp.version>4.12.0</okhttp.version>
+        <kotlin.version>1.9.25</kotlin.version>
     </properties>
     <dependencyManagement>
         <dependencies>
@@ -67,6 +69,28 @@
             <groupId>com.squareup.okhttp3</groupId>
             <artifactId>mockwebserver</artifactId>
             <version>4.12.0</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>cn.iocoder.langgraph4j</groupId>
+            <artifactId>langgraph4j-opentelemetry</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.opentelemetry</groupId>
+            <artifactId>opentelemetry-sdk-testing</artifactId>
+            <version>1.55.0</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.opentelemetry.proto</groupId>
+            <artifactId>opentelemetry-proto</artifactId>
+            <version>1.8.0-alpha</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.google.protobuf</groupId>
+            <artifactId>protobuf-java-util</artifactId>
+            <version>4.33.0</version>
             <scope>test</scope>
         </dependency>
     </dependencies>

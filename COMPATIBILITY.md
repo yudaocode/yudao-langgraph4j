@@ -80,3 +80,23 @@ Java8 adds `langgraph4j-dynamodb-saver` to the compatibility BOM/reactor (16 mod
 The Java8 module aligns AWS SDK to the parent-compatible2.57.12 (above upstream module2.27.21), excludes automatic Apache/Netty transport choices and supplies URLConnection for synchronous runtime clients; applications may explicitly supply other HTTP clients. The existing Apache transport tests retain a test-only Apache client. HTTP4 test dependencies converge at httpcore4.4.16/commons-codec1.17.1. Jackson annotation metadata is optional, and the compile-only @Serial marker is omitted while serialVersionUID remains unchanged. Production closure182jars /79550 effective base classes is <=52; static API findings29 remain reviewed third-party optional paths.
 
 Modern branches keep official `org.bsc.langgraph4j:langgraph4j-dynamodb-saver:1.9.9`; actual official jars passed the same42 contracts on native17 and25 (zero failures/errors, same upstream skip). Add optional S3 SDK explicitly when using offload and configure actual AWS credentials/endpoints separately. No AWS paid service was used in this gate.
+
+## OpenTelemetry
+
+Java8 adds the OpenTelemetry module to the BOM/default reactor (17 modules).
+A complete serial native8 clean install passed547 cases with zero failures/errors and one existing DynamoDB lineage skip.
+The seven new OTel cases exercise real OTLP HTTP export with SDK1.55.0, workflow hook spans, checked failure recording, baggage scope restoration, actual Logback1.2 logs with trace IDs, SDK metrics and local collector protobuf/file output.
+Four upstream integration-style cases also passed separately on native8 with external exporters disabled; the seven local protocol tests cover real export.
+The Boot2 consumer combines both framework adapters and OTel, passing eight native8 tests in the native2.7.18 parent dependency graph.
+
+SDK1.55.0 and instrumentation2.21.0 are retained.
+The Java8 transport excludes the SDK's transitive okhttp-jvm5 artifact and uses tested OkHttp4.12.0; Boot2 parent properties select okhttp4.12.0/kotlin1.9.25/Logback1.2.13.
+The local development collector accepts port0, offers an explicit bind address and AutoCloseable lifecycle, and returns a connectable loopback endpoint for wildcard listeners.
+The original proto/protobuf dependencies remain optional; applications using the internal collector must supply them explicitly.
+Java8 builds default to one Maven thread to avoid parallel container startup exhaustion; no database assertions were removed.
+
+Modern branches keep actual official org.bsc.langgraph4j1.9.9 OTel jars.
+The same six hook/SDK/HTTP contracts passed independently on native17 and25 using those official artifacts; they do not assert compatibility of the Java8-only collector lifecycle additions with upstream.
+
+The final selected-runtime audit includes17 default-module classpaths plus the refreshed Boot2 consumer:195 jars /80612 effective base classes, all <=52.
+Static API findings31 retain the previously identified optional modern-JVM serializers/Flow/SLF4J paths plus OTel optional SLF4J2 key-value types; the native8 Logback1.2 capture test verifies the fallback when those types are absent.

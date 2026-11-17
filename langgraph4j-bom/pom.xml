@@ -43,6 +43,11 @@
     <dependencyManagement>
         <dependencies>
             <dependency>
+                <groupId>cn.iocoder.langgraph4j</groupId>
+                <artifactId>langgraph4j-opentelemetry</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
                 <groupId>cn.iocoder.langchain4j</groupId>
                 <artifactId>langchain4j-bom</artifactId>
                 <version>1.24.0-jdk8-SNAPSHOT</version>
