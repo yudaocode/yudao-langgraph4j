@@ -1,14 +1,18 @@
 # yudao-langgraph4j 兼容版
 
+> 版本命名：保留当前源码基线的官方版本号；共用现代制品不加 JDK 后缀，隔离维护的兼容路线添加 `jdk8` / `jdk17` / `jdk25`。SNAPSHOT 尚未发布 Maven Central。JDK 路线后缀不等于最低字节码版本，框架依赖仍按 Boot 版本选择。
+> 完整版本规则与预览命名见 [VERSIONING.md](VERSIONING.md)。
+
+
 保留 LangGraph4j 的 Java 包名与 API，支持 Spring Boot 2/3/4 的组合。Java 8 分支尽量回迁较高版本；Java 17+ 优先复用官方核心和 LangChain4j adapter，仅维护 Spring AI 适配层。上游源码基线为 1.9.9（`bbce202845fe99660fcee29a7dd7a5acb4100199`）。
 
-| 分支 | Spring Boot / 运行 JDK | Graph core / LangChain4j adapter | LangChain4j | Spring AI / Graph Spring AI adapter |
-| --- | --- | --- | --- | --- |
-| `main` | 4.x / 17、25 | 官方 `org.bsc.langgraph4j` 1.9.9 | 官方 `dev.langchain4j` 1.23.0 | 芋道 `cn.iocoder.spring-ai` / `cn.iocoder.langgraph4j` 4.0.0-SNAPSHOT |
-| `main-jdk17` | 3.x / 17、25 | 官方 `org.bsc.langgraph4j` 1.9.9 | 官方 `dev.langchain4j` 1.23.0 | 芋道 `cn.iocoder.spring-ai` / `cn.iocoder.langgraph4j` 3.0.0-SNAPSHOT |
-| `main-jdk8` | 2.x / 8 | 芋道 `cn.iocoder.langgraph4j` 2.0.0-SNAPSHOT | 芋道 `cn.iocoder.langchain4j` 2.0.0-SNAPSHOT | 芋道 `cn.iocoder.spring-ai` / `cn.iocoder.langgraph4j` 2.0.0-SNAPSHOT |
+| 分支 | Spring Boot / 运行 JDK | 图核心 / LangChain4j adapter | LangChain4j | Spring AI | 本仓BOM / Spring AI adapter |
+| --- | --- | --- | --- | --- | --- |
+| `main` | 4.x / 17、25 | 官方1.9.9 | 官方1.23.0 | cn.iocoder.spring-ai:2.1.0-jdk25-SNAPSHOT | cn.iocoder.langgraph4j:1.9.9-jdk25-SNAPSHOT |
+| `main-jdk17` | 3.x / 17、25 | 官方1.9.9 | 官方1.23.0 | cn.iocoder.spring-ai:2.1.0-jdk17-SNAPSHOT | cn.iocoder.langgraph4j:1.9.9-jdk17-SNAPSHOT |
+| `main-jdk8` | 2.x / 8 | 本仓1.9.9-jdk8-SNAPSHOT | 本仓1.24.0 stable / beta34-jdk8 | cn.iocoder.spring-ai:2.1.0-jdk8-SNAPSHOT | cn.iocoder.langgraph4j:1.9.9-jdk8-SNAPSHOT |
 
-当前分支：`main-jdk17`，兼容版版本号：`3.0.0-SNAPSHOT`。上述 `-SNAPSHOT` 当前需从源码安装；尚未发布 Maven Central，后续发布统一使用 `cn.iocoder.*` 坐标，不覆盖官方 artifact。
+当前分支：`main-jdk17`，兼容版版本号：`1.9.9-jdk17-SNAPSHOT`。上述 `-SNAPSHOT` 当前需从源码安装；尚未发布 Maven Central，后续发布统一使用 `cn.iocoder.*` 坐标，不覆盖官方 artifact。
 
 ## 如何使用
 
@@ -20,7 +24,7 @@
         <dependency>
             <groupId>cn.iocoder.langgraph4j</groupId>
             <artifactId>langgraph4j-bom</artifactId>
-            <version>3.0.0-SNAPSHOT</version>
+            <version>1.9.9-jdk17-SNAPSHOT</version>
             <type>pom</type>
             <scope>import</scope>
         </dependency>

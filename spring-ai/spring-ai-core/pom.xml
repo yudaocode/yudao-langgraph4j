@@ -4,7 +4,7 @@
     <parent>
         <groupId>cn.iocoder.langgraph4j</groupId>
         <artifactId>langgraph4j-parent</artifactId>
-        <version>3.0.0-SNAPSHOT</version>
+        <version>1.9.9-jdk17-SNAPSHOT</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
     <artifactId>langgraph4j-spring-ai</artifactId>

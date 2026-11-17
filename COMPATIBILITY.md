@@ -1,10 +1,10 @@
 # LangGraph4j compatibility scope
 
-| 分支 | Spring Boot / 运行 JDK | Graph core / LangChain4j adapter | LangChain4j | Spring AI / Graph Spring AI adapter |
-| --- | --- | --- | --- | --- |
-| `main` | 4.x / 17、25 | 官方 `org.bsc.langgraph4j` 1.9.9 | 官方 `dev.langchain4j` 1.23.0 | 芋道 `cn.iocoder.spring-ai` / `cn.iocoder.langgraph4j` 4.0.0-SNAPSHOT |
-| `main-jdk17` | 3.x / 17、25 | 官方 `org.bsc.langgraph4j` 1.9.9 | 官方 `dev.langchain4j` 1.23.0 | 芋道 `cn.iocoder.spring-ai` / `cn.iocoder.langgraph4j` 3.0.0-SNAPSHOT |
-| `main-jdk8` | 2.x / 8 | 芋道 `cn.iocoder.langgraph4j` 2.0.0-SNAPSHOT | 芋道 `cn.iocoder.langchain4j` 2.0.0-SNAPSHOT | 芋道 `cn.iocoder.spring-ai` / `cn.iocoder.langgraph4j` 2.0.0-SNAPSHOT |
+| 分支 | Spring Boot / 运行 JDK | 图核心 / LangChain4j adapter | LangChain4j | Spring AI | 本仓BOM / Spring AI adapter |
+| --- | --- | --- | --- | --- | --- |
+| `main` | 4.x / 17、25 | 官方1.9.9 | 官方1.23.0 | cn.iocoder.spring-ai:2.1.0-jdk25-SNAPSHOT | cn.iocoder.langgraph4j:1.9.9-jdk25-SNAPSHOT |
+| `main-jdk17` | 3.x / 17、25 | 官方1.9.9 | 官方1.23.0 | cn.iocoder.spring-ai:2.1.0-jdk17-SNAPSHOT | cn.iocoder.langgraph4j:1.9.9-jdk17-SNAPSHOT |
+| `main-jdk8` | 2.x / 8 | 本仓1.9.9-jdk8-SNAPSHOT | 本仓1.24.0 stable / beta34-jdk8 | cn.iocoder.spring-ai:2.1.0-jdk8-SNAPSHOT | cn.iocoder.langgraph4j:1.9.9-jdk8-SNAPSHOT |
 
 
 ## Source and coordinates
@@ -13,15 +13,15 @@ Upstream LangGraph4j commit: `bbce202845fe99660fcee29a7dd7a5acb4100199` (1.9.9).
 Java 8 LangChain4j backport baseline: upstream commit `886c258b91090d41c941e69ab58edf6aa020a9c9` (1.24.0/beta34 development tree).
 Java 17+ deliberately uses official LangChain4j 1.23.0 matching upstream graph adapters.
 ArtifactIds and Java packages are retained; fork artifacts use distinct `cn.iocoder.*` groups.
-No Maven Central deployment has been performed. Versions represent compatibility lines, not matching upstream release numbers.
+No Maven Central deployment has been performed. Versions retain upstream baseline numbers, add the isolated JDK route and use a date suffix on release; see VERSIONING.md.
 
 ## Included modules and verification
 
 - main / main-jdk17: parent + BOM + `spring-ai/spring-ai-core`; production graph core and LangChain4j adapter are official 1.9.9. Spring AI adapter unit suite: 18 tests, zero failures/errors/skips on Java17; Boot4 adapter also tested on Java25.
-- main-jdk8: parent + BOM + `langgraph4j-java8-compat` + `async-generator` + `langgraph4j-core` + both adapter children. Native8 async74, core261, LangChain4j15 and Spring AI21 tests passed (zero failures/errors/skips, component gates). Tests include streaming, tools, serialization, concurrent graph behavior, executor cleanup, JSON schema and duration parsing.
+- main-jdk8: parent + BOM + `langgraph4j-java8-compat` + `async-generator` + `langgraph4j-core` + both adapter children plus filesystem, SQLite, Redis and PostgreSQL savers (11 modules). Native8 async74, core261, LangChain4j15 and Spring AI21 tests passed (zero failures/errors/skips, component gates). Tests include streaming, tools, serialization, concurrent graph behavior, executor cleanup, JSON schema and duration parsing.
 - Identical standalone Java consumer source on Boot2/Java8, Boot3/Java17 and25, Boot4/Java17 and25: two tests per combination. Real Spring contexts, local HTTP model responses, graph execution, MemorySaver checkpoint and framework Jackson message restoration. Responses are local fixtures, not real cloud models.
 - Java8 runtime closure is audited for class-file level and statically referenced Java8/SLF4J APIs. Optional native Java9 Flow adapters and guarded legacy SLF4J binders in third-party jars remain documented audit findings; they are not executed on the verified Java8 path.
-- Optional database savers, studio, examples, agents and observability modules outside the default reactor retain upstream sources/descriptors. They are not claimed as ported or tested. No external database/cloud integration, Windows shell acceptance, Javadoc gate or binary compatibility release gate is claimed.
+- Optional database savers, studio, examples, agents and observability modules outside the default reactor retain upstream sources/descriptors. They are not claimed as ported or tested. SQLite, Redis and PostgreSQL saver tests are exercised locally, including real container-backed Redis/PostgreSQL. External cloud models, Windows shell acceptance, Javadoc and binary compatibility release gates are not claimed.
 
 ## Build and reproduce
 
@@ -56,3 +56,7 @@ Boot2 parent's Apache HTTP5/Core5 and Logback properties must match README. Impo
 ## Upstream README
 
 Only a fork preface is added to the root README. The upstream suffix is preserved byte-for-byte (SHA256 `fd1d349646213cfcb8204c1e54b7f9888c412482b6c10d232f00c5ff54dc318b`). Upstream instructions below that preface may describe modules outside this compatibility scope.
+
+## Additional Java8 savers
+
+The Java8 default reactor now includes filesystem-saver and sqlite-saver. Their real native8 suites passed10 and21 tests. SQLite AGUI/Javelit demo fixtures remain outside this support scope; core saver unit assertions are retained. Version-coordinate revalidation is recorded separately.
