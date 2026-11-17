@@ -21,8 +21,7 @@
   ~ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
   ~ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
   ~ SOFTWARE.
--->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+--><project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>cn.iocoder.langgraph4j</groupId>
@@ -88,7 +87,7 @@
                 <version>1.9.9-jdk8-SNAPSHOT</version>
             </dependency>
             <dependency><groupId>cn.iocoder.langgraph4j</groupId><artifactId>langgraph4j-sqlite-saver</artifactId><version>1.9.9-jdk8-SNAPSHOT</version></dependency>
-        <dependency><groupId>cn.iocoder.langgraph4j</groupId><artifactId>langgraph4j-redis-saver</artifactId><version>1.9.9-jdk8-SNAPSHOT</version></dependency><dependency><groupId>cn.iocoder.langgraph4j</groupId><artifactId>langgraph4j-postgres-saver</artifactId><version>1.9.9-jdk8-SNAPSHOT</version></dependency></dependencies>
+        <dependency><groupId>cn.iocoder.langgraph4j</groupId><artifactId>langgraph4j-redis-saver</artifactId><version>1.9.9-jdk8-SNAPSHOT</version></dependency><dependency><groupId>cn.iocoder.langgraph4j</groupId><artifactId>langgraph4j-postgres-saver</artifactId><version>1.9.9-jdk8-SNAPSHOT</version></dependency><dependency><groupId>cn.iocoder.langgraph4j</groupId><artifactId>langgraph4j-mysql-saver</artifactId><version>${project.version}</version></dependency><dependency><groupId>cn.iocoder.langgraph4j</groupId><artifactId>langgraph4j-mongodb-saver</artifactId><version>${project.version}</version></dependency><dependency><groupId>cn.iocoder.langgraph4j</groupId><artifactId>langgraph4j-cockroachdb-saver</artifactId><version>${project.version}</version></dependency></dependencies>
     </dependencyManagement>
     <build>
         <plugins>

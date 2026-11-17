@@ -201,5 +201,5 @@
         <module>langgraph4j-sqlite-saver</module>
         <module>langchain4j/langchain4j-core</module>
         <module>spring-ai/spring-ai-core</module>
-    <module>langgraph4j-redis-saver</module><module>langgraph4j-postgres-saver</module></modules>
+    <module>langgraph4j-redis-saver</module><module>langgraph4j-postgres-saver</module><module>langgraph4j-mysql-saver</module><module>langgraph4j-mongodb-saver</module><module>langgraph4j-cockroachdb-saver</module></modules>
 </project>
