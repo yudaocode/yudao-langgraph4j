@@ -61,6 +61,20 @@ Boot 2 使用官方 `spring-boot-starter-parent` 时，还需设置以下属性�
 
 默认验证范围、源码构建顺序、完整消费者示例见 [COMPATIBILITY.md](COMPATIBILITY.md) 和 [Boot 消费者](compatibility-tests/boot-consumer)。当前不将仓库里全部可选 saver、studio、samples 列为兼容完成；API key / 外部模型服务未参与本轮验证。
 
+
+## 可选 checkpoint saver
+
+MySQL、MongoDB、CockroachDB 已纳入兼容验证。Boot3/4 + JDK17/25 复用官方 `org.bsc.langgraph4j` 的1.9.9制品；Boot2/JDK8 使用本仓 `cn.iocoder.langgraph4j` 的1.9.9-jdk8-SNAPSHOT。当前分支BOM已管理对应版本，按需添加：
+
+```xml
+<dependency>
+    <groupId>org.bsc.langgraph4j</groupId>
+    <artifactId>langgraph4j-mysql-saver</artifactId>
+</dependency>
+```
+
+MongoDB、CockroachDB 分别改为 `langgraph4j-mongodb-saver`、`langgraph4j-cockroachdb-saver`。数据库连接与 `StateSerializer` 按模块builder配置；测试涵盖真实容器中的checkpoint恢复、隔离与历史记录。Java8 Mongo驱动排除仅支持Java17的可选record codec，使用标准BSON/POJO编码。
+
 ---
 
 <!-- 以下保留官方 README 原文 -->

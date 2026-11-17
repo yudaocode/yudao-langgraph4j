@@ -21,7 +21,7 @@ No Maven Central deployment has been performed. Versions retain upstream baselin
 - main-jdk8: parent + BOM + `langgraph4j-java8-compat` + `async-generator` + `langgraph4j-core` + both adapter children plus filesystem, SQLite, Redis and PostgreSQL savers (11 modules). Native8 async74, core261, LangChain4j15 and Spring AI21 tests passed (zero failures/errors/skips, component gates). Tests include streaming, tools, serialization, concurrent graph behavior, executor cleanup, JSON schema and duration parsing.
 - Identical standalone Java consumer source on Boot2/Java8, Boot3/Java17 and25, Boot4/Java17 and25: two tests per combination. Real Spring contexts, local HTTP model responses, graph execution, MemorySaver checkpoint and framework Jackson message restoration. Responses are local fixtures, not real cloud models.
 - Java8 runtime closure is audited for class-file level and statically referenced Java8/SLF4J APIs. Optional native Java9 Flow adapters and guarded legacy SLF4J binders in third-party jars remain documented audit findings; they are not executed on the verified Java8 path.
-- Optional database savers, studio, examples, agents and observability modules outside the default reactor retain upstream sources/descriptors. They are not claimed as ported or tested. SQLite, Redis and PostgreSQL saver tests are exercised locally, including real container-backed Redis/PostgreSQL. External cloud models, Windows shell acceptance, Javadoc and binary compatibility release gates are not claimed.
+- Remaining optional database savers, studio, examples, agents and observability modules outside the default reactor retain upstream sources/descriptors. They are not claimed as ported or tested. SQLite, Redis and PostgreSQL saver tests are exercised locally, including real container-backed Redis/PostgreSQL. External cloud models, Windows shell acceptance, Javadoc and binary compatibility release gates are not claimed.
 
 ## Build and reproduce
 
@@ -60,3 +60,7 @@ Only a fork preface is added to the root README. The upstream suffix is preserve
 ## Additional Java8 savers
 
 The Java8 default reactor now includes filesystem-saver and sqlite-saver. Their real native8 suites passed10 and21 tests. SQLite AGUI/Javelit demo fixtures remain outside this support scope; core saver unit assertions are retained. Version-coordinate revalidation is recorded separately.
+
+## Optional saver coordinates
+
+MySQL/MongoDB/CockroachDB: Java8 uses fork artifacts from the current BOM; Java17/25 uses official org.bsc.langgraph4j1.9.9 artifacts already imported by the modern BOM. The Java8 default14-module clean install passed495 tests with no failures/errors/skips. The same upstream59 saver contracts passed separately against the actual official jars on native17 and25, using real database containers. This acceptance is independent of Spring Boot: these saver APIs do not require a Boot starter. Java8 excludes MongoDB native record codec; driver baseline5.5.1, MySQL9.2.0 and PostgreSQL42.7.7 retained.
