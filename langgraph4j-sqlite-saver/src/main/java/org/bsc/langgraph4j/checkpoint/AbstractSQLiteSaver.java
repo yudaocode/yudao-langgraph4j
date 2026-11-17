@@ -102,10 +102,11 @@ public abstract class AbstractSQLiteSaver extends AbstractCheckpointSaver implem
             this.datasource = builder.datasource;
         } else {
             final var ds = new SQLiteDataSource( ofNullable(builder.config).orElseGet(SQLiteConfig::new));
-            ofNullable(builder.url)
-                    .ifPresentOrElse(
-                            $1 -> ds.setUrl(requireNotBlank($1, "url")),
-                            () -> ds.setUrl("jdbc:sqlite:".concat(requireNotBlank(builder.databasePath, "databasePath"))));
+            if (builder.url != null) {
+                ds.setUrl(requireNotBlank(builder.url, "url"));
+            } else {
+                ds.setUrl("jdbc:sqlite:".concat(requireNotBlank(builder.databasePath, "databasePath")));
+            }
 
             this.datasource = ds;
         }

@@ -4,7 +4,7 @@
     <parent>
         <groupId>cn.iocoder.langgraph4j</groupId>
         <artifactId>langgraph4j-parent</artifactId>
-        <version>2.0.0-SNAPSHOT</version>
+        <version>1.9.9-jdk8-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
     <artifactId>async-generator</artifactId>
@@ -12,7 +12,7 @@
         <dependency>
             <groupId>cn.iocoder.langgraph4j</groupId>
             <artifactId>langgraph4j-java8-compat</artifactId>
-            <version>2.0.0-SNAPSHOT</version>
+            <version>1.9.9-jdk8-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>

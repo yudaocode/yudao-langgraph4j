@@ -10,7 +10,7 @@ for p in paths:
   if jar.suffix=='.jar':jars.add(jar);owners.setdefault(str(jar),[]).append(str(p.parent.parent.relative_to(root)))
 # Runtime classpaths don't include the current module's output. Scan its packaged implementation too.
 for p in paths:
- for jar in p.parent.glob('*-2.0.0-SNAPSHOT.jar'):
+ for jar in p.parent.glob('*-jdk8*.jar'):
   if jar.name.endswith(('-tests.jar','-sources.jar','-javadoc.jar')):continue
   jars.add(jar);owners.setdefault(str(jar),[]).append(str(p.parent.parent.relative_to(root)))
 results=[]

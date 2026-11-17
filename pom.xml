@@ -4,12 +4,12 @@
     <parent>
         <groupId>cn.iocoder.langchain4j</groupId>
         <artifactId>langchain4j-parent</artifactId>
-        <version>2.0.0-SNAPSHOT</version>
+        <version>1.24.0-beta34-jdk8-SNAPSHOT</version>
         <relativePath/>
     </parent>
     <groupId>cn.iocoder.langgraph4j</groupId>
     <artifactId>langgraph4j-parent</artifactId>
-    <version>2.0.0-SNAPSHOT</version>
+    <version>1.9.9-jdk8-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>langgraph4j::parent</name>
     <url>https://github.com/yudaocode/yudao-langgraph4j</url>
@@ -52,9 +52,9 @@
         <maven.compiler.target>8</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <langchain4j.version>2.0.0-SNAPSHOT</langchain4j.version>
-        <langchain4j.beta>2.0.0-SNAPSHOT</langchain4j.beta>
-        <spring-ai.version>2.0.0-SNAPSHOT</spring-ai.version>
+        <langchain4j.version>1.24.0-jdk8-SNAPSHOT</langchain4j.version>
+        <langchain4j.beta>1.24.0-beta34-jdk8-SNAPSHOT</langchain4j.beta>
+        <spring-ai.version>2.1.0-jdk8-SNAPSHOT</spring-ai.version>
         <ag-ui.version>0.1.1</ag-ui.version>
         <flatten-maven-plugin.version>1.5.0</flatten-maven-plugin.version>
         <maven.compiler.release>8</maven.compiler.release>
@@ -197,7 +197,9 @@
         <module>async-generator</module>
         <module>langgraph4j-core</module>
         <module>langgraph4j-bom</module>
+        <module>langgraph4j-filesystem-saver</module>
+        <module>langgraph4j-sqlite-saver</module>
         <module>langchain4j/langchain4j-core</module>
         <module>spring-ai/spring-ai-core</module>
-    </modules>
+    <module>langgraph4j-redis-saver</module><module>langgraph4j-postgres-saver</module></modules>
 </project>
