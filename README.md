@@ -88,6 +88,19 @@ DSL 导出已完成 Java8 /17 /25 验证，按需添加（版本由当前分支 
 
 使用 `org.bsc.langgraph4j.dsl.JsonDslGenerator`：`workflow.compile().reduce(new JsonDslGenerator<>())` 得到 JSON 图定义；模块自带 `langgraph4j-dsl.schema.json`。Java8 使用兼容制品，Java17/25 复用官方1.9.9，不额外维护同名现代分叉。导出包含条件边与嵌套子图，不包含模型服务调用。
 
+## 可选 DynamoDB saver
+
+DynamoDB saver 已完成真实 JDK8/17/25 容器测试，按需引入（版本由当前分支 BOM 管理）：
+
+```xml
+<dependency>
+    <groupId>org.bsc.langgraph4j</groupId>
+    <artifactId>langgraph4j-dynamodb-saver</artifactId>
+</dependency>
+```
+
+使用 `org.bsc.langgraph4j.checkpoint.DynamoDBSaver` builder，传入已配置的 `DynamoDbClient` 与状态序列化器；连接地址、AWS凭据由应用提供。大状态的 S3 offload 需另引入 AWS SDK `s3` 并提供 `S3Client`。Java8 路线将 AWS SDK 统一为已验证的 `2.57.12`，默认使用 URL Connection HTTP 实现；现代路线复用官方1.9.9的依赖。本轮各 JVM 均为42项、零失败/错误、1项上游禁用（尚待core支持checkpoint lineage），数据库与S3使用本地DynamoDB/对象存储容器，不代表AWS云账号验收。
+
 ---
 
 <!-- 以下保留官方 README 原文 -->
