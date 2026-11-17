@@ -75,6 +75,19 @@ MySQL、MongoDB、CockroachDB 已纳入兼容验证。Boot3/4 + JDK17/25 复用�
 
 MongoDB、CockroachDB 分别改为 `langgraph4j-mongodb-saver`、`langgraph4j-cockroachdb-saver`。数据库连接与 `StateSerializer` 按模块builder配置；测试涵盖真实容器中的checkpoint恢复、隔离与历史记录。Java8 Mongo驱动排除仅支持Java17的可选record codec，使用标准BSON/POJO编码。
 
+## 可选图 DSL 导出
+
+DSL 导出已完成 Java8 /17 /25 验证，按需添加（版本由当前分支 BOM 管理）：
+
+```xml
+<dependency>
+    <groupId>org.bsc.langgraph4j</groupId>
+    <artifactId>langgraph4j-dsl</artifactId>
+</dependency>
+```
+
+使用 `org.bsc.langgraph4j.dsl.JsonDslGenerator`：`workflow.compile().reduce(new JsonDslGenerator<>())` 得到 JSON 图定义；模块自带 `langgraph4j-dsl.schema.json`。Java8 使用兼容制品，Java17/25 复用官方1.9.9，不额外维护同名现代分叉。导出包含条件边与嵌套子图，不包含模型服务调用。
+
 ---
 
 <!-- 以下保留官方 README 原文 -->

@@ -64,3 +64,9 @@ The Java8 default reactor now includes filesystem-saver and sqlite-saver. Their 
 ## Optional saver coordinates
 
 MySQL/MongoDB/CockroachDB: Java8 uses fork artifacts from the current BOM; Java17/25 uses official org.bsc.langgraph4j1.9.9 artifacts already imported by the modern BOM. The Java8 default14-module clean install passed495 tests with no failures/errors/skips. The same upstream59 saver contracts passed separately against the actual official jars on native17 and25, using real database containers. This acceptance is independent of Spring Boot: these saver APIs do not require a Boot starter. Java8 excludes MongoDB native record codec; driver baseline5.5.1, MySQL9.2.0 and PostgreSQL42.7.7 retained.
+
+## Graph DSL export
+
+Java8 adds `langgraph4j-dsl` under the compatibility BOM and group, expanding the default reactor to15 modules. A complete native8 clean install passed498 cases, zero failures/errors/skips. The three upstream DSL contracts cover JSON graph structure, schema resource and nested subgraphs; source lowering handles modern syntax without rewriting production source. Javadoc remains excluded because its parser does not use Jabel.
+
+Modern branches use official `org.bsc.langgraph4j:langgraph4j-dsl:1.9.9`, already managed by the imported official BOM. The same three unchanged upstream contracts passed against actual official jars on native17 and25. These graph-only tests are independent of Boot. Add the module and reduce the compiled graph with `JsonDslGenerator`; the JSON schema resource is packaged in the jar. Other optional modules outside the default reactor remain unverified.
