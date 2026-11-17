@@ -12,7 +12,7 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
-import org.testcontainers.containers.FixedHostPortGenericContainer;
+import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.wait.strategy.Wait;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
@@ -69,9 +69,9 @@ public class DynamoDBSaverTest extends AbstractCheckpointSaverTest {
     private static final String TABLE_NAME = "lg4j-test-checkpoints";
 
     @Container
-    static final FixedHostPortGenericContainer<?> dynamoContainer =
-        new FixedHostPortGenericContainer<>("amazon/dynamodb-local:latest")
-            .withFixedExposedPort(8344, DYNAMODB_PORT)
+    static final GenericContainer<?> dynamoContainer =
+        new GenericContainer<>("amazon/dynamodb-local:latest")
+            .withExposedPorts(DYNAMODB_PORT)
             .waitingFor(Wait.forLogMessage(".*Initializing DynamoDB Local.*\\n", 1));
 
     static final DockerImageName myImage = DockerImageName.parse("pgsty/silo:RELEASE.2026-09-16T00-00-00Z").asCompatibleSubstituteFor("minio/minio");

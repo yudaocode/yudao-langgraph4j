@@ -3,7 +3,7 @@ package org.bsc.langgraph4j.checkpoint;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.testcontainers.containers.FixedHostPortGenericContainer;
+import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.MinIOContainer;
 import org.testcontainers.containers.wait.strategy.Wait;
 import org.testcontainers.junit.jupiter.Container;
@@ -38,9 +38,9 @@ public class StorageStrategyTest {
     private static final String S3_BUCKET = "test-checkpoints-bucket";
 
     @Container
-    static final FixedHostPortGenericContainer<?> dynamoContainer =
-        new FixedHostPortGenericContainer<>("amazon/dynamodb-local:latest")
-            .withFixedExposedPort(8345, DYNAMODB_PORT) // Different port to avoid conflict
+    static final GenericContainer<?> dynamoContainer =
+        new GenericContainer<>("amazon/dynamodb-local:latest")
+            .withExposedPorts(DYNAMODB_PORT)
             .waitingFor(Wait.forLogMessage(".*Initializing DynamoDB Local.*\\n", 1));
 
     static final DockerImageName myImage = DockerImageName.parse("pgsty/silo:RELEASE.2026-09-16T00-00-00Z").asCompatibleSubstituteFor("minio/minio");

@@ -13,7 +13,6 @@ import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 import software.amazon.awssdk.services.s3.S3Client;
 
 import java.io.IOException;
-import java.io.Serial;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
@@ -276,7 +275,6 @@ public class DynamoDBSaver extends AbstractCheckpointSaver implements LG4JLoggab
      * without reading DynamoDB again.
      */
     static final class GenerationCheckpoints extends LinkedList<Checkpoint> {
-        @Serial
         private static final long serialVersionUID = 1L;
 
         final long generation;
