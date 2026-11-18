@@ -100,3 +100,10 @@ The same six hook/SDK/HTTP contracts passed independently on native17 and25 usin
 
 The final selected-runtime audit includes17 default-module classpaths plus the refreshed Boot2 consumer:195 jars /80612 effective base classes, all <=52.
 Static API findings31 retain the previously identified optional modern-JVM serializers/Flow/SLF4J paths plus OTel optional SLF4J2 key-value types; the native8 Logback1.2 capture test verifies the fallback when those types are absent.
+
+
+## LangChain4j Agent Executor on Java 8
+
+`cn.iocoder.langgraph4j:langgraph4j-langchain4j-agentexecutor` uses the same Java 8 BOM as the graph core. The module preserves the LangChain4j 1.24.0 branch and existing tool, skill and checkpoint APIs. The optional MCP library has provided scope. Add Jackson explicitly when selecting Jackson state serialization.
+
+The 18-module build on native Java 8 reports 594 tests, zero failures or errors, and one previously disabled upstream case. The Agent Executor has 47 passing component tests. An independent Boot 2.7 consumer ran nine tests, including a local OpenAI-compatible HTTP tool-call loop across two turns on the same checkpoint thread. Java 8's runtime classpath contains 24 JARs and 5,193 base classes. Existing Studio/Javelit demo sources and cloud integration cases retain their own prerequisites.

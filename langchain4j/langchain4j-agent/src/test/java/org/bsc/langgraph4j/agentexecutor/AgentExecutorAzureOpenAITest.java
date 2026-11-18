@@ -2,7 +2,11 @@ package org.bsc.langgraph4j.agentexecutor;
 
 import dev.langchain4j.model.azure.AzureOpenAiChatModel;
 import org.bsc.langgraph4j.StateGraph;
+import org.junit.jupiter.api.condition.EnabledIfEnvironmentVariable;
 
+@EnabledIfEnvironmentVariable(named = "AZURE_OPENAI_API_KEY", matches = ".+")
+@EnabledIfEnvironmentVariable(named = "AZURE_OPENAI_DEPLOYMENT_NAME", matches = ".+")
+@EnabledIfEnvironmentVariable(named = "AZURE_OPENAI_ENDPOINT", matches = ".+")
 public class AgentExecutorAzureOpenAITest extends AbstractAgentExecutorTest {
 
     @Override

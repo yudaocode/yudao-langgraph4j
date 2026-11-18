@@ -119,6 +119,22 @@ Java8 的7项本地协议/SDK测试与4项上游集成用例均通过；后4项�
 官方制品在 JDK17/25 分别通过同一组6项 hooks/SDK/HTTP 测试；Java8 的 Boot2 组合消费者8项通过。
 这些验证未使用远端 Collector、Jaeger 或付费模型。
 
+## LangChain4j Agent Executor（Boot 2 / JDK 8）
+
+导入本分支的 BOM 后，按需添加：
+
+```xml
+<dependency>
+    <groupId>cn.iocoder.langgraph4j</groupId>
+    <artifactId>langgraph4j-langchain4j-agentexecutor</artifactId>
+</dependency>
+```
+
+通过 `AgentExecutor.builder()` 或 `AgentExecutorEx.builder()` 传入 LangChain4j 的模型与工具，编译为 `StateGraph` 后可使用 checkpoint saver 恢复同一线程。使用 MCP 工具时另引入兼容版 `langchain4j-mcp`；使用 Jackson 序列化时引入 `jackson-databind`。LangChain4j 保留 `1.24.0-jdk8-SNAPSHOT`，MCP 采用该分支对应的 beta 制品。
+
+原生 JDK8 通过 47 项组件测试及独立 Boot2 应用的双轮 HTTP 工具调用和检查点恢复。Studio/Javelit 演示和需要云端凭据的测试保留各自的运行前提。
+
+
 ---
 
 <!-- 以下保留官方 README 原文 -->

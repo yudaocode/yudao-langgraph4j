@@ -5,6 +5,9 @@ import static org.bsc.langgraph4j.StateGraph.START;
 import static org.bsc.langgraph4j.StateGraph.END;
 import static org.bsc.langgraph4j.action.AsyncNodeAction.node_async;
 
+import dev.langchain4j.agent.tool.P;
+import dev.langchain4j.agent.tool.Tool;
+import dev.langchain4j.data.message.UserMessage;
 import dev.langchain4j.http.client.jdk.JdkHttpClient;
 import dev.langchain4j.http.client.jdk.JdkHttpClientBuilder;
 import dev.langchain4j.model.openai.OpenAiChatModel;
@@ -13,12 +16,15 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
 import org.bsc.langgraph4j.CompileConfig;
 import org.bsc.langgraph4j.CompiledGraph;
+import org.bsc.langgraph4j.GraphInput;
 import org.bsc.langgraph4j.RunnableConfig;
 import org.bsc.langgraph4j.StateGraph;
+import org.bsc.langgraph4j.agentexecutor.AgentExecutor;
 import org.bsc.langgraph4j.checkpoint.MemorySaver;
 import org.bsc.langgraph4j.langchain4j.serializer.jackson.LC4jJacksonStateSerializer;
 import org.bsc.langgraph4j.spring.ai.serializer.jackson.SpringAIJacksonStateSerializer;
@@ -110,6 +116,50 @@ class GraphCompatibilityTest {
         assertTrue(history.get(0) instanceof dev.langchain4j.data.message.UserMessage);
         assertTrue(history.get(1) instanceof dev.langchain4j.data.message.AiMessage);
         assertTrue(server.takeRequest().getPath().endsWith("/chat/completions"));
+    }
+
+    @Test
+    void agentExecutorContinuesToolCallsAcrossTwoCheckpointTurns() throws Exception {
+        enqueueToolCall("tool-one", "one");
+        answer("first answer");
+        enqueueToolCall("tool-two", "two");
+        answer("second answer");
+
+        CompiledGraph<AgentExecutor.State> graph = AgentExecutor.builder()
+                .chatModel(context.getBean(OpenAiChatModel.class))
+                .toolsFromObject(new EchoTool())
+                .build()
+                .compile(CompileConfig.builder().checkpointSaver(new MemorySaver()).releaseThread(false).build());
+        RunnableConfig config = RunnableConfig.builder().threadId("local-agent-executor").build();
+
+        assertEquals("first answer", graph.invoke(GraphInput.args(Collections.singletonMap("messages",
+                        UserMessage.from("first question"))), config)
+                .orElseThrow(AssertionError::new).finalResponse().orElseThrow(AssertionError::new));
+        assertEquals("second answer", graph.invoke(GraphInput.args(Collections.singletonMap("messages",
+                        UserMessage.from("second question"))), config)
+                .orElseThrow(AssertionError::new).finalResponse().orElseThrow(AssertionError::new));
+        assertNotNull(server.takeRequest(2, TimeUnit.SECONDS));
+        assertTrue(server.takeRequest(2, TimeUnit.SECONDS).getBody().readUtf8().contains("echo:one"));
+        assertNotNull(server.takeRequest(2, TimeUnit.SECONDS));
+        assertTrue(server.takeRequest(2, TimeUnit.SECONDS).getBody().readUtf8().contains("echo:two"));
+    }
+
+    private void enqueueToolCall(String id, String message) {
+        server.enqueue(new MockResponse().setHeader("Content-Type", "application/json").setBody(
+                "{\"id\":\"local\",\"object\":\"chat.completion\",\"created\":1,\"model\":\"mock\","
+                + "\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"tool_calls\":["
+                + "{\"id\":\"" + id + "\",\"type\":\"function\",\"function\":{\"name\":\"echo\","
+                + "\"arguments\":\"{\\\"message\\\":\\\"" + message + "\\\"}\"}}]},\"finish_reason\":\"tool_calls\"}]}"));
+    }
+
+    /**
+     * @author 芋道源码
+     */
+    public static class EchoTool {
+        @Tool("Echo a message")
+        public String echo(@P("Message") String message) {
+            return "echo:" + message;
+        }
     }
 
     /**

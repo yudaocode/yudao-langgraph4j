@@ -45,6 +45,10 @@
         </dependency>
         <dependency>
             <groupId>cn.iocoder.langgraph4j</groupId>
+            <artifactId>langgraph4j-langchain4j-agentexecutor</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>cn.iocoder.langgraph4j</groupId>
             <artifactId>langgraph4j-langchain4j</artifactId>
             <version>1.9.9-jdk8-SNAPSHOT</version>
         </dependency>

@@ -120,7 +120,7 @@ public interface AgentExecutor {
                         .filter(AiMessage::hasToolExecutionRequests)
                         .map(AiMessage::toolExecutionRequests);
 
-            if (toolExecutionRequests.isEmpty() ) {
+            if (!toolExecutionRequests.isPresent() ) {
                 final Command command = state.finalResponse()
                         .map( response -> new Command(Agent.END_LABEL) )
                         .orElseGet( () -> new Command(Agent.END_LABEL,

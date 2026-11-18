@@ -238,7 +238,7 @@ public interface AgentExecutorEx extends LG4JLoggable {
 
             final var approvalResultOptional = state.<String>value( AgentEx.APPROVAL_RESULT );
 
-            if( approvalResultOptional.isEmpty() ) {
+            if( !approvalResultOptional.isPresent() ) {
                 return failedFuture( new IllegalStateException( "resume property '%s' not found!".formatted(AgentEx.APPROVAL_RESULT) ));
             }
 
