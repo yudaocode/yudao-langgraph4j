@@ -4,13 +4,13 @@ import org.bsc.langgraph4j.agui.sdk.AGUIAgent;
 import org.bsc.langgraph4j.agui.sdk.AGUIAgentRegistry;
 import org.bsc.langgraph4j.studio.agui.AGUILangGraphStudioJacksonSerializer;
 import org.bsc.langgraph4j.studio.agui.AGUILangGraphStudioServer;
-import org.eclipse.jetty.ee10.servlet.ServletContextHandler;
-import org.eclipse.jetty.ee10.servlet.ServletHolder;
-import org.eclipse.jetty.server.Handler;
+import org.eclipse.jetty.servlet.ServletContextHandler;
+import org.eclipse.jetty.servlet.ServletHolder;
+import org.eclipse.jetty.server.handler.HandlerList;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.server.handler.ResourceHandler;
-import org.eclipse.jetty.util.resource.ResourceFactory;
+import org.eclipse.jetty.util.resource.Resource;
 
 import java.util.HashMap;
 import java.util.Objects;
@@ -115,14 +115,14 @@ public class AGUILangGraphStudioServer4Jetty implements AGUILangGraphStudioServe
 
             var resourceHandler = new ResourceHandler();
 
-            var baseResource = ResourceFactory.of(resourceHandler).newClassLoaderResource("agui/webapp");
+            var baseResource = Resource.newClassPathResource("agui/webapp");
             resourceHandler.setBaseResource(baseResource);
 
-            resourceHandler.setDirAllowed(true);
+            resourceHandler.setDirectoriesListed(true);
 
             final var context = new ServletContextHandler(ServletContextHandler.SESSIONS);
 
-            context.setSessionHandler(new org.eclipse.jetty.ee10.servlet.SessionHandler());
+            context.setContextPath("/");
 
             final var serializer = ofNullable(this.serializer).orElseGet(AGUILangGraphStudioJacksonSerializer::new);
 
@@ -133,7 +133,7 @@ public class AGUILangGraphStudioServer4Jetty implements AGUILangGraphStudioServe
             if( filterHandler != null ) {
                 filterHandler.accept(context);
             }
-            final var handlerList = new Handler.Sequence(resourceHandler, context  );
+            final var handlerList = new HandlerList(resourceHandler, context);
 
             server.setHandler(handlerList);
 

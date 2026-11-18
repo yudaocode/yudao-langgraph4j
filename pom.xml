@@ -210,5 +210,8 @@
         <module>ag-ui/langgraph4j-ag-ui-json</module>
         <module>ag-ui/langgraph4j-ag-ui-sdk</module>
         <module>ag-ui/langgraph4j-ag-ui-springboot</module>
+        <module>studio/base</module>
+        <module>studio/jetty</module>
+        <module>studio/springboot</module>
     </modules>
 </project>

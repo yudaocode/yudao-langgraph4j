@@ -4,9 +4,9 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>org.bsc.langgraph4j</groupId>
+        <groupId>cn.iocoder.langgraph4j</groupId>
         <artifactId>langgraph4j-parent</artifactId>
-        <version>1.9.9</version>
+        <version>1.9.9-jdk8-SNAPSHOT</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
@@ -16,17 +16,17 @@
     <description>an embed playground webapp to run a Langgraph4j workflow in visual way on Jetty platform</description>
 
     <properties>
-        <maven.compiler.source>17</maven.compiler.source>
-        <maven.compiler.target>17</maven.compiler.target>
+
+
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <jetty.version>12.1.13</jetty.version>
-        <jackson.version>2.21.7</jackson.version>
+        <jetty.version>9.4.58.v20250814</jetty.version>
+        <jackson.version>2.21.4</jackson.version>
     </properties>
 
     <dependencyManagement>
         <dependencies>
             <dependency>
-                <groupId>dev.langchain4j</groupId>
+                <groupId>cn.iocoder.langchain4j</groupId>
                 <artifactId>langchain4j-bom</artifactId>
                 <version>${langchain4j.version}</version>
                 <type>pom</type>
@@ -53,7 +53,7 @@
 
     <dependencies>
         <dependency>
-            <groupId>org.bsc.langgraph4j</groupId>
+            <groupId>cn.iocoder.langgraph4j</groupId>
             <artifactId>langgraph4j-studio</artifactId>
             <version>${project.version}</version>
         </dependency>
@@ -69,8 +69,8 @@
         </dependency>
 
         <dependency>
-            <groupId>org.eclipse.jetty.ee10</groupId>
-            <artifactId>jetty-ee10-servlet</artifactId>
+            <groupId>org.eclipse.jetty</groupId>
+            <artifactId>jetty-servlet</artifactId>
             <version>${jetty.version}</version>
         </dependency>
 
@@ -80,7 +80,7 @@
         </dependency>
 
         <dependency>
-            <groupId>org.bsc.langgraph4j</groupId>
+            <groupId>cn.iocoder.langgraph4j</groupId>
             <artifactId>langgraph4j-studio</artifactId>
             <version>${project.version}</version>
             <type>test-jar</type>
@@ -94,20 +94,25 @@
         </dependency>
 
         <dependency>
-            <groupId>dev.langchain4j</groupId>
+            <groupId>cn.iocoder.langchain4j</groupId>
             <artifactId>langchain4j</artifactId>
             <scope>test</scope>
         </dependency>
 
         <dependency>
-            <groupId>dev.langchain4j</groupId>
+            <groupId>cn.iocoder.langchain4j</groupId>
             <artifactId>langchain4j-ollama</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>cn.iocoder.langchain4j</groupId>
+            <artifactId>langchain4j-mcp</artifactId>
             <scope>test</scope>
         </dependency>
 
 
         <dependency>
-            <groupId>org.bsc.langgraph4j</groupId>
+            <groupId>cn.iocoder.langgraph4j</groupId>
             <artifactId>langgraph4j-langchain4j-agentexecutor</artifactId>
             <version>${project.version}</version>
             <scope>test</scope>
@@ -147,7 +152,6 @@
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>exec-maven-plugin</artifactId>
-                <version>3.3.0</version>
                 <executions>
                     <execution>
                         <!--
@@ -188,7 +192,7 @@
                 </executions>
                 <dependencies>
                     <dependency>
-                        <groupId>org.bsc.langgraph4j</groupId>
+                        <groupId>cn.iocoder.langgraph4j</groupId>
                         <artifactId>langgraph4j-core</artifactId>
                         <version>${project.version}</version>
                     </dependency>

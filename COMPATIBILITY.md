@@ -128,3 +128,10 @@ The reconciled native Java 8 `clean install` reports cover 21 modules and 629 te
 The new AG-UI Java 8 protocol JAR builds the published Community Java SDK 0.1.1 core, server and client, with the upstream source hashes and license texts in `META-INF`. The Java 8 source generator lowers records and Flow signatures while keeping AG-UI JSON names. The client reads SSE under downstream demand on a blocking executor using the existing Spring AI HTTP/Flow compatibility layer. The JSON adapter, LangGraph4j SDK and Boot 2 MVC controller ship as separate BOM-managed artifacts.
 
 The 25-module `clean install` reports 641 tests (1 conditional skip). Protocol tests cover polymorphic JSON, in-band SSE event order, UTF-8 and HTTP errors. A standalone installed-artifact test starts Boot 2.7.18 on Java 8, posts to the controller and receives a run-start, graph-generated text and run-finished event. The installed runtime has 42 JARs and 12,634 Java 8 base classes. Boot 2 consumers using the Java HTTP client need HTTP Client 5.6.5 and HttpCore 5.4.4 as shown in the README. The Javelit demo still uses its Java 21 route.
+
+
+## Studio on Java 8
+
+Studio base uses `javax.servlet` and the Java 8 line of the Victools test generator (4.38.0). The server adapters use Jetty 9.4.58.v20250814 and Spring Boot 2.7.18. Both retain the upstream legacy and AG-UI assets, initialization and graph streaming flows. Runtime tests start both actual servers on loopback, load packaged HTML and initialization data, submit a UTF-8 graph input and receive the output. The independent Boot 2 and Jetty consumers repeat both routes using the installed JARs.
+
+Native Java 8 clean install covers 28 modules and 647 test cases with 1 conditional skip. Studio contributes six passing cases. The two standalone consumers contribute four real HTTP cases separately.

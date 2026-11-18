@@ -6,6 +6,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletRequestWrapper;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import javax.servlet.http.HttpSessionContext;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
@@ -85,6 +86,31 @@ public class CORSFilterConfig {
 
     }
     record FakeSession(ServletContext context) implements HttpSession {
+
+        @Override
+        public HttpSessionContext getSessionContext() {
+            return null;
+        }
+
+        @Override
+        public Object getValue(String name) {
+            return getAttribute(name);
+        }
+
+        @Override
+        public String[] getValueNames() {
+            return new String[0];
+        }
+
+        @Override
+        public void putValue(String name, Object value) {
+            setAttribute(name, value);
+        }
+
+        @Override
+        public void removeValue(String name) {
+            removeAttribute(name);
+        }
 
         @Override
         public long getCreationTime() {

@@ -1,6 +1,6 @@
 package org.bsc.langgraph4j.studio.jetty;
 
-import jakarta.servlet.*;
+import javax.servlet.*;
 import org.bsc.langgraph4j.CompileConfig;
 import org.bsc.langgraph4j.GraphStateException;
 import org.bsc.langgraph4j.StateGraph;

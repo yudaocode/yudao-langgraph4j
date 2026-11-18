@@ -164,7 +164,16 @@ Java8 的7项本地协议/SDK测试与4项上游集成用例均通过；后4项�
 
 Java AG-UI Client 与 JDK HTTP Server 使用 `langgraph4j-ag-ui-protocol-java8`，承接上游 Community SDK `0.1.1`。若应用同时用 Boot 2 父 POM 和兼容版 Java HTTP 客户端，设置 `httpclient5.version=5.6.5` 与 `httpcore5.version=5.4.4`，避免 Boot 2 将 HTTP 库降到发行时的版本。JSON 使用 Jackson 2.21.4 BOM。独立消费验证运行于 Boot `2.7.18` 和 JDK 8。
 
-AG-UI JSON、SDK 与 Spring Boot 适配加入后，JDK 8 默认构建共 25 个模块。
+AG-UI 批次的 JDK 8 默认构建共 25 个模块。
+
+## Studio（JDK 8）
+
+导入本分支 BOM 后，按运行方式选择 `cn.iocoder.langgraph4j:langgraph4j-studio-springboot`（Boot `2.7.18`）或 `cn.iocoder.langgraph4j:langgraph4j-studio-jetty`（Jetty `9.4.58.v20250814`）。`langgraph4j-studio` 提供两者共享的 `javax.servlet` 实现。
+
+- Boot 项目扩展模块中的 `LangGraphStudioConfig` 或 `AGUILangGraphStudioBaseConfig`，注册配置类并提供图或 agent registry。AG-UI 界面配置 `spring.web.resources.static-locations=classpath:/agui/static/`。
+- Jetty 项目通过 `LangGraphStudioServer4Jetty.builder()` 或 `AGUILangGraphStudioServer4Jetty.builder()` 注册图或 agent 后启动。
+
+两种运行方式均验证了安装 JAR 内的网页资源、`/init`、普通图流与 AG-UI SSE 中文图输出。Java 8 默认构建共 28 个模块。
 
 ---
 

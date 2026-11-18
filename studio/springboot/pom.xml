@@ -3,9 +3,9 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
-		<groupId>org.bsc.langgraph4j</groupId>
+		<groupId>cn.iocoder.langgraph4j</groupId>
 		<artifactId>langgraph4j-parent</artifactId>
-		<version>1.9.9</version>
+		<version>1.9.9-jdk8-SNAPSHOT</version>
 		<relativePath>../../pom.xml</relativePath>
 	</parent>
 
@@ -14,17 +14,24 @@
 	<description>an embed playground webapp to run a Langgraph4j workflow in visual way on springboot platform</description>
 
 	<properties>
-		<maven.compiler.source>17</maven.compiler.source>
-		<maven.compiler.target>17</maven.compiler.target>
+
+
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
 
 	<dependencyManagement>
 		<dependencies>
+            <dependency>
+                <groupId>com.fasterxml.jackson</groupId>
+                <artifactId>jackson-bom</artifactId>
+                <version>2.21.4</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-starter-parent</artifactId>
-				<version>4.1.1</version>
+				<artifactId>spring-boot-dependencies</artifactId>
+				<version>2.7.18</version>
 				<type>pom</type>
 				<scope>import</scope>
 			</dependency>
@@ -33,7 +40,7 @@
 
 	<dependencies>
 		<dependency>
-			<groupId>org.bsc.langgraph4j</groupId>
+			<groupId>cn.iocoder.langgraph4j</groupId>
 			<artifactId>langgraph4j-studio</artifactId>
 			<version>${project.version}</version>
 		</dependency>
@@ -41,10 +48,16 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.springframework.boot</groupId>
+                        <artifactId>spring-boot-starter-logging</artifactId>
+                    </exclusion>
+                </exclusions>
 		</dependency>
 
 		<dependency>
-			<groupId>org.bsc.langgraph4j</groupId>
+			<groupId>cn.iocoder.langgraph4j</groupId>
 			<artifactId>langgraph4j-studio</artifactId>
 			<version>${project.version}</version>
 			<type>test-jar</type>
@@ -54,13 +67,12 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
-			<scope>test</scope>
-		</dependency>
-
-		<dependency>
-			<groupId>com.ag-ui.community</groupId>
-			<artifactId>java-client</artifactId>
-			<version>0.1.1</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.springframework.boot</groupId>
+                        <artifactId>spring-boot-starter-logging</artifactId>
+                    </exclusion>
+                </exclusions>
 			<scope>test</scope>
 		</dependency>
 
@@ -71,7 +83,7 @@
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
-				<version>4.1.1</version>
+				<version>2.7.18</version>
 			</plugin>
 		</plugins>
 	</build>

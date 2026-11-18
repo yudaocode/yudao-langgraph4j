@@ -2,7 +2,7 @@ package org.bsc.langgraph4j.studio.agui;
 
 import com.agui.community.core.agent.RunAgentInput;
 import com.agui.community.core.event.Event;
-import jakarta.servlet.*;
+import javax.servlet.*;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;

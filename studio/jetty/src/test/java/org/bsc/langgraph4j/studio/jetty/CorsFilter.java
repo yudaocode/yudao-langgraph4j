@@ -1,7 +1,7 @@
 package org.bsc.langgraph4j.studio.jetty;
 
-import jakarta.servlet.*;
-import jakarta.servlet.http.*;
+import javax.servlet.*;
+import javax.servlet.http.*;
 
 import java.io.IOException;
 import java.util.Enumeration;
@@ -95,6 +95,31 @@ public class CorsFilter implements Filter {
 
     }
     record FakeSession(ServletContext context) implements HttpSession {
+
+            @Override
+            public HttpSessionContext getSessionContext() {
+                return null;
+            }
+
+            @Override
+            public Object getValue(String name) {
+                return getAttribute(name);
+            }
+
+            @Override
+            public String[] getValueNames() {
+                return new String[0];
+            }
+
+            @Override
+            public void putValue(String name, Object value) {
+                setAttribute(name, value);
+            }
+
+            @Override
+            public void removeValue(String name) {
+                removeAttribute(name);
+            }
 
         @Override
             public long getCreationTime() {

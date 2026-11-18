@@ -1,13 +1,13 @@
 package org.bsc.langgraph4j.studio.jetty;
 
 import org.bsc.langgraph4j.studio.LangGraphStudioServer;
-import org.eclipse.jetty.ee10.servlet.ServletContextHandler;
-import org.eclipse.jetty.ee10.servlet.ServletHolder;
-import org.eclipse.jetty.server.Handler;
+import org.eclipse.jetty.servlet.ServletContextHandler;
+import org.eclipse.jetty.servlet.ServletHolder;
+import org.eclipse.jetty.server.handler.HandlerList;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.server.handler.ResourceHandler;
-import org.eclipse.jetty.util.resource.ResourceFactory;
+import org.eclipse.jetty.util.resource.Resource;
 
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
@@ -110,14 +110,14 @@ public class LangGraphStudioServer4Jetty implements LangGraphStudioServer {
 
             var resourceHandler = new ResourceHandler();
 
-            var baseResource = ResourceFactory.of(resourceHandler).newClassLoaderResource("webapp");
+            var baseResource = Resource.newClassPathResource("webapp");
             resourceHandler.setBaseResource(baseResource);
 
-            resourceHandler.setDirAllowed(true);
+            resourceHandler.setDirectoriesListed(true);
 
             var context = new ServletContextHandler(ServletContextHandler.SESSIONS);
 
-            context.setSessionHandler(new org.eclipse.jetty.ee10.servlet.SessionHandler());
+            context.setContextPath("/");
 
             context.addServlet(new ServletHolder(new GraphInitServlet(instanceMap)), "/init");
 
@@ -126,7 +126,7 @@ public class LangGraphStudioServer4Jetty implements LangGraphStudioServer {
             if( filterHandler != null ) {
                 filterHandler.accept(context);
             }
-            var handlerList = new Handler.Sequence(resourceHandler, context  );
+            var handlerList = new HandlerList(resourceHandler, context);
 
             server.setHandler(handlerList);
 
