@@ -173,7 +173,13 @@ AG-UI 批次的 JDK 8 默认构建共 25 个模块。
 - Boot 项目扩展模块中的 `LangGraphStudioConfig` 或 `AGUILangGraphStudioBaseConfig`，注册配置类并提供图或 agent registry。AG-UI 界面配置 `spring.web.resources.static-locations=classpath:/agui/static/`。
 - Jetty 项目通过 `LangGraphStudioServer4Jetty.builder()` 或 `AGUILangGraphStudioServer4Jetty.builder()` 注册图或 agent 后启动。
 
-两种运行方式均验证了安装 JAR 内的网页资源、`/init`、普通图流与 AG-UI SSE 中文图输出。Java 8 默认构建共 28 个模块。
+两种运行方式均验证了安装 JAR 内的网页资源、`/init`、普通图流与 AG-UI SSE 中文图输出。该批次默认构建共 28 个模块。
+
+### Quarkus Studio（JDK 8）
+
+本分支的 `studio/quarkus` 使用 Quarkus `1.13.7.Final`。安装兼容依赖后执行 `./mvnw -pl studio/quarkus package`，将 `studio/quarkus/target/quarkus-app` 目录整体部署，在目标目录使用原生 JDK 8 运行 `java -jar quarkus-run.jar`。普通 Studio 界面、初始化和图执行流均可用。
+
+Quarkus 适配加入后，Java 8 默认构建共 29 个模块。
 
 ---
 

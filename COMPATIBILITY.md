@@ -135,3 +135,10 @@ The 25-module `clean install` reports 641 tests (1 conditional skip). Protocol t
 Studio base uses `javax.servlet` and the Java 8 line of the Victools test generator (4.38.0). The server adapters use Jetty 9.4.58.v20250814 and Spring Boot 2.7.18. Both retain the upstream legacy and AG-UI assets, initialization and graph streaming flows. Runtime tests start both actual servers on loopback, load packaged HTML and initialization data, submit a UTF-8 graph input and receive the output. The independent Boot 2 and Jetty consumers repeat both routes using the installed JARs.
 
 Native Java 8 clean install covers 28 modules and 647 test cases with 1 conditional skip. Studio contributes six passing cases. The two standalone consumers contribute four real HTTP cases separately.
+
+
+## Quarkus Studio on Java 8
+
+Quarkus 1.13.7.Final is the last Java 8 line. The adapter uses `javax` Servlet/CDI, RESTEasy Classic, and `META-INF/resources` for the upstream packaged Studio web assets. The test suite checks the page and init API. Deploy the whole `quarkus-app` directory and start `quarkus-run.jar` on Java 8.
+
+The independent copied fast-jar executes HTML, initialization JSON and the configured sample graph over local HTTP. Its 107 archives contain 12,527 Java 8 base classes. The native Java 8 Maven reactor covers 29 modules with 649 cases and 1 conditional skip.

@@ -213,5 +213,6 @@
         <module>studio/base</module>
         <module>studio/jetty</module>
         <module>studio/springboot</module>
+        <module>studio/quarkus</module>
     </modules>
 </project>

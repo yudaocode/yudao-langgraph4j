@@ -1,8 +1,8 @@
 package org.bsc.quarkus;
 
-import jakarta.servlet.*;
-import jakarta.servlet.annotation.WebServlet;
-import jakarta.servlet.http.HttpServlet;
+import javax.servlet.*;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
 import org.bsc.langgraph4j.studio.LangGraphStudioServer;
 
 import java.io.IOException;
