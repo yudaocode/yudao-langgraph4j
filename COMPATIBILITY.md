@@ -148,4 +148,8 @@ The independent copied fast-jar executes HTML, initialization JSON and the confi
 
 The compatibility archetype generates a project with Boot 2.7.18, the maintained Spring AI artifact versions and Java 8 target bytecode. Project coordinates are substituted by the archetype plugin. A standalone project generated from the installed archive retains all three requested project coordinates, compiles on JDK 17 and runs the generated-agent test inside an actual Boot 2 context on native JDK 8. All 21 production classes in the generated JAR use Java 8 bytecode. Maven's default archetype fixture verifies generation inside the 30-module reactor.
 
-Javelit remains a Java 21 UI dependency. The Maven Central audit found Java 21 in all 38 release POMs. The first and currently pinned releases were also checked at bytecode level. The native Java 8 CLI load exercises the actual runtime rejection.
+## Embedded Javelit on Java 8
+
+The existing LangGraph4j Javelit components use an embedded runtime backported from Javelit 0.89.0. All 38 official release POMs audited use Java 21. The compatibility runtime uses Undertow Core 2.2.41.Final, Tablesaw 0.43.1, Flexmark 0.62.2 and Jackson 2.21.4. Use Java 21 and the official distribution for its CLI and doclet. Model discovery uses the native Ollama catalog and model-detail endpoints.
+
+Three native Java 8 tests verify HTTP plus WebSocket component updates, application file compilation and reload, and the Ollama protocol fixture. A separate Boot 2.7.18 application loads the installed artifacts, starts the server and receives the result of a real LangGraph4j graph in a Java 8 WebSocket session.

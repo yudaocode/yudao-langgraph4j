@@ -8,8 +8,8 @@ import io.javelit.core.JtComponent;
 import io.javelit.core.JtComponentBuilder;
 import io.javelit.core.JtContainer;
 
-import jakarta.annotation.Nonnull;
-import jakarta.annotation.Nullable;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import org.intellij.lang.annotations.Language;
 
 import java.io.StringWriter;

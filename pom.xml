@@ -215,5 +215,7 @@
         <module>studio/springboot</module>
         <module>studio/quarkus</module>
         <module>spring-ai/spring-ai-agent-archetype</module>
+        <module>compatibility/javelit-runtime</module>
+        <module>javelit</module>
     </modules>
 </project>

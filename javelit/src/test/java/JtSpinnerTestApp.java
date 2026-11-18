@@ -36,7 +36,7 @@ public class JtSpinnerTestApp {
                         return "my result";
                     })
                     .onComplete((result, elapsed) ->
-                            Jt.info("**Completed in** %ds".formatted(elapsed.toSeconds())))
+                            Jt.info("**Completed in** %ds".formatted(elapsed.getSeconds())))
                     .overlay()
                     .use();
         }
@@ -53,7 +53,7 @@ public class JtSpinnerTestApp {
                         Thread.sleep(1000 * 5);
                         final var elapsed = Duration.between(start, Instant.now());
 
-                        Jt.info("**Completed in** %ds".formatted(elapsed.toSeconds())).use(spinner);
+                        Jt.info("**Completed in** %ds".formatted(elapsed.getSeconds())).use(spinner);
                     } catch (InterruptedException e) {
                         Jt.error("interrupted exception").use(spinner);
                     }

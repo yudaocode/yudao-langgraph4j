@@ -1,13 +1,13 @@
 package org.bsc.javelit;
 
-import io.github.ollama4j.Ollama;
 import io.javelit.core.Jt;
 import io.javelit.core.JtComponent;
 
+import java.io.IOException;
+import java.net.URL;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Stream;
 
 public interface JtSelectAiModel {
 
@@ -91,33 +91,17 @@ public interface JtSelectAiModel {
                                                model.name(),
                                                 Map.of("OPENAI_API_KEY", apikey)));
             } else {
-                var ollama = (Ollama)Jt.cache().computeIfAbsent("ollama", (key) -> new Ollama("http://localhost:11434/"));
-
                 try {
-                    if (!ollama.ping()) {
-                        Jt.error("OLLAMA is not available").use();
+                    List<Model> models = new OllamaToolModels(new URL("http://localhost:11434/")).list();
+                    if (models.isEmpty()) {
+                        Jt.info("No local Ollama model with tool support was found").use();
                         return Optional.empty();
                     }
-                }
-                catch( Exception ex ) {
-                    Jt.error("OLLAMA is not available: %s".formatted(ex.getMessage())).use();
+                    return Optional.ofNullable(Jt.radio("Available models", models).use());
+                } catch (IOException unavailable) {
+                    Jt.error("OLLAMA is not available: " + unavailable.getMessage()).use();
                     return Optional.empty();
                 }
-
-                var models = ollama.listModels().stream().filter( m -> {
-                            try {
-                                var capabilities = ollama.getModelDetails(m.getName()).getCapabilities();
-                                return Stream.of( capabilities ).anyMatch("tools"::equalsIgnoreCase);
-                            }
-                            catch( Exception ex ) {
-                                return false;
-                            }})
-                        .map( m -> new Model(Model.Provider.OLLAMA,m.getName()))
-                        .toList();
-
-                var model = Jt.radio("Available models", models)
-                        .use();
-                return Optional.of(model);
             }
         }
         catch( Throwable ex ) {

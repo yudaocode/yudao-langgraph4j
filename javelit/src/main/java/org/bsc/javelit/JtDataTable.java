@@ -10,7 +10,7 @@ import com.github.mustachejava.Mustache;
 import com.github.mustachejava.MustacheFactory;
 import io.javelit.core.JtComponent;
 import io.javelit.core.JtComponentBuilder;
-import jakarta.annotation.Nonnull;
+import javax.annotation.Nonnull;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static java.util.Objects.requireNonNull;

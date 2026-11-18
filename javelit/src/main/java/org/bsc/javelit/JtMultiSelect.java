@@ -6,7 +6,7 @@ import com.github.mustachejava.Mustache;
 import com.github.mustachejava.MustacheFactory;
 import io.javelit.core.JtComponent;
 import io.javelit.core.JtComponentBuilder;
-import jakarta.annotation.Nonnull;
+import javax.annotation.Nonnull;
 
 import java.io.StringWriter;
 import java.util.Set;

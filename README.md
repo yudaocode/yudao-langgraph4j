@@ -196,7 +196,27 @@ mvn org.apache.maven.plugins:maven-archetype-plugin:3.4.1:generate \
 
 生成工程用 JDK 17 构建并输出 Java 8 字节码。使用 JDK 8 安装目录下的 `bin/java` 作为 Surefire 的 `-Djvm` 参数，可在目标 JVM 上运行生成工程的测试。内置测试通过真实 Boot 2.7.18 上下文执行生成的 `AgentExecutor`。已有模型示例和 Javelit 演示各自依赖相应运行环境。
 
-Java 8 默认构建共 30 个模块。Javelit 独立 UI 依赖 `io.javelit:javelit:0.89.0`，运行该 UI 需 Java 21 或以上。
+## Javelit（JDK 8）
+
+导入兼容 BOM 后，在应用中加入以下依赖。它包含 LangGraph4j 组件，并传递引入基于 Javelit 0.89.0 的 Java 8 嵌入式运行时。
+
+```xml
+<dependency>
+    <groupId>cn.iocoder.langgraph4j</groupId>
+    <artifactId>langgraph4j-javelit</artifactId>
+</dependency>
+```
+
+用 `io.javelit.core.Server` 启动服务。Spring Boot 2.7 项目设置 `undertow.version=2.2.41.Final` 和 `jackson-bom.version=2.21.4`，以对齐已验证的依赖组合。
+
+```java
+Server server = Server.builder(() -> Jt.markdown("LangGraph4j on Java 8").use(), 8888)
+        .host("127.0.0.1")
+        .build();
+server.start();
+```
+
+应用退出时调用 `server.stop()`。官方 JBang 命令行启动与文档生成仍使用 JDK 21 的官方发行版。Java 8 默认构建共 32 个模块。
 
 ---
 
