@@ -135,6 +135,20 @@ Java8 的7项本地协议/SDK测试与4项上游集成用例均通过；后4项�
 原生 JDK8 通过 47 项组件测试及独立 Boot2 应用的双轮 HTTP 工具调用和检查点恢复。Studio/Javelit 演示和需要云端凭据的测试保留各自的运行前提。
 
 
+## Spring AI Agent Executor（Boot 2 / JDK 8）
+
+导入本分支的 BOM 后，按需添加：
+
+```xml
+<dependency>
+    <groupId>cn.iocoder.langgraph4j</groupId>
+    <artifactId>langgraph4j-springai-agentexecutor</artifactId>
+</dependency>
+```
+
+使用 `org.bsc.langgraph4j.spring.ai.agentexecutor.AgentExecutor` 或 `AgentExecutorEx`，传入 Spring AI `ChatModel` 和工具。Java8 路线复用 `cn.iocoder.spring-ai` 的 `2.1.0-jdk8-SNAPSHOT`，兼容 BOM 管理依赖。支持批注工具、审批中断与恢复、技能文件以及同线程检查点。独立 Boot 2.7 消费验证见 `compatibility-tests/boot-consumer`。
+
+
 ---
 
 <!-- 以下保留官方 README 原文 -->

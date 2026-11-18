@@ -206,7 +206,7 @@ public interface AgentExecutorEx extends LG4JLoggable {
 
             final var approvalResultOptional = state.<String>value( AgentEx.APPROVAL_RESULT);
 
-            if( approvalResultOptional.isEmpty() ) {
+            if( !approvalResultOptional.isPresent() ) {
                 return failedFuture( new IllegalStateException(format("resume property '%s' not found!", AgentEx.APPROVAL_RESULT) ));
             }
 
@@ -287,7 +287,7 @@ public interface AgentExecutorEx extends LG4JLoggable {
                 .filter(AssistantMessage::hasToolCalls)
                 .map(AssistantMessage::getToolCalls);
 
-            if (toolExecutionRequests.isEmpty()) {
+            if (!toolExecutionRequests.isPresent()) {
                 return Map.of(
                         State.NEXT_ACTION, MARK_FOR_REMOVAL,
                         State.TOOL_EXECUTION_REQUESTS, MARK_FOR_RESET);

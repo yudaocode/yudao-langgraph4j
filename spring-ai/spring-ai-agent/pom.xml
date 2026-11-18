@@ -3,9 +3,9 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>org.bsc.langgraph4j</groupId>
+        <groupId>cn.iocoder.langgraph4j</groupId>
         <artifactId>langgraph4j-parent</artifactId>
-        <version>1.9.9</version>
+        <version>1.9.9-jdk8-SNAPSHOT</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
@@ -16,41 +16,16 @@
     <description>Sample using Langgraph4j with SpringAI</description>
 
     <properties>
-        <maven.compiler.source>17</maven.compiler.source>
-        <maven.compiler.target>17</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
     <dependencyManagement>
         <dependencies>
-            <dependency>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-starter-parent</artifactId>
-                <version>4.1.0-M4</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
 
             <dependency>
-                <groupId>org.springframework.ai</groupId>
+                <groupId>cn.iocoder.spring-ai</groupId>
                 <artifactId>spring-ai-bom</artifactId>
                 <version>${spring-ai.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-
-            <dependency>
-                <groupId>org.springaicommunity</groupId>
-                <artifactId>spring-ai-agent-utils-bom</artifactId>
-                <version>0.12.0</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-
-            <dependency>
-                <groupId>org.springaicommunity</groupId>
-                <artifactId>typesafe-bom</artifactId>
-                <version>0.3.0</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
@@ -59,7 +34,7 @@
 
     <dependencies>
         <dependency>
-            <groupId>org.bsc.langgraph4j</groupId>
+            <groupId>cn.iocoder.langgraph4j</groupId>
             <artifactId>langgraph4j-spring-ai</artifactId>
             <version>${project.version}</version>
         </dependency>
@@ -79,19 +54,19 @@
     	======================================================
     	-->
         <dependency>
-            <groupId>org.springframework.ai</groupId>
+            <groupId>cn.iocoder.spring-ai</groupId>
             <artifactId>spring-ai-ollama</artifactId>
             <scope>test</scope>
         </dependency>
 
         <dependency>
-            <groupId>org.springframework.ai</groupId>
+            <groupId>cn.iocoder.spring-ai</groupId>
             <artifactId>spring-ai-openai</artifactId>
             <scope>test</scope>
         </dependency>
 
         <dependency>
-            <groupId>org.springframework.ai</groupId>
+            <groupId>cn.iocoder.spring-ai</groupId>
             <artifactId>spring-ai-google-genai</artifactId>
             <scope>test</scope>
         </dependency>
@@ -99,33 +74,23 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
+            <version>2.7.18</version>
             <scope>test</scope>
         </dependency>
 
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
-            <scope>test</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.bsc.langgraph4j</groupId>
-            <artifactId>langgraph4j-studio-springboot</artifactId>
-            <version>${project.version}</version>
+            <version>2.7.18</version>
             <scope>test</scope>
         </dependency>
 
 
         <dependency>
-            <groupId>org.springaicommunity</groupId>
-            <artifactId>spring-ai-agent-utils</artifactId>
+            <groupId>cn.iocoder.spring-ai</groupId>
+            <artifactId>spring-ai-agent-utils-compat</artifactId>
+            <version>${spring-ai.version}</version>
             <scope>test</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.springaicommunity</groupId>
-            <artifactId>typesafe-spring-ai</artifactId>
-			<scope>test</scope>
         </dependency>
     </dependencies>
 
@@ -152,6 +117,9 @@
                 <configuration>
                     <testExcludes>
                         <testExclude>**/Jt*</testExclude>
+                        <testExclude>**/JBangJEVTest.java</testExclude>
+                        <testExclude>**/studio/**/*.java</testExclude>
+                        <testExclude>**/CORSFilterConfig.java</testExclude>
                     </testExcludes>
                 </configuration>
             </plugin>
@@ -165,25 +133,28 @@
                 </configuration>
             </plugin>
 
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-enforcer-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>enforce</id>
+                        <configuration>
+                            <rules>
+                                <requireUpperBoundDeps>
+                                    <!-- Producer SpringAI2 deliberately pins Boot2 logging and its tested Jackson2 baseline. Keep convergence, bytecode and runtime/schema checks; do not raise versions merely to satisfy transitive POM metadata. -->
+                                    <excludes>
+                                        <exclude>org.slf4j:slf4j-api</exclude>
+                                        <exclude>com.fasterxml.jackson.core:jackson-databind</exclude>
+                                    </excludes>
+                                </requireUpperBoundDeps>
+                            </rules>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
 
-    <profiles>
-        <profile>
-            <id>javelit</id>
-            <activation>
-                <jdk>[21,)</jdk>
-            </activation>
-            <dependencies>
-                <dependency>
-                    <groupId>org.bsc.langgraph4j</groupId>
-                    <artifactId>langgraph4j-javelit</artifactId>
-                    <version>${project.version}</version>
-                    <scope>test</scope>
-                    <optional>true</optional>
-                </dependency>
-            </dependencies>
-        </profile>
-    </profiles>
 
 </project>

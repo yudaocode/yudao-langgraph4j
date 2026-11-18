@@ -160,11 +160,10 @@ public class SubAgentITest {
 
                 final AgentExecutorEx.State state = result.asState();
 
-                state.lastMessage()
+                System.out.print(state.lastMessage()
                         .map(Content::getText)
-                        .ifPresentOrElse(
-                                text -> System.out.printf("commit message:%n%s%n", text),
-                                () -> System.out.println("result not found"));
+                        .map(text -> String.format("commit message:%n%s%n", text))
+                        .orElseGet(() -> "result not found" + System.lineSeparator()));
                 break;
 
             }

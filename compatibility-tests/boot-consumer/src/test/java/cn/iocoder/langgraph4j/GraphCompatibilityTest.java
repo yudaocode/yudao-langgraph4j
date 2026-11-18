@@ -144,6 +144,33 @@ class GraphCompatibilityTest {
         assertTrue(server.takeRequest(2, TimeUnit.SECONDS).getBody().readUtf8().contains("echo:two"));
     }
 
+    @Test
+    void springAiAgentExecutorContinuesToolCallsAcrossTwoCheckpointTurns() throws Exception {
+        enqueueToolCall("tool-one", "one");
+        answer("first answer");
+        enqueueToolCall("tool-two", "two");
+        answer("second answer");
+
+        CompiledGraph<org.bsc.langgraph4j.spring.ai.agentexecutor.AgentExecutor.State> graph =
+                org.bsc.langgraph4j.spring.ai.agentexecutor.AgentExecutor.builder()
+                        .chatModel(context.getBean(org.springframework.ai.chat.model.ChatModel.class))
+                        .toolsFromObject(new EchoTool())
+                        .build()
+                        .compile(CompileConfig.builder().checkpointSaver(new MemorySaver()).releaseThread(false).build());
+        RunnableConfig config = RunnableConfig.builder().threadId("local-spring-ai-agent-executor").build();
+
+        assertEquals("first answer", graph.invoke(GraphInput.args(Collections.singletonMap("messages",
+                        new org.springframework.ai.chat.messages.UserMessage("first question"))), config)
+                .orElseThrow(AssertionError::new).lastMessage().orElseThrow(AssertionError::new).getText());
+        assertEquals("second answer", graph.invoke(GraphInput.args(Collections.singletonMap("messages",
+                        new org.springframework.ai.chat.messages.UserMessage("second question"))), config)
+                .orElseThrow(AssertionError::new).lastMessage().orElseThrow(AssertionError::new).getText());
+        assertNotNull(server.takeRequest(2, TimeUnit.SECONDS));
+        assertTrue(server.takeRequest(2, TimeUnit.SECONDS).getBody().readUtf8().contains("echo:one"));
+        assertNotNull(server.takeRequest(2, TimeUnit.SECONDS));
+        assertTrue(server.takeRequest(2, TimeUnit.SECONDS).getBody().readUtf8().contains("echo:two"));
+    }
+
     private void enqueueToolCall(String id, String message) {
         server.enqueue(new MockResponse().setHeader("Content-Type", "application/json").setBody(
                 "{\"id\":\"local\",\"object\":\"chat.completion\",\"created\":1,\"model\":\"mock\","
@@ -157,6 +184,7 @@ class GraphCompatibilityTest {
      */
     public static class EchoTool {
         @Tool("Echo a message")
+        @org.springframework.ai.tool.annotation.Tool(name = "echo", description = "Echo a message")
         public String echo(@P("Message") String message) {
             return "echo:" + message;
         }

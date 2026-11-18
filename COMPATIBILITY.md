@@ -107,3 +107,10 @@ Static API findings31 retain the previously identified optional modern-JVM seria
 `cn.iocoder.langgraph4j:langgraph4j-langchain4j-agentexecutor` uses the same Java 8 BOM as the graph core. The module preserves the LangChain4j 1.24.0 branch and existing tool, skill and checkpoint APIs. The optional MCP library has provided scope. Add Jackson explicitly when selecting Jackson state serialization.
 
 The 18-module build on native Java 8 reports 594 tests, zero failures or errors, and one previously disabled upstream case. The Agent Executor has 47 passing component tests. An independent Boot 2.7 consumer ran nine tests, including a local OpenAI-compatible HTTP tool-call loop across two turns on the same checkpoint thread. Java 8's runtime classpath contains 24 JARs and 5,193 base classes. Existing Studio/Javelit demo sources and cloud integration cases retain their own prerequisites.
+
+
+## Spring AI Agent Executor on Java 8
+
+Use `cn.iocoder.langgraph4j:langgraph4j-springai-agentexecutor` with this branch's BOM and Spring AI `2.1.0-jdk8-SNAPSHOT`. The library keeps the upstream model, tool and graph interfaces. Its Spring runtime uses the Spring Boot 2.7 generation.
+
+The native JDK 8 default build covers 19 modules and 597 cases with one previously disabled upstream case. Three component tests cover approval-edge resumption with an external tool result and UTF-8 skill loading. The independent Boot 2.7 application verifies both Agent Executors against local HTTP model responses over two checkpoint turns. Studio, Javelit and TypeSafe/JBang demo sources keep their own framework requirements.

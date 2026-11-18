@@ -44,6 +44,11 @@
         <dependencies>
             <dependency>
                 <groupId>cn.iocoder.langgraph4j</groupId>
+                <artifactId>langgraph4j-springai-agentexecutor</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>cn.iocoder.langgraph4j</groupId>
                 <artifactId>langgraph4j-langchain4j-agentexecutor</artifactId>
                 <version>${project.version}</version>
             </dependency>

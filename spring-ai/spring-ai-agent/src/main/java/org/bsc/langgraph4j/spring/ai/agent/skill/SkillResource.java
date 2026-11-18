@@ -2,8 +2,10 @@ package org.bsc.langgraph4j.spring.ai.agent.skill;
 
 import org.bsc.langgraph4j.agent.skill.SkillSource;
 import org.springframework.core.io.Resource;
+import org.springframework.util.StreamUtils;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 
 import static java.util.Objects.requireNonNull;
@@ -23,6 +25,8 @@ public record SkillResource( Resource skillRootPath ) implements SkillSource {
 
         final var skillFileResource = skillRootPath.createRelative("SKILL.md");
 
-        return skillFileResource.getContentAsString(StandardCharsets.UTF_8);
+        try (InputStream content = skillFileResource.getInputStream()) {
+            return StreamUtils.copyToString(content, StandardCharsets.UTF_8);
+        }
     }
 }

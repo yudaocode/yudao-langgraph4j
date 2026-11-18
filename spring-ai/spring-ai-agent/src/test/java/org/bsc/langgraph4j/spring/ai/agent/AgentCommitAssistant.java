@@ -59,9 +59,14 @@ public interface AgentCommitAssistant {
 
                 final var process = processBuilder.start();
 
-                return process.onExit().thenCombine(readStdout(process), (p, stdout) -> {
-
-                    final var exitCode = p.exitValue();
+                return readStdout(process).thenApply(stdout -> {
+                    final int exitCode;
+                    try {
+                        exitCode = process.waitFor();
+                    } catch (InterruptedException interrupted) {
+                        Thread.currentThread().interrupt();
+                        throw new CompletionException(interrupted);
+                    }
                     if (exitCode != 0) {
                         throw new CompletionException(new IOException("Git command failed with exit code %d. stderr: %s".formatted(exitCode, stdout)));
                     }
