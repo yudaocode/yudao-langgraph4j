@@ -44,6 +44,26 @@
         <dependencies>
             <dependency>
                 <groupId>cn.iocoder.langgraph4j</groupId>
+                <artifactId>langgraph4j-ag-ui-springboot</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>cn.iocoder.langgraph4j</groupId>
+                <artifactId>langgraph4j-ag-ui-protocol-java8</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>cn.iocoder.langgraph4j</groupId>
+                <artifactId>langgraph4j-ag-ui-json</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>cn.iocoder.langgraph4j</groupId>
+                <artifactId>langgraph4j-ag-ui-sdk</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>cn.iocoder.langgraph4j</groupId>
                 <artifactId>langgraph4j-hazelcast-saver</artifactId>
                 <version>${project.version}</version>
             </dependency>

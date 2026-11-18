@@ -121,3 +121,10 @@ The native JDK 8 default build covers 19 modules and 597 cases with one previous
 The default Java 8 reactor and BOM now include both savers. Oracle retains JDBC 23.9 via `ojdbc8` and the Jackson OSON provider. Both upstream test classes use their own Oracle Free 23.7 container and its built-in PDB. Hazelcast 5.2.5 is the Java 8 dependency, with the AP `IMap` storage path. The `CP_MAP` enum is retained so callers get an explicit error instead of a silent change in storage semantics. Enterprise CPMap was introduced after the Hazelcast Java 8 line.
 
 The reconciled native Java 8 `clean install` reports cover 21 modules and 629 test cases (1 conditional skips). The two savers contribute 32 passing cases. An independent installed-artifact consumer with Boot 2.7.18 dependency management exercises write, reopen, read and release on real Oracle and Hazelcast. Its 26 runtime JARs contain 16,041 base classes at Java 8 bytecode level.
+
+
+## AG-UI 0.1.1 on Boot 2 and Java 8
+
+The new AG-UI Java 8 protocol JAR builds the published Community Java SDK 0.1.1 core, server and client, with the upstream source hashes and license texts in `META-INF`. The Java 8 source generator lowers records and Flow signatures while keeping AG-UI JSON names. The client reads SSE under downstream demand on a blocking executor using the existing Spring AI HTTP/Flow compatibility layer. The JSON adapter, LangGraph4j SDK and Boot 2 MVC controller ship as separate BOM-managed artifacts.
+
+The 25-module `clean install` reports 641 tests (1 conditional skip). Protocol tests cover polymorphic JSON, in-band SSE event order, UTF-8 and HTTP errors. A standalone installed-artifact test starts Boot 2.7.18 on Java 8, posts to the controller and receives a run-start, graph-generated text and run-finished event. The installed runtime has 42 JARs and 12,634 Java 8 base classes. Boot 2 consumers using the Java HTTP client need HTTP Client 5.6.5 and HttpCore 5.4.4 as shown in the README. The Javelit demo still uses its Java 21 route.

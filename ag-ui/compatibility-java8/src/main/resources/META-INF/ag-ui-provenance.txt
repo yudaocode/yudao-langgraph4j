@@ -1,0 +1,16 @@
+AG-UI Community Java SDK source backport (0.1.1)
+
+Upstream repository: https://github.com/ag-ui-protocol/ag-ui
+Upstream tag commit: 04e8f67b5e8de3ad256133881bd4a93158ddddda
+Published licenses: the Java artifact POM declares Apache-2.0; the repository root MIT text is also preserved.
+
+Source JARs with SHA-256:
+https://repo.maven.apache.org/maven2/com/ag-ui/community/java-core/0.1.1/java-core-0.1.1-sources.jar
+c2b249357c17b6cbd755325141f5654a3e03866e9a7892d2591d0a1b6200e306
+https://repo.maven.apache.org/maven2/com/ag-ui/community/java-server/0.1.1/java-server-0.1.1-sources.jar
+812703cb90f2371b757ce63e7fb7c4c0eeb37213418e06f3c6858794a70716d0
+https://repo.maven.apache.org/maven2/com/ag-ui/community/java-client/0.1.1/java-client-0.1.1-sources.jar
+853f2789366e6fe7bb45c779b5bcdb3d5719b26a8d15925b1bbe07f6752f850a
+
+The compatibility build uses the LangGraph4j Java 8 generator for language features and
+Spring AI's Java 8 HTTP and Flow compatibility types. Modified upstream files retain their packages.

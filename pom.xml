@@ -206,5 +206,9 @@
         <module>spring-ai/spring-ai-agent</module>
         <module>langgraph4j-hazelcast-saver</module>
         <module>langgraph4j-oracle-saver</module>
+        <module>ag-ui/compatibility-java8</module>
+        <module>ag-ui/langgraph4j-ag-ui-json</module>
+        <module>ag-ui/langgraph4j-ag-ui-sdk</module>
+        <module>ag-ui/langgraph4j-ag-ui-springboot</module>
     </modules>
 </project>

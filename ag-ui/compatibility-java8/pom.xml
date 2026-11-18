@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>cn.iocoder.langgraph4j</groupId>
+        <artifactId>langgraph4j-parent</artifactId>
+        <version>1.9.9-jdk8-SNAPSHOT</version>
+        <relativePath>../../pom.xml</relativePath>
+    </parent>
+    <artifactId>langgraph4j-ag-ui-protocol-java8</artifactId>
+    <name>AG-UI Community Java SDK compatibility for Java 8</name>
+    <description>Java 8 build of the AG-UI Community Java core, server and client</description>
+    <licenses>
+        <license>
+            <name>Apache License, Version 2.0</name>
+            <url>https://www.apache.org/licenses/LICENSE-2.0</url>
+        </license>
+    </licenses>
+    <dependencies>
+        <dependency>
+            <groupId>cn.iocoder.langgraph4j</groupId>
+            <artifactId>langgraph4j-java8-compat</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>cn.iocoder.spring-ai</groupId>
+            <artifactId>spring-ai-jdk-http-compat</artifactId>
+            <version>${spring-ai.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-annotations</artifactId>
+        </dependency>
+    </dependencies>
+</project>

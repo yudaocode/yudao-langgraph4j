@@ -2,9 +2,9 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>org.bsc.langgraph4j</groupId>
+        <groupId>cn.iocoder.langgraph4j</groupId>
         <artifactId>langgraph4j-parent</artifactId>
-        <version>1.9.9</version>
+        <version>1.9.9-jdk8-SNAPSHOT</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
@@ -25,14 +25,15 @@
         </dependency>
 
         <dependency>
-            <groupId>com.ag-ui.community</groupId>
-            <artifactId>java-core</artifactId>
-            <version>${ag-ui.version}</version>
+            <groupId>cn.iocoder.langgraph4j</groupId>
+            <artifactId>langgraph4j-ag-ui-protocol-java8</artifactId>
+            <version>${project.version}</version>
         </dependency>
 
         <dependency>
-            <groupId>org.jspecify</groupId>
-            <artifactId>jspecify</artifactId>
+            <groupId>cn.iocoder.spring-ai</groupId>
+            <artifactId>spring-ai-jspecify-compat</artifactId>
+            <version>${spring-ai.version}</version>
         </dependency>
 
         <dependency>

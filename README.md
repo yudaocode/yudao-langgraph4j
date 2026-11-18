@@ -156,7 +156,15 @@ Java8 的7项本地协议/SDK测试与4项上游集成用例均通过；后4项�
 - Oracle 使用 `ojdbc8:23.9.0.25.07`。V1/V2 均可通过 `DataSource`、状态序列化器和 `CreateOption` 配置，数据库需支持 JSON 类型。
 - Hazelcast 另加 `com.hazelcast:hazelcast:5.2.5`，通过 `HazelcastSaver.builder().hazelcastInstance(instance)` 接入 `IMap`。JSON 存储需另提供 Jackson 2。Enterprise `CPMap` 使用现代 Java 路线。
 
-JDK 8 默认构建共 21 个模块。独立安装包已在原生 JDK 8 上验证实际 Oracle Free 23.7，以及 Hazelcast 成员与 TCP 客户端之间的检查点读写和释放。
+该批次默认构建共 21 个模块。独立安装包已在原生 JDK 8 上验证实际 Oracle Free 23.7，以及 Hazelcast 成员与 TCP 客户端之间的检查点读写和释放。
+
+## AG-UI（Boot 2 / JDK 8）
+
+导入本分支 BOM，再引入 `cn.iocoder.langgraph4j:langgraph4j-ag-ui-springboot` 和 Boot 2 的 `spring-boot-starter-web`。将自定义的 `AGUIAgent` 放入 `AGUIAgentRegistry`，并注册 `new AGUISSEController(registry, new AGUIJacksonSerializer())`。客户端向 `/sse/{agentId}` POST AG-UI JSON，从 SSE 响应消费事件。
+
+Java AG-UI Client 与 JDK HTTP Server 使用 `langgraph4j-ag-ui-protocol-java8`，承接上游 Community SDK `0.1.1`。若应用同时用 Boot 2 父 POM 和兼容版 Java HTTP 客户端，设置 `httpclient5.version=5.6.5` 与 `httpcore5.version=5.4.4`，避免 Boot 2 将 HTTP 库降到发行时的版本。JSON 使用 Jackson 2.21.4 BOM。独立消费验证运行于 Boot `2.7.18` 和 JDK 8。
+
+AG-UI JSON、SDK 与 Spring Boot 适配加入后，JDK 8 默认构建共 25 个模块。
 
 ---
 
