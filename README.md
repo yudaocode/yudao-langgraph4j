@@ -149,6 +149,15 @@ Java8 的7项本地协议/SDK测试与4项上游集成用例均通过；后4项�
 使用 `org.bsc.langgraph4j.spring.ai.agentexecutor.AgentExecutor` 或 `AgentExecutorEx`，传入 Spring AI `ChatModel` 和工具。Java8 路线复用 `cn.iocoder.spring-ai` 的 `2.1.0-jdk8-SNAPSHOT`，兼容 BOM 管理依赖。支持批注工具、审批中断与恢复、技能文件以及同线程检查点。独立 Boot 2.7 消费验证见 `compatibility-tests/boot-consumer`。
 
 
+## Oracle 与 Hazelcast Saver（JDK 8）
+
+导入本分支 BOM 后，按实际存储选用 `cn.iocoder.langgraph4j:langgraph4j-oracle-saver` 或 `cn.iocoder.langgraph4j:langgraph4j-hazelcast-saver`。
+
+- Oracle 使用 `ojdbc8:23.9.0.25.07`。V1/V2 均可通过 `DataSource`、状态序列化器和 `CreateOption` 配置，数据库需支持 JSON 类型。
+- Hazelcast 另加 `com.hazelcast:hazelcast:5.2.5`，通过 `HazelcastSaver.builder().hazelcastInstance(instance)` 接入 `IMap`。JSON 存储需另提供 Jackson 2。Enterprise `CPMap` 使用现代 Java 路线。
+
+JDK 8 默认构建共 21 个模块。独立安装包已在原生 JDK 8 上验证实际 Oracle Free 23.7，以及 Hazelcast 成员与 TCP 客户端之间的检查点读写和释放。
+
 ---
 
 <!-- 以下保留官方 README 原文 -->

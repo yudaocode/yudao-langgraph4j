@@ -1,3 +1,11 @@
+## Java 8 compatibility branch
+
+Use `cn.iocoder.langgraph4j:langgraph4j-oracle-saver` with the compatibility BOM.
+The driver is `com.oracle.database.jdbc:ojdbc8:23.9.0.25.07`.
+V1 and V2 were exercised on native Java 8 with Oracle Free 23.7 and the Jackson OSON provider.
+
+---
+
 # Oracle Checkpoint Saver
 
 `langgraph4j-oracle-saver` persists LangGraph4j checkpoints in Oracle Database so graph executions can be resumed, inspected, or released across JVM restarts. It implements the LangGraph4j checkpoint saver contract with JDBC-backed Oracle storage and schema initialization helpers.

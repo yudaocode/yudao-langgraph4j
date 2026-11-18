@@ -44,6 +44,16 @@
         <dependencies>
             <dependency>
                 <groupId>cn.iocoder.langgraph4j</groupId>
+                <artifactId>langgraph4j-hazelcast-saver</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>cn.iocoder.langgraph4j</groupId>
+                <artifactId>langgraph4j-oracle-saver</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>cn.iocoder.langgraph4j</groupId>
                 <artifactId>langgraph4j-springai-agentexecutor</artifactId>
                 <version>${project.version}</version>
             </dependency>

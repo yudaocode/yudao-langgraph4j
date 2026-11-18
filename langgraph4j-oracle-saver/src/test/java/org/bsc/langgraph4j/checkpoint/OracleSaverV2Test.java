@@ -34,7 +34,6 @@ public class OracleSaverV2Test extends AbstractCheckpointSaverTest {
                 oracleContainer = new OracleContainer(ORACLE_IMAGE_NAME)
                         .withStartupTimeout(Duration.ofSeconds(600))
                         .withConnectTimeoutSeconds(600)
-                        .withDatabaseName("OracleSaverV2Test")
                         .withUsername("testuser")
                         .withPassword("testpwd");
                 oracleContainer.start();

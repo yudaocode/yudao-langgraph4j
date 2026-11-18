@@ -2,9 +2,9 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>org.bsc.langgraph4j</groupId>
+        <groupId>cn.iocoder.langgraph4j</groupId>
         <artifactId>langgraph4j-parent</artifactId>
-        <version>1.9.9</version>
+        <version>1.9.9-jdk8-SNAPSHOT</version>
     </parent>
 
     <artifactId>langgraph4j-oracle-saver</artifactId>
@@ -29,6 +29,11 @@
     <dependencyManagement>
         <dependencies>
             <dependency>
+                <groupId>com.oracle.database.jdbc</groupId>
+                <artifactId>ojdbc8</artifactId>
+                <version>${ojdbc.version}</version>
+            </dependency>
+            <dependency>
                 <groupId>org.testcontainers</groupId>
                 <artifactId>testcontainers-bom</artifactId>
                 <version>${testcontainers.version}</version>
@@ -46,14 +51,14 @@
         </dependency>
 
         <dependency>
-            <groupId>org.jspecify</groupId>
-            <artifactId>jspecify</artifactId>
+            <groupId>cn.iocoder.spring-ai</groupId>
+            <artifactId>spring-ai-jspecify-compat</artifactId>
+            <version>2.1.0-jdk8-SNAPSHOT</version>
         </dependency>
 
         <dependency>
             <groupId>com.oracle.database.jdbc</groupId>
-            <artifactId>ojdbc11</artifactId>
-            <version>${ojdbc.version}</version>
+            <artifactId>ojdbc8</artifactId>
         </dependency>
         <dependency>
             <groupId>com.oracle.database.jdbc</groupId>
@@ -62,7 +67,7 @@
         </dependency>
 
         <dependency>
-            <groupId>org.bsc.langgraph4j</groupId>
+            <groupId>cn.iocoder.langgraph4j</groupId>
             <artifactId>langgraph4j-core</artifactId>
             <version>${project.version}</version>
             <type>test-jar</type>

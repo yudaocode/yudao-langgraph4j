@@ -1,7 +1,6 @@
 package org.bsc.langgraph4j.checkpoint;
 
 import com.hazelcast.core.HazelcastInstance;
-import com.hazelcast.cp.CPMap;
 import com.hazelcast.map.IMap;
 import org.bsc.langgraph4j.LG4JLoggable;
 import org.bsc.langgraph4j.RunnableConfig;
@@ -39,19 +38,10 @@ import static java.util.concurrent.CompletableFuture.completedFuture;
  * appended checkpoint re-serializes and rewrites the entire list for that thread (an {@code O(n)}
  * write for the {@code n}-th checkpoint). This is fine for typical workflows (tens of checkpoints,
  * modest state); for long-lived threads with large state, prune history (release threads you no
- * longer need) and mind {@link CPMap} per-map size limits.</p>
+ * longer need) and account for the map size.</p>
  *
- * <p><b>Map type (CE vs. EE).</b> Two map types are supported, selected with
- * {@link Builder#mapType(MapType)}:</p>
- * <ul>
- *   <li><b>{@link IMap} (default, Community Edition).</b> AP, backup-replicated. Survives the
- *       loss of one member with the default backup count, but is not linearizable. Runs on the
- *       free {@code com.hazelcast:hazelcast} jar.</li>
- *   <li><b>{@link CPMap} (Enterprise).</b> Linearizable, Raft-backed (CP Subsystem) &mdash; an
- *       acknowledged checkpoint is never lost while a CP majority is available, which is the
- *       stronger guarantee you usually want for checkpointing. Requires the
- *       {@code com.hazelcast:hazelcast-enterprise} jar and an Enterprise license at runtime.</li>
- * </ul>
+ * <p>This branch uses Hazelcast 5.2 and the Community Edition {@link IMap}, which is AP and
+ * backup-replicated. Enterprise CPMap requires Hazelcast 5.4 or later.</p>
  *
  * <p><b>Topology.</b> The saver is topology-agnostic: it works with any {@link HazelcastInstance},
  * whether an embedded cluster member ({@code Hazelcast.newHazelcastInstance(...)}) or a thin client
@@ -68,19 +58,6 @@ import static java.util.concurrent.CompletableFuture.completedFuture;
  *         .build();
  * }</pre>
  *
- * <p><b>Usage (client to remote cluster, CPMap / EE):</b></p>
- * <pre>{@code
- * ClientConfig cfg = new ClientConfig();
- * cfg.getNetworkConfig().addAddress("hazelcast-host:5701");
- * HazelcastInstance hz = HazelcastClient.newHazelcastClient(cfg);
- *
- * var saver = HazelcastSaver.builder()
- *         .hazelcastInstance(hz)
- *         .stateSerializer(new ObjectStreamStateSerializer<>(AgentState::new))
- *         .mapType(HazelcastSaver.MapType.CP_MAP)   // linearizable CP map (Enterprise)
- *         .mapName("agentCheckpoints")
- *         .build();
- * }</pre>
  */
 public class HazelcastSaver extends AbstractCheckpointSaver implements LG4JLoggable {
 
@@ -96,15 +73,11 @@ public class HazelcastSaver extends AbstractCheckpointSaver implements LG4JLogga
          * backup count, but is not linearizable. Available on the open-source Community Edition.
          */
         I_MAP,
-        /**
-         * {@link CPMap}: linearizable, Raft-backed (CP Subsystem). An acknowledged checkpoint is
-         * never lost while a CP majority is available. Requires Hazelcast Enterprise (license + an
-         * enabled CP Subsystem) at runtime.
-         */
+        /** Enterprise CPMap, available on the modern Java route. */
         CP_MAP
     }
 
-    private final CheckpointStore store;
+    private final IMap<String, String> store;
     private final Serializer<LinkedList<Checkpoint>> checkpointsSerializer;
 
     private HazelcastSaver(Builder builder) {
@@ -117,12 +90,10 @@ public class HazelcastSaver extends AbstractCheckpointSaver implements LG4JLogga
         // JSON when the state serializer is Jackson-based, binary otherwise.
         this.checkpointsSerializer = CheckpointListSerializer.of(stateSerializer);
 
-        // CPMap is an Enterprise feature: its API is in the CE jar but it throws at runtime
-        // unless a Hazelcast Enterprise license is present and the CP Subsystem is enabled.
-        this.store = switch (builder.mapType) {
-            case CP_MAP -> new CPMapStore(builder.hazelcastInstance.getCPSubsystem().getMap(mapName));
-            case I_MAP -> new IMapStore(builder.hazelcastInstance.getMap(mapName));
-        };
+        if (builder.mapType == MapType.CP_MAP) {
+            throw new UnsupportedOperationException("Enterprise CPMap requires the modern Hazelcast route");
+        }
+        this.store = builder.hazelcastInstance.getMap(mapName);
     }
 
     public static Builder builder() {
@@ -143,7 +114,7 @@ public class HazelcastSaver extends AbstractCheckpointSaver implements LG4JLogga
         int index = checkpoints.indexOf(checkpoint);
         checkpoints.set(index, checkpoint.withSavedAtIfUnset( Instant.now() ));
 
-        store.put(threadId(config), encode(checkpoints));
+        store.set(threadId(config), encode(checkpoints));
     }
 
     @Override
@@ -151,13 +122,13 @@ public class HazelcastSaver extends AbstractCheckpointSaver implements LG4JLogga
         int index = checkpoints.indexOf(checkpoint);
         checkpoints.set(index, checkpoint.withSavedAtIfUnset( Instant.now() ));
 
-        store.put(threadId(config), encode(checkpoints));
+        store.set(threadId(config), encode(checkpoints));
     }
 
     @Override
     protected Tag releaseCheckpoints(RunnableConfig config, LinkedList<Checkpoint> checkpoints, String message) throws Exception {
         final String threadId = threadId(config);
-        store.remove(threadId);
+        store.delete(threadId);
         return new Tag(threadId, checkpoints);
     }
 
@@ -197,52 +168,6 @@ public class HazelcastSaver extends AbstractCheckpointSaver implements LG4JLogga
                     "Failed to decode stored checkpoints. A Hazelcast map entry must be read with the same "
                             + "StateSerializer kind it was written with (JSON vs. binary); verify the saver "
                             + "uses a matching serializer.", e);
-        }
-    }
-
-    // -------------------------------------------------------------------------
-    // Backing-store adapter (IMap and CPMap share no common super-interface)
-    // -------------------------------------------------------------------------
-
-    private interface CheckpointStore {
-        String get(String key);
-
-        void put(String key, String value);
-
-        void remove(String key);
-    }
-
-    private record IMapStore(IMap<String, String> map) implements CheckpointStore {
-        @Override
-        public String get(String key) {
-            return map.get(key);
-        }
-
-        @Override
-        public void put(String key, String value) {
-            map.set(key, value);
-        }
-
-        @Override
-        public void remove(String key) {
-            map.delete(key);
-        }
-    }
-
-    private record CPMapStore(CPMap<String, String> map) implements CheckpointStore {
-        @Override
-        public String get(String key) {
-            return map.get(key);
-        }
-
-        @Override
-        public void put(String key, String value) {
-            map.set(key, value);
-        }
-
-        @Override
-        public void remove(String key) {
-            map.delete(key);
         }
     }
 

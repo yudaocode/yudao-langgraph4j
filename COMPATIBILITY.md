@@ -114,3 +114,10 @@ The 18-module build on native Java 8 reports 594 tests, zero failures or errors,
 Use `cn.iocoder.langgraph4j:langgraph4j-springai-agentexecutor` with this branch's BOM and Spring AI `2.1.0-jdk8-SNAPSHOT`. The library keeps the upstream model, tool and graph interfaces. Its Spring runtime uses the Spring Boot 2.7 generation.
 
 The native JDK 8 default build covers 19 modules and 597 cases with one previously disabled upstream case. Three component tests cover approval-edge resumption with an external tool result and UTF-8 skill loading. The independent Boot 2.7 application verifies both Agent Executors against local HTTP model responses over two checkpoint turns. Studio, Javelit and TypeSafe/JBang demo sources keep their own framework requirements.
+
+
+## Oracle and Hazelcast savers on Java 8
+
+The default Java 8 reactor and BOM now include both savers. Oracle retains JDBC 23.9 via `ojdbc8` and the Jackson OSON provider. Both upstream test classes use their own Oracle Free 23.7 container and its built-in PDB. Hazelcast 5.2.5 is the Java 8 dependency, with the AP `IMap` storage path. The `CP_MAP` enum is retained so callers get an explicit error instead of a silent change in storage semantics. Enterprise CPMap was introduced after the Hazelcast Java 8 line.
+
+The reconciled native Java 8 `clean install` reports cover 21 modules and 629 test cases (1 conditional skips). The two savers contribute 32 passing cases. An independent installed-artifact consumer with Boot 2.7.18 dependency management exercises write, reopen, read and release on real Oracle and Hazelcast. Its 26 runtime JARs contain 16,041 base classes at Java 8 bytecode level.

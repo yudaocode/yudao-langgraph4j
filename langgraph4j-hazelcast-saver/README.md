@@ -1,3 +1,11 @@
+## Java 8 compatibility branch
+
+Use `cn.iocoder.langgraph4j:langgraph4j-hazelcast-saver` with Hazelcast `5.2.5` (provided).
+The Java 8 branch supports `IMap` with embedded members and Java clients.
+Enterprise `CPMap` and its integration test require the modern branch described below.
+
+---
+
 # LangGraph4j :: Hazelcast Saver
 
 A [`BaseCheckpointSaver`](../langgraph4j-core/src/main/java/org/bsc/langgraph4j/checkpoint/BaseCheckpointSaver.java)

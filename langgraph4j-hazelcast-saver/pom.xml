@@ -2,9 +2,9 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>org.bsc.langgraph4j</groupId>
+        <groupId>cn.iocoder.langgraph4j</groupId>
         <artifactId>langgraph4j-parent</artifactId>
-        <version>1.9.9</version>
+        <version>1.9.9-jdk8-SNAPSHOT</version>
     </parent>
 
     <artifactId>langgraph4j-hazelcast-saver</artifactId>
@@ -22,11 +22,17 @@
     </scm>
 
     <properties>
-        <hazelcast.version>5.7.0</hazelcast.version>
+        <hazelcast.version>5.2.5</hazelcast.version>
         <jackson.version>2.21.1</jackson.version>
     </properties>
 
     <dependencies>
+        <dependency>
+            <groupId>com.hazelcast</groupId>
+            <artifactId>hazelcast</artifactId>
+            <version>${hazelcast.version}</version>
+            <scope>provided</scope>
+        </dependency>
         <dependency>
             <groupId>${project.parent.groupId}</groupId>
             <artifactId>langgraph4j-core</artifactId>
@@ -34,8 +40,9 @@
         </dependency>
 
         <dependency>
-            <groupId>org.jspecify</groupId>
-            <artifactId>jspecify</artifactId>
+            <groupId>cn.iocoder.spring-ai</groupId>
+            <artifactId>spring-ai-jspecify-compat</artifactId>
+            <version>2.1.0-jdk8-SNAPSHOT</version>
         </dependency>
 
         <!-- Needed at runtime only for the JSON path (JacksonCheckpointListSerializer). Declared
@@ -48,7 +55,7 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>org.bsc.langgraph4j</groupId>
+            <groupId>cn.iocoder.langgraph4j</groupId>
             <artifactId>langgraph4j-core</artifactId>
             <version>${project.version}</version>
             <type>test-jar</type>
@@ -70,13 +77,22 @@
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <testExcludes>
+                        <testExclude>**/HazelcastCPMapSaverITest.java</testExclude>
+                    </testExcludes>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <configuration>
                     <!-- Keep Hazelcast cluster discovery on the loopback interface during tests -->
                     <systemPropertyVariables>
                         <java.net.preferIPv4Stack>true</java.net.preferIPv4Stack>
                     </systemPropertyVariables>
-                    <!-- *ITest.java are Enterprise-license-gated integration tests; excluded from CI -->
+                    <!-- Enterprise CPMap requires a newer Hazelcast runtime. -->
                     <excludes>
                         <exclude>**/*ITest.java</exclude>
                     </excludes>
@@ -85,71 +101,4 @@
         </plugins>
     </build>
 
-    <profiles>
-        <!--
-            Default profile: open-source Community Edition jar. Active for every normal build
-            (including release), so the module always compiles and the IMap tests run on CE.
-            Deactivated automatically only when another profile of THIS pom (enterprise-it) is
-            activated, which is what lets the Enterprise jar take its place without a clash.
-        -->
-        <profile>
-            <id>community</id>
-            <activation>
-                <activeByDefault>true</activeByDefault>
-            </activation>
-            <dependencies>
-                <dependency>
-                    <groupId>com.hazelcast</groupId>
-                    <artifactId>hazelcast</artifactId>
-                    <version>${hazelcast.version}</version>
-                    <scope>provided</scope>
-                </dependency>
-            </dependencies>
-        </profile>
-
-        <!--
-            Enterprise integration-test profile (opt-in: -Penterprise-it). Replaces the CE jar with
-            the Enterprise jar (a drop-in superset, so the two must never coexist on the classpath),
-            adds the Hazelcast Enterprise Maven repository, and runs the otherwise-excluded *ITest.
-            The CPMap integration test still needs a license via HZ_LICENSEKEY (or the
-            hazelcast.enterprise.license.key system property) and skips when none is present.
-
-            Example:
-              HZ_LICENSEKEY=... ./mvnw -pl langgraph4j-hazelcast-saver -Penterprise-it test
-        -->
-        <profile>
-            <id>enterprise-it</id>
-            <repositories>
-                <repository>
-                    <id>hazelcast-release</id>
-                    <url>https://repository.hazelcast.com/release/</url>
-                </repository>
-            </repositories>
-            <dependencies>
-                <dependency>
-                    <groupId>com.hazelcast</groupId>
-                    <artifactId>hazelcast-enterprise</artifactId>
-                    <version>${hazelcast.version}</version>
-                    <scope>provided</scope>
-                </dependency>
-            </dependencies>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-surefire-plugin</artifactId>
-                        <configuration>
-                            <!-- Override the default exclude so the *ITest run under this profile -->
-                            <excludes>
-                                <exclude>none</exclude>
-                            </excludes>
-                            <includes>
-                                <include>**/*ITest.java</include>
-                            </includes>
-                        </configuration>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-    </profiles>
 </project>

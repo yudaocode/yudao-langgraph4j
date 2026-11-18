@@ -47,6 +47,7 @@ public class StorageStrategyTest {
 
     @Container
     static final MinIOContainer minioContainer = new MinIOContainer(myImage)
+            .withTmpFs(Map.of("/data", "rw,size=2g"))
         .withUserName("minioadmin")
         .withPassword("minioadmin");
 

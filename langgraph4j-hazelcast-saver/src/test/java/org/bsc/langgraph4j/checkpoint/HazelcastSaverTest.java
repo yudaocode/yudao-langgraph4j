@@ -14,6 +14,7 @@ import org.bsc.langgraph4j.state.AgentState;
 import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 
@@ -54,6 +55,15 @@ public class HazelcastSaverTest extends AbstractCheckpointSaverTest {
         if (hazelcastInstance != null) {
             hazelcastInstance.shutdown();
         }
+    }
+
+    @Test
+    void rejectsEnterpriseCpMapOnJava8() {
+        assertThrows(UnsupportedOperationException.class, () -> HazelcastSaver.builder()
+                .hazelcastInstance(hazelcastInstance)
+                .stateSerializer(StateSerializerEnum.BINARY.stateSerializer)
+                .mapType(HazelcastSaver.MapType.CP_MAP)
+                .build());
     }
 
     /** Each saver gets its own map so tests are isolated from one another. */
