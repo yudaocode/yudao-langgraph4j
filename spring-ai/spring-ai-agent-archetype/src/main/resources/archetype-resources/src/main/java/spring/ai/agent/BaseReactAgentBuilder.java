@@ -13,60 +13,66 @@ import org.springframework.ai.support.ToolCallbacks;
 import org.springframework.ai.tool.ToolCallback;
 import org.springframework.ai.tool.ToolCallbackProvider;
 import org.springframework.core.io.Resource;
-
 import java.util.*;
-
 import static java.util.Objects.requireNonNull;
 import static java.util.Optional.ofNullable;
 
-public abstract class BaseReactAgentBuilder<B extends BaseReactAgentBuilder<B,State>, State extends MessagesState<Message>> {
+public abstract class BaseReactAgentBuilder<B extends BaseReactAgentBuilder<B, State>, State extends MessagesState<Message>> {
 
     protected ChatService chatService;
+
     protected StateSerializer<State> stateSerializer;
+
     protected ChatModel chatModel;
+
     protected String systemMessage;
+
     protected boolean streaming = false;
+
     protected final Set<ToolCallback> tools = new HashSet<>();
+
     protected Map<String, Channel<?>> schema = MessagesState.SCHEMA;
+
     protected boolean emitStreamingOutputEnd;
+
     protected ConversationContextPolicy<Message> conversationContextPolicy;
 
     public BaseReactAgentBuilder() {
     }
 
-    public BaseReactAgentBuilder(BaseReactAgentBuilder<?,State> builder) {
+    public BaseReactAgentBuilder(BaseReactAgentBuilder<?, State> builder) {
         this.chatService = builder.chatService;
         this.stateSerializer = builder.stateSerializer;
         this.chatModel = builder.chatModel;
         this.systemMessage = builder.systemMessage;
         this.streaming = builder.streaming;
-        if( !builder.tools.isEmpty() ) {
+        if (!builder.tools.isEmpty()) {
             this.tools.addAll(builder.tools);
         }
         this.schema = builder.schema;
         this.emitStreamingOutputEnd = builder.emitStreamingOutputEnd;
         this.conversationContextPolicy = builder.conversationContextPolicy;
-
     }
+
     public Optional<String> systemMessage() {
         return ofNullable(systemMessage);
     }
 
     public List<ToolCallback> tools() {
-        return tools.stream().toList();
+        return dev.langchain4j.internal.compat.Java8Collections.streamToList(tools.stream());
     }
 
     @SuppressWarnings("unchecked")
     protected B result() {
-        return (B)this;
+        return (B) this;
     }
 
-    public B chatService( ChatService chatService ) {
+    public B chatService(ChatService chatService) {
         this.chatService = requireNonNull(chatService, "chatService cannot be null!");
         return result();
     }
 
-    public B conversationContextPolicy( ConversationContextPolicy<Message> conversationContextPolicy ) {
+    public B conversationContextPolicy(ConversationContextPolicy<Message> conversationContextPolicy) {
         this.conversationContextPolicy = conversationContextPolicy;
         return result();
     }
@@ -98,7 +104,7 @@ public abstract class BaseReactAgentBuilder<B extends BaseReactAgentBuilder<B,St
      * {@link ${symbol_pound}streaming(boolean)} and {@link ${symbol_pound}emitStreamingEnd(boolean)}.
      */
     @Deprecated
-    public B chatModel(ChatModel chatModel, boolean streaming, boolean emitStreamingOutputEnd ) {
+    public B chatModel(ChatModel chatModel, boolean streaming, boolean emitStreamingOutputEnd) {
         this.chatModel = chatModel;
         this.streaming = streaming;
         this.emitStreamingOutputEnd = emitStreamingOutputEnd;
@@ -115,23 +121,23 @@ public abstract class BaseReactAgentBuilder<B extends BaseReactAgentBuilder<B,St
      * {@link ${symbol_pound}streaming(boolean)}.
      */
     @Deprecated
-    public B chatModel(ChatModel chatModel, boolean streaming ) {
+    public B chatModel(ChatModel chatModel, boolean streaming) {
         this.chatModel = chatModel;
         this.streaming = streaming;
         return result();
     }
 
-    public B chatModel( ChatModel chatModel ) {
+    public B chatModel(ChatModel chatModel) {
         this.chatModel = chatModel;
         return result();
     }
 
-    public B streaming( boolean streaming ) {
+    public B streaming(boolean streaming) {
         this.streaming = streaming;
         return result();
     }
 
-    public B emitStreamingEnd(boolean emitStreamingOutputEnd ) {
+    public B emitStreamingEnd(boolean emitStreamingOutputEnd) {
         this.emitStreamingOutputEnd = emitStreamingOutputEnd;
         return result();
     }
@@ -157,14 +163,13 @@ public abstract class BaseReactAgentBuilder<B extends BaseReactAgentBuilder<B,St
         if (toolCallbacks.length == 0) {
             throw new IllegalArgumentException("toolCallbackProvider.getToolCallbacks() cannot be empty!");
         }
-        this.tools.addAll(List.of(toolCallbacks));
+        this.tools.addAll(dev.langchain4j.internal.compat.Java8Collections.listOf(toolCallbacks));
         return result();
     }
 
     public B toolsFromObject(Object objectWithTools) {
         var tools = ToolCallbacks.from(requireNonNull(objectWithTools, "objectWithTools cannot be null"));
-        this.tools.addAll(List.of(tools));
+        this.tools.addAll(dev.langchain4j.internal.compat.Java8Collections.listOf(tools));
         return result();
     }
-
 }

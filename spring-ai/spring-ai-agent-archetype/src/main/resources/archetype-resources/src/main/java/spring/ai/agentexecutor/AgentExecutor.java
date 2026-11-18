@@ -9,13 +9,11 @@ import org.bsc.langgraph4j.agent.Agent;
 import org.bsc.langgraph4j.hook.EdgeHook;
 import org.bsc.langgraph4j.hook.NodeHook;
 import org.bsc.langgraph4j.prebuilt.MessagesState;
-import org.bsc.langgraph4j.spring.ai.agent.*;
+import ${package}.spring.ai.agent.*;
 import org.bsc.langgraph4j.spring.ai.serializer.jackson.SpringAIJacksonStateSerializer;
 import org.bsc.langgraph4j.state.AgentState;
 import org.springframework.ai.chat.messages.Message;
-
 import java.util.Map;
-
 import static java.util.Optional.ofNullable;
 
 /**
@@ -48,22 +46,11 @@ public interface AgentExecutor {
          * @return A configured StateGraph object.
          * @throws GraphStateException If there is an issue with building the graph state.
          */
-        public StateGraph<State> build( ) throws GraphStateException {
-
-            final var callModelAction = new CallModelAction<State>(this );
-
-            final var executeToolsAction = new ExecuteToolsAction<State>( tools() );
-
-            return agentBuilder
-                    .stateSerializer( ofNullable(stateSerializer)
-                            .orElseGet( () -> new SpringAIJacksonStateSerializer<>(State::new) ) )
-                    .schema( ofNullable(schema).orElse( MessagesState.SCHEMA) )
-                    .callModelAction( callModelAction )
-                    .executeToolsAction( executeToolsAction )
-                    .build();
-
+        public StateGraph<State> build() throws GraphStateException {
+            final var callModelAction = new CallModelAction<State>(this);
+            final var executeToolsAction = new ExecuteToolsAction<State>(tools());
+            return agentBuilder.stateSerializer(ofNullable(stateSerializer).orElseGet(() -> new SpringAIJacksonStateSerializer<>(State::new))).schema(ofNullable(schema).orElse(MessagesState.SCHEMA)).callModelAction(callModelAction).executeToolsAction(executeToolsAction).build();
         }
-
     }
 
     /**
@@ -90,7 +77,5 @@ public interface AgentExecutor {
         public State(Map<String, Object> initData) {
             super(initData);
         }
-
     }
-
 }

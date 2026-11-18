@@ -11,7 +11,6 @@ import org.springframework.ai.support.ToolCallbacks;
 import org.springframework.ai.tool.ToolCallback;
 import org.springframework.ai.tool.annotation.Tool;
 import org.springframework.ai.tool.annotation.ToolParam;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -25,7 +24,6 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
-
 import static java.util.Optional.ofNullable;
 
 public interface AgentCommitAssistant {
@@ -35,110 +33,73 @@ public interface AgentCommitAssistant {
         private CompletableFuture<String> readStdout(Process process) {
             return CompletableFuture.supplyAsync(() -> {
                 try (var reader = new BufferedReader(new InputStreamReader(process.getInputStream(), StandardCharsets.UTF_8))) {
-                    return reader.lines()
-                            .map(String::stripTrailing)
-                            .filter(line -> !line.isBlank())
-                            .collect(Collectors.joining("${symbol_escape}n"));                          // Java 16+
+                    return reader.lines().map(dev.langchain4j.internal.compat.Java8Platform::stripTrailing).filter(line -> !dev.langchain4j.internal.compat.Java8Platform.isBlank(line)).collect(// Java 16+
+                    Collectors.joining("\n"));
                 } catch (IOException e) {
                     throw new UncheckedIOException(e);
                 }
-
             });
         }
 
         private CompletableFuture<String> runGit(String... args) {
-            var cwd = ofNullable(System.getenv("CWD"))
-                    .orElseGet(() -> System.getProperty("user.dir"));
-
+            var cwd = ofNullable(System.getenv("CWD")).orElseGet(() -> System.getProperty("user.dir"));
             var command = new ArrayList<String>();
             command.add("git");
             command.addAll(Arrays.asList(args));
-
-            final var processBuilder = new ProcessBuilder(command)
-                    .directory(Path.of(cwd).toFile())
-                    .redirectErrorStream(true);
-
+            final var processBuilder = new ProcessBuilder(command).directory(java.nio.file.Paths.get(cwd).toFile()).redirectErrorStream(true);
             try {
-
                 final var process = processBuilder.start();
-
-                return process.onExit().thenCombine(readStdout(process), (p, stdout) -> {
-
-                    final var exitCode = p.exitValue();
-                    if (exitCode != 0) {
-                        throw new CompletionException(new IOException("Git command failed with exit code %d. stderr: %s".formatted(exitCode, stdout)));
+                return readStdout(process).thenApply(stdout -> {
+                    final int exitCode;
+                    try {
+                        exitCode = process.waitFor();
+                    } catch (InterruptedException failure) {
+                        Thread.currentThread().interrupt();
+                        throw new CompletionException(failure);
                     }
-
+                    if (exitCode != 0) {
+                        throw new CompletionException(new IOException(java.lang.String.format("Git command failed with exit code %d. stderr: %s", exitCode, stdout)));
+                    }
                     return stdout;
                 });
-
             } catch (Exception e) {
-                return CompletableFuture.failedFuture(e);
+                return dev.langchain4j.internal.compat.Java8Platform.failedFuture(e);
             }
         }
 
-        @Tool(name="git-diff", description = "get the git diff of a file")
+        @Tool(name = "git-diff", description = "get the git diff of a file")
         public String diff(@ToolParam(description = "the commit file path") String filename) {
             return runGit("diff", "--staged", "--", filename).join();
         }
 
-        @Tool( name="git-list-files", description = "List files by git status; when staged=true, list staged files")
+        @Tool(name = "git-list-files", description = "List files by git status; when staged=true, list staged files")
         public List<String> listFiles() {
-
-            return runGit("diff", "--cached", "--name-only")
-                    .thenApply(output ->
-                            output.lines()
-                                    .map(String::trim)
-                                    .filter(s -> !s.isEmpty())
-                                    .toList())
-                    .join();
+            return runGit("diff", "--cached", "--name-only").thenApply(output -> dev.langchain4j.internal.compat.Java8Collections.streamToList(dev.langchain4j.internal.compat.Java8Platform.stringLines(output).map(String::trim).filter(s -> !s.isEmpty()))).join();
         }
 
-        @Tool( name="git-commit", description = "perform a git commit for a specific file using the provided message")
-        public String commit(
-                @ToolParam(description = "the commit file path") String filename,
-                @ToolParam(description = "the commit message") String message
-        )  {
-
-            return "file '%s' commited".formatted(filename);
+        @Tool(name = "git-commit", description = "perform a git commit for a specific file using the provided message")
+        public String commit(@ToolParam(description = "the commit file path") String filename, @ToolParam(description = "the commit message") String message) {
+            return java.lang.String.format("file '%s' commited", filename);
             /*
             return runGit( "commit", "-m", message, filename)
                     .thenApply(output -> output )
                     .join();
 
              */
-
         }
 
-        private static final ToolCallback[] toolCallbacks = ToolCallbacks.from( new Tools() );
+        private static final ToolCallback[] toolCallbacks = ToolCallbacks.from(new Tools());
 
         public static List<ToolCallback> get() {
-            return List.of( toolCallbacks );
+            return dev.langchain4j.internal.compat.Java8Collections.listOf(toolCallbacks);
         }
     }
 
-    static SkilledReactSubAgent subAgent(ChatModel chatModel,
-                                         CompileConfig compileConfig,
-                                         SkillSource skillSource,
-                                         Consumer<String> logConsumer) throws Exception {
+    static SkilledReactSubAgent subAgent(ChatModel chatModel, CompileConfig compileConfig, SkillSource skillSource, Consumer<String> logConsumer) throws Exception {
         final var logHook = new LogNodeHook(logConsumer);
-
-        return SkilledReactSubAgent.builder()
-                .chatModel(chatModel)
-                .streaming(true)
-                .tools( Tools.get() )
-                .approvalOn( "git-commit", (nodeId, state ) -> {
-
-                    final var toolCall = state.getToolCallByNameFromLastMessage( "git-commit" )
-                            .orElseThrow();
-
-                    return InterruptionMetadata.builder(nodeId, state)
-                            .addMetadata( "TOOL_CALLS", toolCall)
-                            .build();
-                })
-                .addNodeHook( logHook.asBeforeCall() )
-                .addNodeHook( logHook.asAfterCall() )
-                .build( compileConfig, skillSource );
-
+        return SkilledReactSubAgent.builder().chatModel(chatModel).streaming(true).tools(Tools.get()).approvalOn("git-commit", (nodeId, state) -> {
+            final var toolCall = state.getToolCallByNameFromLastMessage("git-commit").orElseThrow(java.util.NoSuchElementException::new);
+            return InterruptionMetadata.builder(nodeId, state).addMetadata("TOOL_CALLS", toolCall).build();
+        }).addNodeHook(logHook.asBeforeCall()).addNodeHook(logHook.asAfterCall()).build(compileConfig, skillSource);
     }
 }

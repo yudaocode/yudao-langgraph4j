@@ -142,3 +142,10 @@ Native Java 8 clean install covers 28 modules and 647 test cases with 1 conditio
 Quarkus 1.13.7.Final is the last Java 8 line. The adapter uses `javax` Servlet/CDI, RESTEasy Classic, and `META-INF/resources` for the upstream packaged Studio web assets. The test suite checks the page and init API. Deploy the whole `quarkus-app` directory and start `quarkus-run.jar` on Java 8.
 
 The independent copied fast-jar executes HTML, initialization JSON and the configured sample graph over local HTTP. Its 107 archives contain 12,527 Java 8 base classes. The native Java 8 Maven reactor covers 29 modules with 649 cases and 1 conditional skip.
+
+
+## Spring AI Maven archetype on Java 8
+
+The compatibility archetype generates a project with Boot 2.7.18, the maintained Spring AI artifact versions and Java 8 target bytecode. Project coordinates are substituted by the archetype plugin. A standalone project generated from the installed archive retains all three requested project coordinates, compiles on JDK 17 and runs the generated-agent test inside an actual Boot 2 context on native JDK 8. All 21 production classes in the generated JAR use Java 8 bytecode. Maven's default archetype fixture verifies generation inside the 30-module reactor.
+
+Javelit remains a Java 21 UI dependency. The Maven Central audit found Java 21 in all 38 release POMs. The first and currently pinned releases were also checked at bytecode level. The native Java 8 CLI load exercises the actual runtime rejection.

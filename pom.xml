@@ -214,5 +214,6 @@
         <module>studio/jetty</module>
         <module>studio/springboot</module>
         <module>studio/quarkus</module>
+        <module>spring-ai/spring-ai-agent-archetype</module>
     </modules>
 </project>

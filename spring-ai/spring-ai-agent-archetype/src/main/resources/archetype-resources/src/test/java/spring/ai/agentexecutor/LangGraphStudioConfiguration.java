@@ -17,7 +17,6 @@ import org.springframework.ai.chat.messages.UserMessage;
 import org.springframework.ai.chat.model.ChatModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
-
 import java.util.Map;
 import java.util.Objects;
 
@@ -28,32 +27,13 @@ public class LangGraphStudioConfiguration extends LangGraphStudioConfig {
 
     @Override
     public Map<String, LangGraphStudioServer.Instance> instanceMap() {
-
-        return  Map.of( "sample", LangGraphStudioServer.Instance.builder()
-                .title("LangGraph Studio (Spring AI)")
-                .addInputStringArg( "messages", true, v -> new UserMessage( Objects.toString(v) ) )
-                .graph( workflow )
-                .compileConfig( CompileConfig.builder()
-                        .checkpointSaver( new MemorySaver() )
-                        .releaseThread(true)
-                        .build())
-                .build());
-
+        return dev.langchain4j.internal.compat.Java8Collections.mapOf("sample", LangGraphStudioServer.Instance.builder().title("LangGraph Studio (Spring AI)").addInputStringArg("messages", true, v -> new UserMessage(Objects.toString(v))).graph(workflow).compileConfig(CompileConfig.builder().checkpointSaver(new MemorySaver()).releaseThread(true).build()).build());
     }
 
-    public LangGraphStudioConfiguration( /*@Qualifier("ollama")*/ ChatModel chatModel ) throws GraphStateException {
-
-        this.workflow = AgentExecutorEx.builder()
-                .chatModel(chatModel)
-                .streaming(true)
-                .approvalOn( "threadCount", (nodeId, state) ->
-                        InterruptionMetadata.builder( nodeId, state ).build())
-                .toolsFromObject(new TestTools())
-                .build();
-
-        var mermaid = workflow.getGraph( GraphRepresentation.Type.MERMAID, "ReAct Agent", false );
-        System.out.println( mermaid.content() );
-
+    public LangGraphStudioConfiguration(/*@Qualifier("ollama")*/
+    ChatModel chatModel) throws GraphStateException {
+        this.workflow = AgentExecutorEx.builder().chatModel(chatModel).streaming(true).approvalOn("threadCount", (nodeId, state) -> InterruptionMetadata.builder(nodeId, state).build()).toolsFromObject(new TestTools()).build();
+        var mermaid = workflow.getGraph(GraphRepresentation.Type.MERMAID, "ReAct Agent", false);
+        System.out.println(mermaid.content());
     }
-
 }

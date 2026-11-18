@@ -7,14 +7,16 @@ import org.bsc.langgraph4j.agent.Agent;
 import org.bsc.langgraph4j.hook.EdgeHook;
 import org.bsc.langgraph4j.hook.NodeHook;
 import org.bsc.langgraph4j.prebuilt.MessagesState;
-import org.bsc.langgraph4j.spring.ai.agentexecutor.AgentExecutor;
+import ${package}.spring.ai.agentexecutor.AgentExecutor;
 import org.springframework.ai.chat.messages.Message;
 
-public abstract class ReactAgentBuilder<B extends ReactAgentBuilder<B,State>, State extends MessagesState<Message>> extends BaseReactAgentBuilder<B,State> {
+public abstract class ReactAgentBuilder<B extends ReactAgentBuilder<B, State>, State extends MessagesState<Message>> extends BaseReactAgentBuilder<B, State> {
+
     protected Agent.Builder<Message, AgentExecutor.State> agentBuilder;
 
     public ReactAgentBuilder() {
-        this.agentBuilder = Agent.builder();;
+        this.agentBuilder = Agent.builder();
+        ;
     }
 
     public ReactAgentBuilder(ReactAgentBuilder<?, State> builder) {
@@ -22,14 +24,13 @@ public abstract class ReactAgentBuilder<B extends ReactAgentBuilder<B,State>, St
         this.agentBuilder = builder.agentBuilder;
     }
 
-    public B addCallModelHook(NodeHook.WrapCall<AgentExecutor.State> wrapCall ) {
+    public B addCallModelHook(NodeHook.WrapCall<AgentExecutor.State> wrapCall) {
         agentBuilder.addCallModelHook(wrapCall);
         return result();
     }
 
-    public B addExecuteToolsHook(EdgeHook.WrapCall<AgentExecutor.State> wrapCall ) {
+    public B addExecuteToolsHook(EdgeHook.WrapCall<AgentExecutor.State> wrapCall) {
         agentBuilder.addExecuteToolsHook(wrapCall);
         return result();
     }
-
 }

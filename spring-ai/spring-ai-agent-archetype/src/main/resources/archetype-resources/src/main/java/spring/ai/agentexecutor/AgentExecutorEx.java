@@ -8,8 +8,8 @@ import org.bsc.langgraph4j.action.*;
 import org.bsc.langgraph4j.agent.AgentEx;
 import org.bsc.langgraph4j.prebuilt.MessagesState;
 import org.bsc.langgraph4j.serializer.StateSerializer;
-import org.bsc.langgraph4j.spring.ai.agent.CallModelAction;
-import org.bsc.langgraph4j.spring.ai.agent.ReactAgentBuilderEx;
+import ${package}.spring.ai.agent.CallModelAction;
+import ${package}.spring.ai.agent.ReactAgentBuilderEx;
 import org.bsc.langgraph4j.spring.ai.serializer.jackson.SpringAIJacksonStateSerializer;
 import org.bsc.langgraph4j.spring.ai.tool.SpringAIToolService;
 import org.bsc.langgraph4j.state.AgentState;
@@ -20,13 +20,11 @@ import org.springframework.ai.chat.messages.Message;
 import org.springframework.ai.chat.messages.MessageType;
 import org.springframework.ai.chat.messages.ToolResponseMessage;
 import org.springframework.ai.tool.ToolCallback;
-
 import java.util.*;
-
 import static java.lang.String.format;
 import static java.util.Optional.ofNullable;
 import static java.util.concurrent.CompletableFuture.completedFuture;
-import static java.util.concurrent.CompletableFuture.failedFuture;
+import static dev.langchain4j.internal.compat.Java8Platform.failedFuture;
 import static org.bsc.langgraph4j.state.AgentState.MARK_FOR_REMOVAL;
 import static org.bsc.langgraph4j.state.AgentState.MARK_FOR_RESET;
 import static org.bsc.langgraph4j.utils.CollectionsUtils.mergeMap;
@@ -46,14 +44,13 @@ import static org.bsc.langgraph4j.utils.CollectionsUtils.mergeMap;
  *          ┌─────────────────┐
  *          │action_dispatcher│
  *          └─────────────────┘_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
- *          |                 ${symbol_escape}              ${symbol_escape}                    ${symbol_escape}
+ *          |                 \              \                    \
  *       ┌────┐         ┌─────────────┐ ┌─────────────┐      ┌─────────────┐
  *       │stop│         │ tool_name 1 │ │ tool_name 2 │......│ tool_name N │
  *       └────┘         └─────────────┘ └─────────────┘      └─────────────┘
  * </pre>
  */
 public interface AgentExecutorEx extends LG4JLoggable {
-
 
     /**
      * Represents the state of an agent in a system.
@@ -63,9 +60,13 @@ public interface AgentExecutorEx extends LG4JLoggable {
     class State extends MessagesState<Message> {
 
         public static final String TOOL_EXECUTION_REQUESTS = "tool_execution_requests";
+
         public static final String TOOL_EXECUTION_RESPONSES = "tool_execution_responses";
+
         public static final String NEXT_ACTION = "next_action";
+
         private static final class StateSerializerHolder {
+
             private static final StateSerializer<State> INSTANCE = new SpringAIJacksonStateSerializer<>(State::new);
         }
 
@@ -73,13 +74,7 @@ public interface AgentExecutorEx extends LG4JLoggable {
             return StateSerializerHolder.INSTANCE;
         }
 
-        static final Map<String, Channel<?>> SCHEMA = mergeMap(
-                MessagesState.SCHEMA,
-                Map.ofEntries(
-                        Map.entry(TOOL_EXECUTION_REQUESTS, Channels.base( LinkedList::new )),
-                        Map.entry(TOOL_EXECUTION_RESPONSES, Channels.appender( LinkedList::new )),
-                        AgentEx.ApprovalResultChannelEntry
-                ));
+        static final Map<String, Channel<?>> SCHEMA = mergeMap(MessagesState.SCHEMA, dev.langchain4j.internal.compat.Java8Collections.mapOfEntries(dev.langchain4j.internal.compat.Java8Collections.mapEntry(TOOL_EXECUTION_REQUESTS, Channels.base(LinkedList::new)), dev.langchain4j.internal.compat.Java8Collections.mapEntry(TOOL_EXECUTION_RESPONSES, Channels.appender(LinkedList::new)), AgentEx.ApprovalResultChannelEntry));
 
         /**
          * Constructs a new State with the given initialization data.
@@ -91,8 +86,7 @@ public interface AgentExecutorEx extends LG4JLoggable {
         }
 
         public List<AssistantMessage.ToolCall> toolExecutionRequests() {
-            return this.<List<AssistantMessage.ToolCall>>value(TOOL_EXECUTION_REQUESTS)
-                    .orElseThrow();
+            return this.<List<AssistantMessage.ToolCall>>value(TOOL_EXECUTION_REQUESTS).orElseThrow(java.util.NoSuchElementException::new);
         }
 
         public Optional<AssistantMessage.ToolCall> toolExecutionRequests${symbol_dollar}getFirst() {
@@ -100,34 +94,26 @@ public interface AgentExecutorEx extends LG4JLoggable {
         }
 
         public List<AssistantMessage.ToolCall> toolExecutionRequests${symbol_dollar}removeFirst() {
-            return toolExecutionRequests().stream().skip(1).toList();
+            return dev.langchain4j.internal.compat.Java8Collections.streamToList(toolExecutionRequests().stream().skip(1));
         }
 
         public List<ToolResponseMessage.ToolResponse> toolExecutionResponses() {
-            return this.<List<ToolResponseMessage.ToolResponse>>value(TOOL_EXECUTION_RESPONSES)
-                            .orElseThrow();
+            return this.<List<ToolResponseMessage.ToolResponse>>value(TOOL_EXECUTION_RESPONSES).orElseThrow(java.util.NoSuchElementException::new);
         }
 
         public Optional<String> nextAction() {
             return value(NEXT_ACTION);
         }
 
-        public Optional<AssistantMessage.ToolCall> getToolCallByNameFromLastMessage( String toolName ) {
-            return this.lastMessage()
-                    .map(AssistantMessage.class::cast)
-                    .filter(AssistantMessage::hasToolCalls)
-                    .map(AssistantMessage::getToolCalls)
-                    .flatMap( toolCalls -> toolCalls.stream()
-                            .filter( call -> toolName.equalsIgnoreCase(call.name()) )
-                            .findFirst() );
+        public Optional<AssistantMessage.ToolCall> getToolCallByNameFromLastMessage(String toolName) {
+            return this.lastMessage().map(AssistantMessage.class::cast).filter(AssistantMessage::hasToolCalls).map(AssistantMessage::getToolCalls).flatMap(toolCalls -> toolCalls.stream().filter(call -> toolName.equalsIgnoreCase(call.name())).findFirst());
         }
     }
 
-    record FunctionToolBehaviour( SpringAIToolService toolService, ToolCallback toolCallback ) implements AgentEx.ToolBehaviour<Message, State> {
-        public FunctionToolBehaviour {
-            Objects.requireNonNull(toolService, "toolService cannot be null!");
-            Objects.requireNonNull(toolCallback, "toolCallback cannot be null!");
-        }
+    @com.fasterxml.jackson.annotation.JsonAutoDetect(fieldVisibility = com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.ANY, getterVisibility = com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.NONE, isGetterVisibility = com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.NONE, setterVisibility = com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.NONE)
+    @dev.langchain4j.internal.compat.Java8Record({ "toolService", "toolCallback" })
+    final static class FunctionToolBehaviour extends dev.langchain4j.internal.compat.Java8RecordBase implements AgentEx.ToolBehaviour<Message, State> {
+
         @Override
         public String name() {
             return toolCallback.getToolDefinition().name();
@@ -135,9 +121,53 @@ public interface AgentExecutorEx extends LG4JLoggable {
 
         @Override
         public void addToGraph(StateGraph<State> graph) throws GraphStateException {
-            graph.addNode( name(), executeTool( this ));
+            graph.addNode(name(), executeTool(this));
+        }
+
+        private final SpringAIToolService toolService;
+
+        public SpringAIToolService toolService() {
+            return this.toolService;
+        }
+
+        private final ToolCallback toolCallback;
+
+        public ToolCallback toolCallback() {
+            return this.toolCallback;
+        }
+
+        @com.fasterxml.jackson.annotation.JsonCreator()
+        public FunctionToolBehaviour(@com.fasterxml.jackson.annotation.JsonProperty("toolService") SpringAIToolService toolService, @com.fasterxml.jackson.annotation.JsonProperty("toolCallback") ToolCallback toolCallback) {
+            Objects.requireNonNull(toolService, "toolService cannot be null!");
+            Objects.requireNonNull(toolCallback, "toolCallback cannot be null!");
+            this.toolService = toolService;
+            this.toolCallback = toolCallback;
+        }
+
+        @Override
+        public boolean equals(Object other) {
+            if (this == other)
+                return true;
+            if (other == null || getClass() != other.getClass())
+                return false;
+            FunctionToolBehaviour that = (FunctionToolBehaviour) other;
+            return java.util.Objects.equals(this.toolService, that.toolService) && java.util.Objects.equals(this.toolCallback, that.toolCallback);
+        }
+
+        @Override
+        public int hashCode() {
+            int result = 0;
+            result = 31 * result + java.util.Objects.hashCode(this.toolService);
+            result = 31 * result + java.util.Objects.hashCode(this.toolCallback);
+            return result;
+        }
+
+        @Override
+        public String toString() {
+            return "FunctionToolBehaviour[toolService=" + java.lang.String.valueOf((Object) this.toolService) + ", toolCallback=" + java.lang.String.valueOf((Object) this.toolCallback) + "]";
         }
     }
+
     /**
      * Class responsible for building a state graph.
      */
@@ -160,37 +190,21 @@ public interface AgentExecutorEx extends LG4JLoggable {
          * @throws GraphStateException If there is an issue with building the graph state.
          */
         public StateGraph<State> build() throws GraphStateException {
-
             final var toolService = new SpringAIToolService(tools());
-
-            final var callModelAction = new CallModelAction<State>( this );
-
+            final var callModelAction = new CallModelAction<State>(this);
             @SuppressWarnings("unchecked")
-            final var toolsInfo = tools.stream().map( tool -> {
-
-                if( tool instanceof AgentEx.ToolBehaviour<?, ?> agentToolBehaviour ) {
+            final var toolsInfo = dev.langchain4j.internal.compat.Java8Collections.streamToList(tools.stream().map(tool -> {
+                if (tool instanceof AgentEx.ToolBehaviour<?, ?> agentToolBehaviour) {
                     return (AgentEx.ToolBehaviour<Message, State>) agentToolBehaviour;
                 }
-                return new FunctionToolBehaviour( toolService, tool );
-            }).toList();
-
-            return agentBuilder
-                    .stateSerializer( ofNullable(stateSerializer)
-                            .orElseGet(State::defaultSerializer) )
-                    .schema( State.SCHEMA )
-                    .callModelAction( callModelAction )
-                    .dispatchToolsAction( dispatchTools( approvals.keySet() ) )
-                    .shouldContinueEdge( shouldContinue() )
-                    .approvalActionEdge( approvalAction() )
-                    .dispatchActionEdge( dispatchAction() )
-                    .build( toolsInfo, approvals )
-                    ;
+                return new FunctionToolBehaviour(toolService, tool);
+            }));
+            return agentBuilder.stateSerializer(ofNullable(stateSerializer).orElseGet(State::defaultSerializer)).schema(State.SCHEMA).callModelAction(callModelAction).dispatchToolsAction(dispatchTools(approvals.keySet())).shouldContinueEdge(shouldContinue()).approvalActionEdge(approvalAction()).dispatchActionEdge(dispatchAction()).build(toolsInfo, approvals);
         }
 
-        public CompiledGraph<State> build( CompileConfig config ) throws GraphStateException {
+        public CompiledGraph<State> build(CompileConfig config) throws GraphStateException {
             return build().compile(config);
         }
-
     }
 
     /**
@@ -202,160 +216,83 @@ public interface AgentExecutorEx extends LG4JLoggable {
         return new Builder();
     }
 
-    private static AsyncCommandAction<State> dispatchAction() {
-        return AsyncCommandAction.command_async( (state, config ) ->
-                    state.nextAction()
-                            .map( Command::new )
-                            .orElseGet( () ->  new Command(AgentEx.CALL_MODEL_NODE) ));
-
+    static public AsyncCommandAction<State> dispatchAction() {
+        return AsyncCommandAction.command_async((state, config) -> state.nextAction().map(Command::new).orElseGet(() -> new Command(AgentEx.CALL_MODEL_NODE)));
     }
 
-    private static AsyncCommandAction<State> approvalAction() {
+    static public AsyncCommandAction<State> approvalAction() {
         return (state, config) -> {
-
-            final var approvalResultOptional = state.<String>value( AgentEx.APPROVAL_RESULT);
-
-            if( approvalResultOptional.isEmpty() ) {
-                return failedFuture( new IllegalStateException(format("resume property '%s' not found!", AgentEx.APPROVAL_RESULT) ));
+            final var approvalResultOptional = state.<String>value(AgentEx.APPROVAL_RESULT);
+            if (!approvalResultOptional.isPresent()) {
+                return failedFuture(new IllegalStateException(format("resume property '%s' not found!", AgentEx.APPROVAL_RESULT)));
             }
-
             final var resumeState = approvalResultOptional.get();
-
-            if( Objects.equals( resumeState, AgentEx.ApprovalState.APPROVED.name() )) {
+            if (Objects.equals(resumeState, AgentEx.ApprovalState.APPROVED.name())) {
                 // APPROVED
-                return completedFuture( new Command( resumeState,
-                        Map.of(AgentEx.APPROVAL_RESULT, MARK_FOR_REMOVAL)));
-
-            }
-            else {
+                return completedFuture(new Command(resumeState, dev.langchain4j.internal.compat.Java8Collections.mapOf(AgentEx.APPROVAL_RESULT, MARK_FOR_REMOVAL)));
+            } else {
                 // DENIED
                 final var currentToolExecutionRequests = state.toolExecutionRequests();
-
-                if(currentToolExecutionRequests.isEmpty())  {
-                    return failedFuture( new IllegalStateException("no tool execution request found!") );
+                if (currentToolExecutionRequests.isEmpty()) {
+                    return failedFuture(new IllegalStateException("no tool execution request found!"));
                 }
-
-                final var currentToolExecutionRequest =  currentToolExecutionRequests.get(0);
-
-                final var toolResponse = new ToolResponseMessage.ToolResponse(
-                        currentToolExecutionRequest.id(),
-                        currentToolExecutionRequest.name(),
-                        "tool '%s' execution has been DENIED!".formatted(currentToolExecutionRequest.name()));
-
+                final var currentToolExecutionRequest = currentToolExecutionRequests.get(0);
+                final var toolResponse = new ToolResponseMessage.ToolResponse(currentToolExecutionRequest.id(), currentToolExecutionRequest.name(), java.lang.String.format("tool '%s' execution has been DENIED!", currentToolExecutionRequest.name()));
                 //final var gotoNode = ( currentToolExecutionRequests.size() > 1 ) ?
                 //        AgentEx.ACTION_DISPATCHER_NODE :
                 //        AgentEx.CALL_MODEL_NODE ;
-
                 final var gotoNode = AgentEx.ACTION_DISPATCHER_NODE;
-
-                return completedFuture( new Command( gotoNode,
-                        Map.of( State.TOOL_EXECUTION_REQUESTS, state.toolExecutionRequests${symbol_dollar}removeFirst(),
-                                State.TOOL_EXECUTION_RESPONSES, toolResponse,
-                                AgentEx.APPROVAL_RESULT, MARK_FOR_REMOVAL)));
-
+                return completedFuture(new Command(gotoNode, dev.langchain4j.internal.compat.Java8Collections.mapOf(State.TOOL_EXECUTION_REQUESTS, state.toolExecutionRequests${symbol_dollar}removeFirst(), State.TOOL_EXECUTION_RESPONSES, toolResponse, AgentEx.APPROVAL_RESULT, MARK_FOR_REMOVAL)));
             }
-
         };
     }
 
-    private static AsyncNodeActionWithConfig<State> dispatchTools( Set<String> approvals ) {
-
+    static public AsyncNodeActionWithConfig<State> dispatchTools(Set<String> approvals) {
         return AsyncNodeActionWithConfig.node_async((state, config) -> {
             log.trace("DispatchTools");
-
             final var previousToolExecutionRequests = state.toolExecutionRequests();
             if (!previousToolExecutionRequests.isEmpty()) {
-
                 final var currentToolExecutionRequest = previousToolExecutionRequests.get(0);
-
-                final var nextAction = approvals.contains(currentToolExecutionRequest.name()) ?
-                        "approval_%s".formatted(currentToolExecutionRequest.name()) :
-                        currentToolExecutionRequest.name();
-
-                return Map.of(  State.NEXT_ACTION, nextAction,
-                                State.TOOL_EXECUTION_REQUESTS, previousToolExecutionRequests);
+                final var nextAction = approvals.contains(currentToolExecutionRequest.name()) ? java.lang.String.format("approval_%s", currentToolExecutionRequest.name()) : currentToolExecutionRequest.name();
+                return dev.langchain4j.internal.compat.Java8Collections.mapOf(State.NEXT_ACTION, nextAction, State.TOOL_EXECUTION_REQUESTS, previousToolExecutionRequests);
             }
-
             // CHECK IF THERE ARE TOOLS RESPONSES
-            if( !state.toolExecutionResponses().isEmpty() ) {
-
-                final var toolResponseMessage = ToolResponseMessage.builder()
-                        .responses(state.toolExecutionResponses())
-                        .build();
-
-                return Map.of(
-                        State.MESSAGES_STATE, toolResponseMessage,
-                        State.TOOL_EXECUTION_RESPONSES, MARK_FOR_RESET,
-                        State.NEXT_ACTION, MARK_FOR_REMOVAL,
-                        State.TOOL_EXECUTION_REQUESTS, MARK_FOR_RESET);
+            if (!state.toolExecutionResponses().isEmpty()) {
+                final var toolResponseMessage = ToolResponseMessage.builder().responses(state.toolExecutionResponses()).build();
+                return dev.langchain4j.internal.compat.Java8Collections.mapOf(State.MESSAGES_STATE, toolResponseMessage, State.TOOL_EXECUTION_RESPONSES, MARK_FOR_RESET, State.NEXT_ACTION, MARK_FOR_REMOVAL, State.TOOL_EXECUTION_REQUESTS, MARK_FOR_RESET);
             }
-
-            final var toolExecutionRequests = state.lastMessage()
-                .filter(m -> MessageType.ASSISTANT == m.getMessageType())
-                .map(AssistantMessage.class::cast)
-                .filter(AssistantMessage::hasToolCalls)
-                .map(AssistantMessage::getToolCalls);
-
-            if (toolExecutionRequests.isEmpty()) {
-                return Map.of(
-                        State.NEXT_ACTION, MARK_FOR_REMOVAL,
-                        State.TOOL_EXECUTION_REQUESTS, MARK_FOR_RESET);
+            final var toolExecutionRequests = state.lastMessage().filter(m -> MessageType.ASSISTANT == m.getMessageType()).map(AssistantMessage.class::cast).filter(AssistantMessage::hasToolCalls).map(AssistantMessage::getToolCalls);
+            if (!toolExecutionRequests.isPresent()) {
+                return dev.langchain4j.internal.compat.Java8Collections.mapOf(State.NEXT_ACTION, MARK_FOR_REMOVAL, State.TOOL_EXECUTION_REQUESTS, MARK_FOR_RESET);
             } else {
-
                 final var newToolExecutionRequests = toolExecutionRequests.get();
-
                 final var currentToolExecutionRequest = newToolExecutionRequests.get(0);
-
-                final var nextAction = approvals.contains(currentToolExecutionRequest.name()) ?
-                        "approval_%s".formatted(currentToolExecutionRequest.name()) :
-                        currentToolExecutionRequest.name();
-
-                return Map.of(
-                        State.NEXT_ACTION, nextAction,
-                        State.TOOL_EXECUTION_REQUESTS, newToolExecutionRequests);
+                final var nextAction = approvals.contains(currentToolExecutionRequest.name()) ? java.lang.String.format("approval_%s", currentToolExecutionRequest.name()) : currentToolExecutionRequest.name();
+                return dev.langchain4j.internal.compat.Java8Collections.mapOf(State.NEXT_ACTION, nextAction, State.TOOL_EXECUTION_REQUESTS, newToolExecutionRequests);
             }
         });
     }
 
-    static AsyncNodeActionWithConfig<State> executeTool( FunctionToolBehaviour toolBehaviour) {
-        return ( state, config ) -> {
-            log.trace( "ExecuteTool" );
-
-            return state.toolExecutionRequests${symbol_dollar}getFirst().map( toolCall ->
-                toolBehaviour.toolService().executeFunctions( List.of(toolCall), state.data() )
-                        .thenApply( result ->
-                            result.command().withMergedUpdate(
-                                        Map.of( State.TOOL_EXECUTION_RESPONSES,
-                                                result.toolResponses(),
-                                                State.TOOL_EXECUTION_REQUESTS,
-                                                state.toolExecutionRequests${symbol_dollar}removeFirst()),
-                                        (v1,v2) -> v2 )
-                                    .update()
-                        ))
-            .orElseGet( () -> failedFuture( new IllegalArgumentException("no tool execution request found!") ) );
-
+    static AsyncNodeActionWithConfig<State> executeTool(FunctionToolBehaviour toolBehaviour) {
+        return (state, config) -> {
+            log.trace("ExecuteTool");
+            return state.toolExecutionRequests${symbol_dollar}getFirst().map(toolCall -> toolBehaviour.toolService().executeFunctions(dev.langchain4j.internal.compat.Java8Collections.listOf(toolCall), state.data()).thenApply(result -> result.command().withMergedUpdate(dev.langchain4j.internal.compat.Java8Collections.mapOf(State.TOOL_EXECUTION_RESPONSES, result.toolResponses(), State.TOOL_EXECUTION_REQUESTS, state.toolExecutionRequests${symbol_dollar}removeFirst()), (v1, v2) -> v2).update())).orElseGet(() -> failedFuture(new IllegalArgumentException("no tool execution request found!")));
         };
     }
 
     static AsyncCommandAction<State> shouldContinue() {
-
-        return AsyncCommandAction.command_async( (state, config ) -> {
-            var message = state.lastMessage().orElseThrow();
-
+        return AsyncCommandAction.command_async((state, config) -> {
+            var message = state.lastMessage().orElseThrow(java.util.NoSuchElementException::new);
             var finishReason = message.getMetadata().getOrDefault("finishReason", "");
-
             if (Objects.equals(finishReason, "STOP")) {
-                return new Command(AgentEx.END_LABEL );
+                return new Command(AgentEx.END_LABEL);
             }
-
             if (message instanceof AssistantMessage assistantMessage) {
                 if (assistantMessage.hasToolCalls()) {
-                    return new Command(AgentEx.CONTINUE_LABEL );
+                    return new Command(AgentEx.CONTINUE_LABEL);
                 }
             }
-            return new Command( AgentEx.END_LABEL );
-
+            return new Command(AgentEx.END_LABEL);
         });
     }
 }
-

@@ -10,33 +10,28 @@ import org.springframework.ai.chat.model.ChatResponse;
 import org.springframework.ai.chat.prompt.ChatOptions;
 import org.springframework.ai.model.tool.ToolCallingChatOptions;
 import reactor.core.publisher.Flux;
-
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
-
 import static java.util.Objects.requireNonNull;
 import static java.util.Optional.ofNullable;
 
 class DefaultChatService implements ChatService {
+
     final ChatModel chatModel;
+
     final ChatOptions chatOptions;
+
     final SystemMessage defaultSystem;
 
-    public DefaultChatService(BaseReactAgentBuilder<?,?> builder ) {
+    public DefaultChatService(BaseReactAgentBuilder<?, ?> builder) {
         this.chatModel = requireNonNull(builder.chatModel, "chatModel cannot be null!");
-
         if (!builder.tools.isEmpty() && chatModel.getOptions() instanceof ToolCallingChatOptions toolCallingChatOptions) {
             chatOptions = toolCallingChatOptions.mutate().toolCallbacks(builder.tools()).build();
-        }
-        else {
+        } else {
             chatOptions = null;
         }
-
-        defaultSystem = SystemMessage.builder()
-                .text(builder.systemMessage().orElse(
-                        "You are a helpful AI Assistant answering questions." ))
-                .build() ;
+        defaultSystem = SystemMessage.builder().text(builder.systemMessage().orElse("You are a helpful AI Assistant answering questions.")).build();
     }
 
     @Override

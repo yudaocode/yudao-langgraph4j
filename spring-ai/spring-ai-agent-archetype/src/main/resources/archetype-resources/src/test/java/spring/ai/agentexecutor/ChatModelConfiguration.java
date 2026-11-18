@@ -34,5 +34,4 @@ public class ChatModelConfiguration {
     public ChatModel githubModel() {
         return AiModel.GITHUB_MODEL.chatModel("gpt-4o-mini");
     }
-
 }
