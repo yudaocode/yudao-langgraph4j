@@ -218,6 +218,8 @@ server.start();
 
 应用退出时调用 `server.stop()`。官方 JBang 命令行启动与文档生成仍使用 JDK 21 的官方发行版。Java 8 默认构建共 32 个模块。
 
+Boot 2.7.18 / 原生 JDK 8 的独立安装包回归共 10 项通过，覆盖 Spring AI 与 LangChain4j 两套模型适配、工具调用后的 checkpoint 恢复以及 OpenTelemetry。DynamoDB 和 S3 兼容端点使用本地容器，42 项中 41 项通过，1 项保持上游停用。Quarkus Studio 的原生 JDK 8 启动用例也已复验。
+
 ---
 
 <!-- 以下保留官方 README 原文 -->
