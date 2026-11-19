@@ -198,6 +198,8 @@ mvn org.apache.maven.plugins:maven-archetype-plugin:3.4.1:generate \
 
 ## Javelit（JDK 8）
 
+Boot 2.7.18 / 原生 JDK 8 使用本地安装的 Javelit 制品和 Docker Ollama 0.40.9，验证 [模型目录筛选](compatibility/javelit-ollama-consumer)。模型选择器保留支持工具调用的 `qwen3.8`，并排除仅支持向量化的 `all-minilm`。
+
 导入兼容 BOM 后，在应用中加入以下依赖。它包含 LangGraph4j 组件，并传递引入基于 Javelit 0.89.0 的 Java 8 嵌入式运行时。
 
 ```xml
