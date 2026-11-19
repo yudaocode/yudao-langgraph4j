@@ -75,6 +75,8 @@ MySQL、MongoDB、CockroachDB 已纳入兼容验证。Boot3/4 + JDK17/25 复用�
 
 MongoDB、CockroachDB 分别改为 `langgraph4j-mongodb-saver`、`langgraph4j-cockroachdb-saver`。数据库连接与 `StateSerializer` 按模块builder配置；测试涵盖真实容器中的checkpoint恢复、隔离与历史记录。Java8 Mongo驱动排除仅支持Java17的可选record codec，使用标准BSON/POJO编码。
 
+Oracle Saver 使用官方 `org.bsc.langgraph4j:langgraph4j-oracle-saver:1.9.9`。用已发布的 Saver 和 Core JAR 连接 Oracle Free 23.7 Docker 实例，在 JDK 17.0.21、25.0.3 上各通过 V1/V2 合计 20 项，均零跳过。这组用例直接验证 Saver，Spring AI 适配的宿主验收见上文。
+
 ## 可选图 DSL 导出
 
 DSL 导出已完成 Java8 /17 /25 验证，按需添加（版本由当前分支 BOM 管理）：
