@@ -156,7 +156,7 @@ Java8 的7项本地协议/SDK测试与4项上游集成用例均通过；后4项�
 - Oracle 使用 `ojdbc8:23.9.0.25.07`。V1/V2 均可通过 `DataSource`、状态序列化器和 `CreateOption` 配置，数据库需支持 JSON 类型。
 - Hazelcast 另加 `com.hazelcast:hazelcast:5.2.5`，通过 `HazelcastSaver.builder().hazelcastInstance(instance)` 接入 `IMap`。JSON 存储需另提供 Jackson 2。Enterprise `CPMap` 使用现代 Java 路线。
 
-该批次默认构建共 21 个模块。独立安装包已在原生 JDK 8 上验证实际 Oracle Free 23.7，以及 Hazelcast 成员与 TCP 客户端之间的检查点读写和释放。
+该批次默认构建共 21 个模块。独立安装包已在原生 JDK 8 上验证实际 Oracle Free 23.7，以及 Hazelcast 成员与 TCP 客户端之间的检查点读写和释放。2026-11-19 使用独立 Oracle Free 23.7 实例复跑，V1/V2 全部 20 项通过。
 
 ## AG-UI（Boot 2 / JDK 8）
 
