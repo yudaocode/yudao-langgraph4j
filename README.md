@@ -8,11 +8,11 @@
 
 | 分支 | Spring Boot / 运行 JDK | 图核心 / LangChain4j adapter | LangChain4j | Spring AI | 本仓BOM / Spring AI adapter |
 | --- | --- | --- | --- | --- | --- |
-| `main` | 4.x / 17、25 | 官方1.9.9 | 官方1.23.0 | cn.iocoder.spring-ai:2.1.0-jdk25-SNAPSHOT | cn.iocoder.langgraph4j:1.9.9-jdk25-SNAPSHOT |
-| `main-jdk17` | 3.x / 17、25 | 官方1.9.9 | 官方1.23.0 | cn.iocoder.spring-ai:2.1.0-jdk17-SNAPSHOT | cn.iocoder.langgraph4j:1.9.9-jdk17-SNAPSHOT |
+| `main` | 4.x / 17、25 | 官方1.9.9 | 官方1.23.0 | `2.1.0-jdk25-preview-20261119` | [1.9.9-jdk25-20261119](https://central.sonatype.com/artifact/cn.iocoder.langgraph4j/langgraph4j-bom/1.9.9-jdk25-20261119) |
+| `main-jdk17` | 3.x / 17、25 | 官方1.9.9 | 官方1.23.0 | `2.1.0-jdk17-preview-20261118` | [1.9.9-jdk17-20261119](https://central.sonatype.com/artifact/cn.iocoder.langgraph4j/langgraph4j-bom/1.9.9-jdk17-20261119) |
 | `main-jdk8` | 2.x / 8 | 本仓1.9.9-jdk8-SNAPSHOT | 本仓1.24.0 stable / beta34-jdk8 | cn.iocoder.spring-ai:2.1.0-jdk8-SNAPSHOT | cn.iocoder.langgraph4j:1.9.9-jdk8-SNAPSHOT |
 
-当前分支：`main`，兼容版版本号：`1.9.9-jdk25-SNAPSHOT`。上述 `-SNAPSHOT` 当前需从源码安装；尚未发布 Maven Central，后续发布统一使用 `cn.iocoder.*` 坐标，不覆盖官方 artifact。
+当前分支为 `main`。Maven Central 已发布 [1.9.9-jdk25-20261119](https://central.sonatype.com/artifact/cn.iocoder.langgraph4j/langgraph4j-bom/1.9.9-jdk25-20261119)，使用 `cn.iocoder.langgraph4j:langgraph4j-bom`。源码开发版本为 `1.9.9-jdk25-SNAPSHOT`。
 
 ## 如何使用
 
@@ -24,7 +24,7 @@
         <dependency>
             <groupId>cn.iocoder.langgraph4j</groupId>
             <artifactId>langgraph4j-bom</artifactId>
-            <version>1.9.9-jdk25-SNAPSHOT</version>
+            <version>1.9.9-jdk25-20261119</version>
             <type>pom</type>
             <scope>import</scope>
         </dependency>
