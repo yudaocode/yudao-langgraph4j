@@ -1,5 +1,7 @@
 package org.bsc.langgraph4j.checkpoint;
 
+import com.hazelcast.client.HazelcastClient;
+import com.hazelcast.client.config.ClientConfig;
 import com.hazelcast.config.Config;
 import com.hazelcast.config.JoinConfig;
 import com.hazelcast.core.Hazelcast;
@@ -31,8 +33,8 @@ import static org.junit.jupiter.api.Assertions.*;
  * <p>
  * A single embedded Hazelcast member is started with cluster join disabled, so the tests
  * run on the open-source Community Edition jar without Docker, a license, or network access.
- * The IMap path is topology-transparent, so an embedded member exercises the same code a
- * client would. The CPMap (Enterprise) path is covered separately by
+ * Set {@code langgraph4j.hazelcast.test.address} to run the same contract
+ * over a thin client connected to a local test cluster named {@code langgraph4j-fixture}. The CPMap (Enterprise) path is covered separately by
  * {@code HazelcastCPMapSaverITest}.
  */
 public class HazelcastSaverTest extends AbstractCheckpointSaverTest {
@@ -41,12 +43,20 @@ public class HazelcastSaverTest extends AbstractCheckpointSaverTest {
 
     @BeforeAll
     public static void setup() {
-        Config config = new Config();
-        config.setClusterName("langgraph4j-test-" + UUID.randomUUID());
-        JoinConfig join = config.getNetworkConfig().getJoin();
-        join.getMulticastConfig().setEnabled(false);
-        join.getTcpIpConfig().setEnabled(false);
-        hazelcastInstance = Hazelcast.newHazelcastInstance(config);
+        String address = System.getProperty("langgraph4j.hazelcast.test.address");
+        if (address == null) {
+            Config config = new Config();
+            config.setClusterName("langgraph4j-test-" + UUID.randomUUID());
+            JoinConfig join = config.getNetworkConfig().getJoin();
+            join.getMulticastConfig().setEnabled(false);
+            join.getTcpIpConfig().setEnabled(false);
+            hazelcastInstance = Hazelcast.newHazelcastInstance(config);
+        } else {
+            ClientConfig config = new ClientConfig().setClusterName("langgraph4j-fixture");
+            config.getNetworkConfig().addAddress(address).setSmartRouting(false);
+            config.getConnectionStrategyConfig().getConnectionRetryConfig().setClusterConnectTimeoutMillis(5000);
+            hazelcastInstance = HazelcastClient.newHazelcastClient(config);
+        }
         assertTrue(hazelcastInstance.getLifecycleService().isRunning());
     }
 

@@ -1,0 +1,10 @@
+hazelcast:
+  cluster-name: langgraph4j-fixture
+  network:
+    join:
+      auto-detection:
+        enabled: false
+      multicast:
+        enabled: false
+      tcp-ip:
+        enabled: false

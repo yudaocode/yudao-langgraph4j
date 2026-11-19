@@ -196,6 +196,10 @@ mvn org.apache.maven.plugins:maven-archetype-plugin:3.4.1:generate \
 
 生成工程用 JDK 17 构建并输出 Java 8 字节码。使用 JDK 8 安装目录下的 `bin/java` 作为 Surefire 的 `-Djvm` 参数，可在目标 JVM 上运行生成工程的测试。内置测试通过真实 Boot 2.7.18 上下文执行生成的 `AgentExecutor`。已有模型示例和 Javelit 演示各自依赖相应运行环境。
 
+## Hazelcast Saver（JDK 8）
+
+原生 JDK 8 客户端连接 Docker Hazelcast Community 5.2.5，12 项 Saver 契约全部通过。使用 `IMap` 保存和重读检查点，支持二进制和 JSON 两种序列化。另用嵌入式成员复跑同一套 12 项。见 [Docker 复验命令](langgraph4j-hazelcast-saver/README-COMPATIBILITY.md)。
+
 ## Javelit（JDK 8）
 
 Boot 2.7.18 / 原生 JDK 8 使用本地安装的 Javelit 制品和 Docker Ollama 0.40.9，验证 [模型目录筛选](compatibility/javelit-ollama-consumer)。模型选择器保留支持工具调用的 `qwen3.8`，并排除仅支持向量化的 `all-minilm`。
