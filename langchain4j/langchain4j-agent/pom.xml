@@ -72,24 +72,6 @@
         </dependency>
 
         <dependency>
-            <groupId>cn.iocoder.langchain4j</groupId>
-            <artifactId>langchain4j-azure-open-ai</artifactId>
-            <scope>test</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>cn.iocoder.langchain4j</groupId>
-            <artifactId>langchain4j-google-ai-gemini</artifactId>
-            <scope>test</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>cn.iocoder.langchain4j</groupId>
-            <artifactId>langchain4j-ollama</artifactId>
-            <scope>test</scope>
-        </dependency>
-
-        <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter</artifactId>
             <scope>test</scope>
