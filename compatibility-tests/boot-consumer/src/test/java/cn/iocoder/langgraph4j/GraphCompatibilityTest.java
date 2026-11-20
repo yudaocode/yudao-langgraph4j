@@ -45,6 +45,9 @@ class GraphCompatibilityTest {
     private ConfigurableApplicationContext context;
 
     @BeforeEach void start() throws Exception {
+        assertEquals(1, Collections.list(StateGraph.class.getClassLoader()
+                .getResources("org/bsc/langgraph4j/StateGraph.class")).size(),
+                "Spring AI and LangChain4j adapters must share one LangGraph4j core");
         assertEquals(System.getProperty("compat.expected.java"), System.getProperty("java.specification.version"));
         server = new MockWebServer();
         server.start();
