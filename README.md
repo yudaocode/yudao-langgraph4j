@@ -100,7 +100,11 @@ Boot 4 分支支持使用 JDK 17 或 25 构建 Hazelcast 5.7.0 的 Saver。启�
 ./mvnw -Phazelcast-saver -pl :langgraph4j-hazelcast-saver -am install
 ```
 
-`CP_MAP` 测试需配置包含 `ADVANCED_CP` 的 Hazelcast Enterprise 试用许可，并允许三个成员。先在本机安全设置环境变量 `HZ_LICENSEKEY`，再执行以下命令。测试会启动三个本地成员，占用 TCP 5701–5703。指定 `-Dcompat.test.jvm=/path/to/jdk/bin/java` 可选择测试 JVM。若 Maven 配置了全局镜像，需让 `hazelcast-release` 直接访问上游仓库。 [Hazelcast 官方试用](https://hazelcast.com/get-started/) · [CPMap 许可要求](https://docs.hazelcast.com/hazelcast/5.7/data-structures/cpmap)
+默认本地验收包含 `HazelcastCPMapContractTest` 和 `HazelcastSaverTest`。前者在 Community 类路径上用内存测试替身验证 `CP_MAP` 适配，覆盖 JSON 和二进制检查点、重开 Saver 读取、暂停恢复和按线程释放。后者在真实 Community 成员上验证 `IMap`。两套在 JDK 17、25 各通过 11 项。
+
+Enterprise 集群的 CP 子系统与节点复制验收按部署需要单独执行。
+
+`CP_MAP` 集群测试需配置包含 `ADVANCED_CP` 的 Hazelcast Enterprise 试用许可，并允许三个成员。先在本机安全设置环境变量 `HZ_LICENSEKEY`，再执行以下命令。测试会启动三个本地成员，占用 TCP 5701–5703。指定 `-Dcompat.test.jvm=/path/to/jdk/bin/java` 可选择测试 JVM。若 Maven 配置了全局镜像，需让 `hazelcast-release` 直接访问上游仓库。 [Hazelcast 官方试用](https://hazelcast.com/get-started/) · [CPMap 许可要求](https://docs.hazelcast.com/hazelcast/5.7/data-structures/cpmap)
 
 ```sh
 : "${HZ_LICENSEKEY:?请先在本机配置 Hazelcast Enterprise 试用许可}"
