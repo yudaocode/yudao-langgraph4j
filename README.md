@@ -8,11 +8,11 @@
 
 保留 LangGraph4j 的 Java 包名与 API，支持 Spring Boot 2/3/4 的组合。Java 8 分支尽量回迁较高版本；Java 17+ 的源码开发版包含本仓核心、DynamoDB Saver 和 Spring AI adapter；LangChain4j adapter 可沿用官方制品。上游源码已对齐 1.9.10（`f36ee0679`）。
 
-| 分支 | Spring Boot / 运行 JDK | 图核心 / LangChain4j adapter | LangChain4j | Spring AI | 本仓BOM / Spring AI adapter |
+| 分支 | 已验 Spring Boot / JDK | LangGraph4j 核心 / LangChain4j adapter（源码） | LangChain4j（源码） | Spring AI（源码） | 本仓已发布 BOM |
 | --- | --- | --- | --- | --- | --- |
-| `main` | 4.x / 17、25 | 开发版使用本仓 core / 官方1.9.9 adapter | 官方1.23.0 | `2.1.0-jdk25-preview-20261119` | [1.9.9-jdk25-20261119](https://central.sonatype.com/artifact/cn.iocoder.langgraph4j/langgraph4j-bom/1.9.9-jdk25-20261119) |
-| `main-jdk17` | 3.x / 17、25 | 开发版使用本仓 core / 官方1.9.9 adapter | 官方1.23.0 | `2.1.0-jdk17-preview-20261118` | [1.9.9-jdk17-20261119](https://central.sonatype.com/artifact/cn.iocoder.langgraph4j/langgraph4j-bom/1.9.9-jdk17-20261119) |
-| `main-jdk8` | 2.x / 8 | 本仓1.9.10-jdk8-SNAPSHOT | 本仓1.24.0 stable / beta34-jdk8 | cn.iocoder.spring-ai:2.1.1-jdk8-SNAPSHOT | cn.iocoder.langgraph4j:1.9.10-jdk8-SNAPSHOT |
+| `main` | 4.2.0 / 17、25 | 开发版使用本仓 core / 官方1.9.9 adapter | 官方1.23.0 | `2.1.1-jdk25-SNAPSHOT` | [1.9.9-jdk25-20261119](https://central.sonatype.com/artifact/cn.iocoder.langgraph4j/langgraph4j-bom/1.9.9-jdk25-20261119) |
+| `main-jdk17` | 3.5.15 / 17、25 | 开发版使用本仓 core / 官方1.9.9 adapter | 官方1.23.0 | `2.1.1-jdk17-SNAPSHOT` | [1.9.9-jdk17-20261119](https://central.sonatype.com/artifact/cn.iocoder.langgraph4j/langgraph4j-bom/1.9.9-jdk17-20261119) |
+| `main-jdk8` | 2.7.18 / 8 | 本仓1.9.10-jdk8-SNAPSHOT | 本仓 `1.25.0-jdk8-SNAPSHOT` / `1.25.0-beta35-jdk8-SNAPSHOT` | `2.1.1-jdk8-SNAPSHOT` | 本表的 JDK 8 快照从源码安装 |
 
 当前分支为 `main-jdk8`，源码开发版本为 `1.9.10-jdk8-SNAPSHOT`。Boot 2 / JDK 8 组合可从源码安装。
 
