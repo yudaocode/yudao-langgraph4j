@@ -90,6 +90,24 @@ DSL 导出已完成 Java8 /17 /25 验证，按需添加（版本由当前分支 
 
 使用 `org.bsc.langgraph4j.dsl.JsonDslGenerator`：`workflow.compile().reduce(new JsonDslGenerator<>())` 得到 JSON 图定义；模块自带 `langgraph4j-dsl.schema.json`。Java8 使用兼容制品，Java17/25 复用官方1.9.9，不额外维护同名现代分叉。导出包含条件边与嵌套子图，不包含模型服务调用。
 
+## 可选 Hazelcast Saver
+
+Boot 3 分支支持使用 JDK 17 或 25 构建 Hazelcast 5.7.0 的 Saver。启用 `hazelcast-saver` profile，将模块安装到本地 Maven 仓后使用 `cn.iocoder.langgraph4j:langgraph4j-hazelcast-saver:1.9.9-jdk17-SNAPSHOT`。使用 `IMap` 时应用显式添加同版本的 `com.hazelcast:hazelcast`。使用 Jackson 序列化时由应用提供 Jackson 2。
+
+```sh
+./mvnw -Phazelcast-saver -pl :langgraph4j-hazelcast-saver -am install
+```
+
+`CP_MAP` 测试需配置包含 `ADVANCED_CP` 的 Hazelcast Enterprise 试用许可，并允许三个成员。先在本机安全设置环境变量 `HZ_LICENSEKEY`，再执行以下命令。测试会启动三个本地成员，占用 TCP 5701–5703。指定 `-Dcompat.test.jvm=/path/to/jdk/bin/java` 可选择测试 JVM。若 Maven 配置了全局镜像，需让 `hazelcast-release` 直接访问上游仓库。 [Hazelcast 官方试用](https://hazelcast.com/get-started/) · [CPMap 许可要求](https://docs.hazelcast.com/hazelcast/5.7/data-structures/cpmap)
+
+```sh
+: "${HZ_LICENSEKEY:?请先在本机配置 Hazelcast Enterprise 试用许可}"
+./mvnw -Phazelcast-saver,enterprise-it -pl :langgraph4j-hazelcast-saver -am \
+  -Dtest=HazelcastCPMapSaverITest -Dsurefire.failIfNoSpecifiedTests=false test
+```
+
+确认 `HazelcastCPMapSaverITest` 实际执行 1 项且通过，用例覆盖检查点写入、重新读取和释放。
+
 ## 可选 DynamoDB saver
 
 父子链功能使用本地安装的 `cn.iocoder.langgraph4j:langgraph4j-bom:1.9.9-jdk17-SNAPSHOT`，并引入同分支的 Saver。

@@ -224,4 +224,12 @@
         <module>langgraph4j-bom</module>
         <module>spring-ai/spring-ai-core</module>
     </modules>
+    <profiles>
+        <profile>
+            <id>hazelcast-saver</id>
+            <modules>
+                <module>langgraph4j-hazelcast-saver</module>
+            </modules>
+        </profile>
+    </profiles>
 </project>
