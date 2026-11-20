@@ -32,3 +32,7 @@ LangGraph4j跟进当前最新主线，不另外维护1.8.x兼容分支。官方1
 Spring AI当前源码基线为2.1.0-SNAPSHOT，区别于[官方已发布的2.0.x说明](https://docs.spring.io/spring-ai/reference/getting-started.html)。
 
 官方README正文保留；兼容版的真实支持范围、构建要求和用法以本仓README前缀及兼容说明为准。
+
+## 发布追溯
+
+每次 Maven 公开发布更新 [芋道变更日志](CHANGELOG-YUDAO.md)，并给构建制品的提交打附注 Git tag，格式为 `v<发布版 BOM 版本>`。日志记录兼容分支、依赖版本和验收范围。

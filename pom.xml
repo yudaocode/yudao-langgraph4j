@@ -46,8 +46,8 @@
         <maven.compiler.target>17</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <langchain4j.version>1.23.0</langchain4j.version>
-        <langchain4j.beta>1.23.0-beta33</langchain4j.beta>
+        <langchain4j.version>1.25.0-SNAPSHOT</langchain4j.version>
+        <langchain4j.beta>1.25.0-beta35-SNAPSHOT</langchain4j.beta>
         <spring-ai.version>2.1.1-jdk17-SNAPSHOT</spring-ai.version>
         <ag-ui.version>0.1.1</ag-ui.version>
         <flatten-maven-plugin.version>1.5.0</flatten-maven-plugin.version>
@@ -222,6 +222,8 @@
         <module>langgraph4j-core</module>
         <module>langgraph4j-dynamodb-saver</module>
         <module>langgraph4j-bom</module>
+        <module>langchain4j/langchain4j-core</module>
+        <module>langchain4j/langchain4j-agent</module>
         <module>spring-ai/spring-ai-core</module>
     </modules>
     <profiles>

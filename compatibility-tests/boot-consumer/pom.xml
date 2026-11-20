@@ -39,22 +39,15 @@
             <version>1.9.10-jdk17-SNAPSHOT</version>
         </dependency>
         <dependency>
-            <groupId>org.bsc.langgraph4j</groupId>
-            <artifactId>langgraph4j-langchain4j</artifactId>
-            <version>1.9.9</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.bsc.langgraph4j</groupId>
-                    <artifactId>langgraph4j-core</artifactId>
-                </exclusion>
-            </exclusions>
+            <groupId>cn.iocoder.langgraph4j</groupId>
+            <artifactId>langgraph4j-langchain4j-agentexecutor</artifactId>
         </dependency>
         <dependency>
             <groupId>cn.iocoder.spring-ai</groupId>
             <artifactId>spring-ai-openai</artifactId>
         </dependency>
         <dependency>
-            <groupId>dev.langchain4j</groupId>
+            <groupId>cn.iocoder.langchain4j</groupId>
             <artifactId>langchain4j-open-ai</artifactId>
         </dependency>
         <dependency>
