@@ -28,4 +28,23 @@ mvn -f compatibility/javelit-ollama-consumer/pom.xml clean test \
   -Djavelit.ollama.embedding-model=all-minilm:latest
 ```
 
-测试覆盖模型目录与图执行链。浏览器中的交互式 Javelit 页面需要按示例单独运行。
+## 浏览器复验
+
+本目录提供独立的嵌入式 Javelit 页面，运行在 Boot 2.7.18 和原生 JDK 8。页面使用 Javelit 的模型选择组件、LangGraph4j AgentExecutor 和 Ollama 原生聊天 API。
+
+让 Ollama 在本机 `127.0.0.1:11434` 提供上文两个模型。为验证浏览器确实切换了模型，可在 Ollama 所在环境中先执行 `ollama cp qwen3:0.6b qwen3:alternate`。
+
+在 LangGraph4j 仓库根目录执行以下命令。启动 Maven 时保留 JDK 17，`JAVA8_HOME` 指向 JDK 8 安装目录。
+
+```bash
+cd compatibility/javelit-ollama-consumer
+mvn test-compile dependency:build-classpath -Dmdep.outputFile=target/browser-classpath
+"$JAVA8_HOME/bin/java" -cp "target/test-classes:$(cat target/browser-classpath)" \
+  org.bsc.javelit.JavelitOllamaBrowserApp
+```
+
+1. 用 Chrome 打开 [本地 Javelit 页面](http://127.0.0.1:18501/)，在 Local 下选择 `ollama:qwen3:0.6b`，确认 **Selected model** 显示 `qwen3:0.6b`。
+2. 输入 `Call get_code to find the code, then report that code.`，按 Tab 提交输入状态，再单击 **Send**。
+3. 确认页面显示 `get_code executed 1 time(s)`，且 **Final answer** 包含 `RAIN42`。
+
+如页面端口已占用，可在 `java` 命令中加 `-Djavelit.browser.port=<端口>`。

@@ -6,13 +6,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import dev.langchain4j.agent.tool.Tool;
-import dev.langchain4j.data.message.UserMessage;
-import dev.langchain4j.model.ollama.OllamaChatModel;
-import dev.langchain4j.model.ollama.OllamaChatRequestParameters;
-
-import org.bsc.langgraph4j.CompileConfig;
-import org.bsc.langgraph4j.agentexecutor.AgentExecutor;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.SpringBootVersion;
@@ -23,12 +16,9 @@ import org.springframework.context.annotation.Configuration;
 
 import java.io.InputStream;
 import java.net.URL;
-import java.time.Duration;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Checks the installed Javelit model catalog against a real Ollama service.
@@ -69,29 +59,11 @@ class JavelitOllamaConsumerTest {
             JtSelectAiModel.Model selected = new OllamaToolModels(endpoint).list().stream()
                     .filter(model -> toolModel.equals(model.name()))
                     .findFirst().orElseThrow(() -> new AssertionError("Tool model missing: " + toolModel));
-            OllamaChatModel model = OllamaChatModel.builder()
-                    .baseUrl(endpoint.toExternalForm())
-                    .defaultRequestParameters(OllamaChatRequestParameters.builder()
-                            .modelName(selected.name())
-                            .think(false)
-                            .temperature(0.0)
-                            .numThread(2)
-                            .maxOutputTokens(128)
-                            .build())
-                    .timeout(Duration.ofSeconds(40))
-                    .maxRetries(0)
-                    .build();
-            CodeTool tool = new CodeTool();
-            AgentExecutor.State state = AgentExecutor.builder()
-                    .chatModel(model)
-                    .toolsFromObject(tool)
-                    .build()
-                    .compile(CompileConfig.builder().recursionLimit(8).build())
-                    .invoke(Collections.singletonMap(
-                            "messages", UserMessage.from("Call get_code to find the code, then report that code.")))
-                    .orElseThrow(AssertionError::new);
-            assertEquals(1, tool.calls.get());
-            String answer = state.finalResponse().orElseThrow(AssertionError::new);
+            JavelitOllamaBrowserApp.CodeTool tool = new JavelitOllamaBrowserApp.CodeTool();
+            String answer = JavelitOllamaBrowserApp.runGraph(
+                    endpoint.toExternalForm(), selected.name(),
+                    "Call get_code to find the code, then report that code.", tool);
+            assertEquals(1, tool.calls());
             assertTrue(answer.contains("RAIN42"), answer);
         }
     }
@@ -103,20 +75,6 @@ class JavelitOllamaConsumerTest {
                 .web(WebApplicationType.NONE)
                 .properties("spring.main.banner-mode=off", "logging.level.root=warn")
                 .run();
-    }
-
-    /**
-     * @author 芋道源码
-     */
-    public static class CodeTool {
-
-        private final AtomicInteger calls = new AtomicInteger();
-
-        @Tool(name = "get_code", value = "Returns the current code. Call this tool to get it.")
-        public String getCode() {
-            calls.incrementAndGet();
-            return "RAIN42";
-        }
     }
 
     private static String required(String property) {
