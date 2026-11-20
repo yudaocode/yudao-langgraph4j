@@ -32,6 +32,7 @@ public final class RunnableConfig implements HasMetadata {
     public static class Builder extends HasMetadata.Builder<Builder> {
         private String threadId;
         private String checkPointId;
+        private String parentCheckpointId;
         private String nextNode;
         private CompiledGraph.StreamMode streamMode = CompiledGraph.StreamMode.VALUES;
         private Integer recursionLimit;
@@ -51,6 +52,7 @@ public final class RunnableConfig implements HasMetadata {
             super( requireNonNull(config, "config cannot be null!").metadata );
             this.threadId       = config.threadId;
             this.checkPointId   = config.checkPointId;
+            this.parentCheckpointId = config.parentCheckpointId;
             this.nextNode       = config.nextNode;
             this.streamMode     = config.streamMode;
             this.recursionLimit = config.recursionLimit;
@@ -80,6 +82,17 @@ public final class RunnableConfig implements HasMetadata {
          */
         public Builder checkPointId(String checkPointId) {
             this.checkPointId = checkPointId;
+            return this;
+        }
+        /**
+         * Sets the source checkpoint for an appended checkpoint.
+         * A null value starts a new lineage. The checkpoint selector is unchanged.
+         *
+         * @param parentCheckpointId the ID of the source checkpoint
+         * @return this builder
+         */
+        public Builder parentCheckpointId(String parentCheckpointId) {
+            this.parentCheckpointId = parentCheckpointId;
             return this;
         }
         /**
@@ -221,6 +234,7 @@ public final class RunnableConfig implements HasMetadata {
 
     private final String threadId;
     private final String checkPointId;
+    private final String parentCheckpointId;
     private final String nextNode;
     private final CompiledGraph.StreamMode streamMode;
     private final Integer recursionLimit;
@@ -230,6 +244,7 @@ public final class RunnableConfig implements HasMetadata {
     private RunnableConfig() {
         this.threadId = null;
         this.checkPointId = null;
+        this.parentCheckpointId = null;
         this.nextNode = null;
         this.streamMode = CompiledGraph.StreamMode.VALUES;
         this.recursionLimit = null;
@@ -245,6 +260,7 @@ public final class RunnableConfig implements HasMetadata {
     private RunnableConfig( Builder builder ) {
         this.threadId       = builder.threadId;
         this.checkPointId   = builder.checkPointId;
+        this.parentCheckpointId = builder.parentCheckpointId;
         this.nextNode       = builder.nextNode;
         this.streamMode     = builder.streamMode;
         this.recursionLimit = builder.recursionLimit;
@@ -295,6 +311,14 @@ public final class RunnableConfig implements HasMetadata {
      */
     public Optional<String> checkPointId() {
         return ofNullable(checkPointId);
+    }
+    /**
+     * Returns the source checkpoint supplied to a saver for an append.
+     *
+     * @return the parent ID, or an empty optional for a lineage root
+     */
+    public Optional<String> parentCheckpointId() {
+        return ofNullable(parentCheckpointId);
     }
     /**
      * Returns an {@code Optional} describing the next node in the sequence,

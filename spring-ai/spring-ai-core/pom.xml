@@ -29,9 +29,9 @@
     </dependencyManagement>
     <dependencies>
         <dependency>
-            <groupId>org.bsc.langgraph4j</groupId>
+            <groupId>cn.iocoder.langgraph4j</groupId>
             <artifactId>langgraph4j-core</artifactId>
-            <version>${langgraph4j.official.version}</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>

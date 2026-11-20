@@ -280,6 +280,7 @@ public class DynamoDBSaver extends AbstractCheckpointSaver implements LG4JLoggab
         private static final long serialVersionUID = 1L;
 
         final long generation;
+        final Map<String, String> parents = new HashMap<>();
 
         GenerationCheckpoints(long generation) {
             this.generation = generation;
@@ -303,7 +304,7 @@ public class DynamoDBSaver extends AbstractCheckpointSaver implements LG4JLoggab
         // Only the current generation is visible: released generations stay archived
         final long generation = repository.currentGeneration(threadId);
 
-        final LinkedList<Checkpoint> checkpoints = new GenerationCheckpoints(generation);
+        final GenerationCheckpoints checkpoints = new GenerationCheckpoints(generation);
         final List<DynamoDBRepository.CheckpointRecord> records = repository.loadCheckpointRecords(threadId, generation);
 
         for (DynamoDBRepository.CheckpointRecord record : records) {
@@ -317,6 +318,7 @@ public class DynamoDBSaver extends AbstractCheckpointSaver implements LG4JLoggab
                     .savedAt( new Date(record.savedAt()))
                     .build();
                 checkpoints.add(checkpoint);
+                checkpoints.parents.put(checkpoint.id(), record.parentCheckpointId());
             } catch (Exception e) {
                 log.error("Failed to deserialize checkpoint '{}' for thread '{}' – skipping",
                     record.checkpointId(), threadId, e);
@@ -333,7 +335,7 @@ public class DynamoDBSaver extends AbstractCheckpointSaver implements LG4JLoggab
                                       Checkpoint checkpoint) throws Exception {
         final String threadId = threadId(config);
         final long generation = generationOf(threadId, checkpoints);
-        final String parentCheckpointId = config.checkPointId().orElse(null);
+        final String parentCheckpointId = config.parentCheckpointId().orElse(null);
         log.debug("Inserting checkpoint '{}' for thread '{}' (generation {}, parent='{}')",
                 checkpoint.id(), threadId, generation, parentCheckpointId);
 
@@ -358,13 +360,11 @@ public class DynamoDBSaver extends AbstractCheckpointSaver implements LG4JLoggab
         final String threadId = threadId(config);
         final long generation = generationOf(threadId, checkpoints);
 
-        // Delete the old checkpoint (identified by the config's checkpointId) then insert new
-        config.checkPointId().ifPresent(oldId -> {
-            log.debug("Deleting old checkpoint '{}' before update, thread '{}'", oldId, threadId);
-            repository.deleteCheckpoint(threadId, generation, oldId);
-        });
-
-        final String parentCheckpointId = config.checkPointId().orElse(null);
+        String replacedId = config.checkPointId().orElseThrow();
+        String previousParent = checkpoints instanceof GenerationCheckpoints loaded
+                ? loaded.parents.get(replacedId) : null;
+        // Old versions could persist a self-reference on an in-place update.
+        String parentCheckpointId = Objects.equals(replacedId, previousParent) ? null : previousParent;
         log.debug("Updating checkpoint '{}' for thread '{}' (generation {}, parent='{}')",
                 checkpoint.id(), threadId, generation, parentCheckpointId);
         final byte[] payload = encodeState(checkpoint.state());
@@ -379,6 +379,9 @@ public class DynamoDBSaver extends AbstractCheckpointSaver implements LG4JLoggab
             parentCheckpointId,
             true  // update path: allow overwrite
         );
+        if (!replacedId.equals(checkpoint.id())) {
+            repository.deleteCheckpoint(threadId, generation, replacedId);
+        }
     }
 
     @Override

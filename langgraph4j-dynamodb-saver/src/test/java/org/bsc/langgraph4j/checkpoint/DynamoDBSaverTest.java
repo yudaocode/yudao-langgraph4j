@@ -8,7 +8,6 @@ import org.bsc.langgraph4j.state.AgentState;
 import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
@@ -423,7 +422,6 @@ public class DynamoDBSaverTest extends AbstractCheckpointSaverTest {
      * Verify that the {@code parentCheckpointId} attribute tracks lineage
      * correctly across multiple graph executions.
      */
-    @Disabled("Pending upstream langgraph4j-core support for checkpoint lineage")
     @ParameterizedTest
     @EnumSource(StateSerializerEnum.class)
     void testParentCheckpointIdLineage(StateSerializerEnum param) throws Exception {
@@ -455,29 +453,23 @@ public class DynamoDBSaverTest extends AbstractCheckpointSaverTest {
         var items = new ArrayList<>(queryResponse.items());
         assertTrue(items.size() >= 2, "Should have at least 2 checkpoints from 2 turns");
 
-        // Sort by savedAt to establish chronological order
-        items.sort((a, b) -> {
-            long aTime = Long.parseLong(a.get("savedAt").n());
-            long bTime = Long.parseLong(b.get("savedAt").n());
-            return Long.compare(aTime, bTime);
-        });
-
-        // First checkpoint should have no parent
-        var firstItem = items.get(0);
-        assertFalse(firstItem.containsKey("parentCheckpointId"),
-                "First checkpoint should not have a parentCheckpointId");
-
-        // Subsequent checkpoints should have a parentCheckpointId
-        boolean foundParent = false;
-        for (int i = 1; i < items.size(); i++) {
-            if (items.get(i).containsKey("parentCheckpointId")) {
-                foundParent = true;
-                String parentId = items.get(i).get("parentCheckpointId").s();
-                assertNotNull(parentId, "parentCheckpointId should not be null");
-                assertFalse(parentId.isEmpty(), "parentCheckpointId should not be empty");
+        var ids = new java.util.HashSet<String>();
+        var parents = new java.util.HashSet<String>();
+        int roots = 0;
+        for (var item : items) {
+            String id = item.get("checkpointId").s();
+            ids.add(id);
+            var parent = item.get("parentCheckpointId");
+            if (parent == null) {
+                roots++;
+            } else {
+                assertNotEquals(id, parent.s(), "A checkpoint cannot be its own parent");
+                assertTrue(parents.add(parent.s()), "A linear execution cannot fork");
             }
         }
-        assertTrue(foundParent, "At least one non-first checkpoint should have a parentCheckpointId");
+        assertEquals(1, roots);
+        assertEquals(items.size() - 1, parents.size());
+        assertTrue(ids.containsAll(parents), "Parents must refer to existing checkpoints");
 
         saver.deleteThread(threadId);
     }
