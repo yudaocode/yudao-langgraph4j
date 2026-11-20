@@ -34,9 +34,13 @@
 </dependencyManagement>
 ```
 
-按模型框架选择 adapter；BOM 已管理核心、adapter 与匹配的模型框架版本：
+按模型框架选择 adapter。将芋道核心与官方 LangChain4j adapter 或官方 Saver 搭配时，在每个相应的官方依赖上排除 `org.bsc.langgraph4j:langgraph4j-core`，避免类路径重复。BOM 管理下列依赖的版本：
 
 ```xml
+<dependency>
+    <groupId>cn.iocoder.langgraph4j</groupId>
+    <artifactId>langgraph4j-core</artifactId>
+</dependency>
 <!-- Spring AI 路线 -->
 <dependency>
     <groupId>cn.iocoder.langgraph4j</groupId>
@@ -46,6 +50,12 @@
 <dependency>
     <groupId>org.bsc.langgraph4j</groupId>
     <artifactId>langgraph4j-langchain4j</artifactId>
+    <exclusions>
+        <exclusion>
+            <groupId>org.bsc.langgraph4j</groupId>
+            <artifactId>langgraph4j-core</artifactId>
+        </exclusion>
+    </exclusions>
 </dependency>
 ```
 
@@ -72,6 +82,12 @@ MySQL、MongoDB、CockroachDB 已纳入兼容验证。Boot3/4 + JDK17/25 复用�
 <dependency>
     <groupId>org.bsc.langgraph4j</groupId>
     <artifactId>langgraph4j-mysql-saver</artifactId>
+    <exclusions>
+        <exclusion>
+            <groupId>org.bsc.langgraph4j</groupId>
+            <artifactId>langgraph4j-core</artifactId>
+        </exclusion>
+    </exclusions>
 </dependency>
 ```
 
