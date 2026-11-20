@@ -1,10 +1,10 @@
-<?xml version='1.0' encoding='UTF-8'?>
+<?xml version='1.0' encoding='utf-8'?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>cn.iocoder.langgraph4j</groupId>
         <artifactId>langgraph4j-parent</artifactId>
-        <version>1.9.10-jdk17-SNAPSHOT</version>
+        <version>1.9.10-jdk17-preview-20261120</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
     <artifactId>langgraph4j-spring-ai</artifactId>
@@ -88,4 +88,27 @@
             </plugin>
         </plugins>
     </build>
-</project>
+<url>https://github.com/yudaocode/yudao-langgraph4j/tree/v1.9.10-jdk17-preview-20261120</url><licenses>
+        <license>
+            <name>MIT</name>
+            <url>https://opensource.org/license/mit</url>
+        </license>
+    </licenses>
+    <developers>
+        <developer>
+            <id>bsorrentino</id>
+            <name>Bartolomeo Sorrentino</name>
+            <email>bartolomeo.sorrentino@gmail.com</email>
+        </developer>
+        <developer>
+            <id>lambochen</id>
+            <name>lambochen</name>
+            <email>lambochen@yeah.net</email>
+        </developer>
+        <developer>
+            <id>yudaocode</id>
+            <name>芋道源码</name>
+            <url>https://github.com/yudaocode</url>
+        </developer>
+    </developers>
+    <scm><connection>scm:git:https://github.com/yudaocode/yudao-langgraph4j.git</connection><developerConnection>scm:git:ssh://git@github.com/yudaocode/yudao-langgraph4j.git</developerConnection><url>https://github.com/yudaocode/yudao-langgraph4j/tree/v1.9.10-jdk17-preview-20261120</url><tag>v1.9.10-jdk17-preview-20261120</tag></scm></project>

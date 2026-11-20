@@ -9,7 +9,7 @@
     </parent>
     <groupId>cn.iocoder.langgraph4j.compatibility</groupId>
     <artifactId>boot-consumer</artifactId>
-    <version>1.9.10-jdk17-SNAPSHOT</version>
+    <version>1.9.10-jdk17-preview-20261120</version>
     <properties>
         <java.version>17</java.version>
         <maven.compiler.release>17</maven.compiler.release>
@@ -22,7 +22,7 @@
             <dependency>
                 <groupId>cn.iocoder.langgraph4j</groupId>
                 <artifactId>langgraph4j-bom</artifactId>
-                <version>1.9.10-jdk17-SNAPSHOT</version>
+                <version>1.9.10-jdk17-preview-20261120</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
@@ -36,7 +36,7 @@
         <dependency>
             <groupId>cn.iocoder.langgraph4j</groupId>
             <artifactId>langgraph4j-spring-ai</artifactId>
-            <version>1.9.10-jdk17-SNAPSHOT</version>
+            <version>1.9.10-jdk17-preview-20261120</version>
         </dependency>
         <dependency>
             <groupId>cn.iocoder.langgraph4j</groupId>
