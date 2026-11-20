@@ -101,7 +101,7 @@ DynamoDB saver 已完成真实 JDK8/17/25 容器测试，按需引入（版本�
 </dependency>
 ```
 
-使用 `org.bsc.langgraph4j.checkpoint.DynamoDBSaver` builder，传入已配置的 `DynamoDbClient` 与状态序列化器；连接地址、AWS凭据由应用提供。大状态的 S3 offload 需另引入 AWS SDK `s3` 并提供 `S3Client`。Java8 路线将 AWS SDK 统一为已验证的 `2.57.12`，默认使用 URL Connection HTTP 实现；现代路线复用官方1.9.9的依赖。本轮各 JVM 均为42项、零失败/错误、1项上游禁用（尚待core支持checkpoint lineage），数据库与S3使用本地DynamoDB/对象存储容器，不代表AWS云账号验收。
+使用 `cn.iocoder.langgraph4j:langgraph4j-dynamodb-saver:1.9.9-jdk25-SNAPSHOT`，与本分支同版本的 `langgraph4j-core` 配套。通过 `DynamoDBSaver` 传入已配置的 `DynamoDbClient` 与状态序列化器。启用 S3 offload 时额外引入 AWS SDK `s3` 并提供 `S3Client`。Graph 会把实际载入的检查点或本轮上一个检查点记录为新条目的父检查点。使用带旧检查点 ID 的 `RunnableConfig` 与 `GraphInput.resume(...)` 可以继续旧状态并形成分支。旧数据缺少父 ID 时仍可读取，后续执行会从实际载入的检查点续接。使用官方扩展时，依赖树中应只保留一套 `langgraph4j-core` Java 类。见 [DynamoDB Local 验证](compatibility-tests/dynamodb-lineage)。
 
 ## 可选 OpenTelemetry
 

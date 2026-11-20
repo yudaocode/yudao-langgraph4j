@@ -219,6 +219,8 @@
         </plugins>
     </build>
     <modules>
+        <module>langgraph4j-core</module>
+        <module>langgraph4j-dynamodb-saver</module>
         <module>langgraph4j-bom</module>
         <module>spring-ai/spring-ai-core</module>
     </modules>
