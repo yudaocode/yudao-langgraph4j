@@ -248,10 +248,8 @@ public final class CompiledGraph<State extends AgentState> implements GraphDefin
         final var saver = compileConfig.checkpointSaver().orElseThrow( () -> (new IllegalStateException("Missing CheckpointSaver!")) );
 
         // merge values with checkpoint values
-        var branchCheckpoint = saver.get(config)
-                            .map(Checkpoint::copyOf)
-                            .map( cp -> cp.updateState(values, stateGraph.getChannels()) )
-                            .orElseThrow( () -> (new IllegalStateException("Missing Checkpoint!")) );
+        var source = saver.get(config).orElseThrow(() -> new IllegalStateException("Missing Checkpoint!"));
+        var branchCheckpoint = Checkpoint.copyOf(source).updateState(values, stateGraph.getChannels());
 
         String nextNodeId = null;
         if( asNode != null ) {
@@ -262,7 +260,8 @@ public final class CompiledGraph<State extends AgentState> implements GraphDefin
 
         }
         // update checkpoint in saver
-        final var newConfig = saver.put( config, branchCheckpoint );
+        final var writeConfig = RunnableConfig.builder(config).parentCheckpointId(source.id()).build();
+        final var newConfig = saver.put(writeConfig, branchCheckpoint);
 
         final var runnableConfigBuilder =  RunnableConfig.builder(newConfig)
                 .checkPointId( branchCheckpoint.id() )
@@ -387,28 +386,13 @@ public final class CompiledGraph<State extends AgentState> implements GraphDefin
                 compileConfig.interruptsAfter().contains(nodeId);
     }
 
-    private Optional<Checkpoint> addCheckpoint( RunnableConfig config, String nodeId, Map<String,Object> state, String nextNodeId ) throws Exception {
-        if( compileConfig.checkpointSaver().isPresent() ) {
-            var cp =  Checkpoint.builder()
-                                .nodeId( nodeId )
-                                .state( cloneState(state, config) )
-                                .nextNodeId( nextNodeId )
-                                .build();
-            compileConfig.checkpointSaver().get().put( config, cp );
-            return Optional.of(cp);
-        }
-        return Optional.empty();
-
-    }
-
     Map<String,Object> initialStateFromSchema() {
         return stateGraph.stateFactory().initialDataFromSchema(stateGraph.getChannels());
     }
 
-    Map<String,Object> initialState(Map<String,Object> inputs, RunnableConfig config) {
+    Map<String,Object> initialState(Map<String,Object> inputs, Optional<Checkpoint> source) {
 
-        return compileConfig.checkpointSaver()
-                .flatMap( saver -> saver.get( config ) )
+        return source
                 .map( cp -> AgentState.updateState( cp.state(), inputs, stateGraph.getChannels() ))
                 .orElseGet( () -> AgentState.updateState( initialStateFromSchema(), inputs, stateGraph.getChannels() ));
     }
@@ -644,6 +628,7 @@ public final class CompiledGraph<State extends AgentState> implements GraphDefin
 
         private final Context context;
         private RunnableConfig config;
+        private String parentCheckpointId;
 
         protected Emitter(GraphInput input, RunnableConfig config )  {
             final var configBuilder = RunnableConfig.builder(config)
@@ -657,6 +642,7 @@ public final class CompiledGraph<State extends AgentState> implements GraphDefin
                 final var optionalResumeUpdateData = config.metadata(RunnableConfig.SUBGRAPH_RESUME_UPDATE_DATA, new TypeRef<Map<String,Object>>() {});
 
                 context = new Context(startCheckpoint);
+                parentCheckpointId = startCheckpoint.id();
 
                 final var startCheckpointNextNodeAction = nodes.get(startCheckpoint.nextNodeId());
                 if( startCheckpointNextNodeAction instanceof SubCompiledGraphNodeAction<?> action ) {
@@ -693,7 +679,9 @@ public final class CompiledGraph<State extends AgentState> implements GraphDefin
 
                 log.trace( "START" );
 
-                final var initState = initialState( input.value(), config );
+                final var source = compileConfig.checkpointSaver().flatMap(saver -> saver.get(config));
+                parentCheckpointId = source.map(Checkpoint::id).orElse(null);
+                final var initState = initialState(input.value(), source);
                 // patch for backward support of AppendableValue
                 State initializedState = stateGraph.stateFactory().apply(initState);
                 this.context = new Context( initializedState.data() );
@@ -861,8 +849,23 @@ public final class CompiledGraph<State extends AgentState> implements GraphDefin
 
 
 
+        private Optional<Checkpoint> addCheckpoint(String nodeId) throws Exception {
+            if (compileConfig.checkpointSaver().isEmpty()) {
+                return Optional.empty();
+            }
+            var checkpoint = Checkpoint.builder()
+                    .nodeId(nodeId)
+                    .state(cloneState(context.currentState(), config))
+                    .nextNodeId(context.nextNodeId())
+                    .build();
+            var writeConfig = RunnableConfig.builder(config).parentCheckpointId(parentCheckpointId).build();
+            compileConfig.checkpointSaver().get().put(writeConfig, checkpoint);
+            parentCheckpointId = checkpoint.id();
+            return Optional.of(checkpoint);
+        }
+
         private CompletableFuture<Output> nodeOutput() throws Exception {
-            Optional<Checkpoint>  cp = addCheckpoint(config, context.currentNodeId(), context.currentState(), context.nextNodeId());
+            Optional<Checkpoint> cp = addCheckpoint(context.currentNodeId());
             return completedFuture(( cp.isPresent() && config.streamMode() == StreamMode.SNAPSHOTS) ?
                     buildStateSnapshot(cp.get()) :
                     buildNodeOutput( context.currentNodeId(), config ))
@@ -916,7 +919,7 @@ public final class CompiledGraph<State extends AgentState> implements GraphDefin
                         context.setNextNodeId(nextNodeCommand.gotoNode());
                         context.setCurrentState( nextNodeCommand.update() );
 
-                        var cp = addCheckpoint( config, START, context.currentState(), context.nextNodeId() );
+                        var cp = addCheckpoint(START);
 
                         var output =  ( cp.isPresent() && config.streamMode() == StreamMode.SNAPSHOTS) ?
                                 buildStateSnapshot(cp.get()) :

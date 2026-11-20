@@ -10,6 +10,7 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import software.amazon.awssdk.awscore.exception.AwsServiceException;
 import software.amazon.awssdk.core.SdkBytes;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
@@ -30,10 +31,8 @@ import software.amazon.awssdk.services.s3.model.BucketLifecycleConfiguration;
 import software.amazon.awssdk.services.s3.model.LifecycleExpiration;
 import software.amazon.awssdk.services.s3.model.LifecycleRule;
 import software.amazon.awssdk.services.s3.model.LifecycleRuleFilter;
-import software.amazon.awssdk.services.s3.model.NoSuchKeyException;
 import software.amazon.awssdk.services.s3.model.ObjectIdentifier;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
-import software.amazon.awssdk.services.s3.model.S3Exception;
 import software.amazon.awssdk.services.s3.model.Tag;
 import software.amazon.awssdk.services.s3.model.Tagging;
 
@@ -378,9 +377,9 @@ class StorageStrategy {
         try {
             s3Client.putObject(reqBuilder.build(), RequestBody.fromBytes(data));
             log.debug("Stored to S3: bucket={}, key={}, size={}B", s3Bucket, prefixedKey, data.length);
-        } catch (S3Exception e) {
+        } catch (AwsServiceException e) {
             // PreconditionFailed means object already exists (conditional write)
-            if ("PreconditionFailed".equals(e.awsErrorDetails().errorCode()) && !allowOverwrite) {
+            if ("PreconditionFailed".equals(awsErrorCode(e)) && !allowOverwrite) {
                 log.debug("S3 object already exists, skipping: key={}", prefixedKey);
                 return;
             }
@@ -402,9 +401,12 @@ class StorageStrategy {
                     .key(prefixedKey)
                     .build());
             return response.readAllBytes();
-        } catch (NoSuchKeyException e) {
-            log.debug("S3 object not found: bucket={}, key={}", s3Bucket, prefixedKey);
-            return null;
+        } catch (AwsServiceException e) {
+            if ("NoSuchKey".equals(awsErrorCode(e))) {
+                log.debug("S3 object not found: bucket={}, key={}", s3Bucket, prefixedKey);
+                return null;
+            }
+            throw e;
         } catch (IOException e) {
             String msg = "Failed to read S3 object: " + prefixedKey;
             throw new RuntimeException(msg, e);
@@ -443,7 +445,7 @@ class StorageStrategy {
                         log.warn("Failed to delete S3 object: key={}, code={}", error.key(), error.code());
                     }
                 }
-            } catch (S3Exception e) {
+            } catch (AwsServiceException e) {
                 log.error("Error during S3 batch delete", e);
                 failedKeys.addAll(batch);
             }
@@ -479,8 +481,8 @@ class StorageStrategy {
                     log.debug("S3 lifecycle rule '{}' exists in {}", ruleId, s3Bucket);
                     return;
                 }
-            } catch (S3Exception e) {
-                if ("NoSuchLifecycleConfiguration".equals(e.awsErrorDetails().errorCode())) {
+            } catch (AwsServiceException e) {
+                if ("NoSuchLifecycleConfiguration".equals(awsErrorCode(e))) {
                     existingRules = new ArrayList<>();
                 } else {
                     throw e;
@@ -527,10 +529,15 @@ class StorageStrategy {
             log.info("Added S3 lifecycle rule '{}' to {}: expire after {} days",
                     ruleId, s3Bucket, expirationDays);
 
-        } catch (S3Exception e) {
+        } catch (AwsServiceException e) {
             log.warn("Failed to configure S3 lifecycle: {}",
-                    e.awsErrorDetails() != null ? e.awsErrorDetails().errorCode() : e.getMessage());
+                    e.getMessage());
         }
+    }
+
+    // Keep S3-only exception classes out of the verifier's exception table.
+    private static String awsErrorCode(AwsServiceException exception) {
+        return exception.awsErrorDetails() == null ? null : exception.awsErrorDetails().errorCode();
     }
 
     // ─── AttributeValue helpers ─────────────────────────────────────────────────
