@@ -1,24 +1,26 @@
 # yudao-langgraph4j 兼容版
 
+发版记录见[芋道变更日志](CHANGELOG-YUDAO.md)。
+
 本分支已用 Boot 4.2.0 的独立消费者验证 DynamoDB 父子链，保留此前的续接和分叉行为。
 
 > 版本命名：保留当前源码基线的官方版本号；共用现代制品不加 JDK 后缀，隔离维护的兼容路线添加 `jdk8` / `jdk17` / `jdk25`。SNAPSHOT 尚未发布 Maven Central。JDK 路线后缀不等于最低字节码版本，框架依赖仍按 Boot 版本选择。
 > 完整版本规则与预览命名见 [VERSIONING.md](VERSIONING.md)。
 
 
-保留 LangGraph4j 的 Java 包名与 API，支持 Spring Boot 2/3/4 的组合。Java 8 分支尽量回迁较高版本；Java 17+ 的源码开发版包含本仓核心、DynamoDB Saver 和 Spring AI adapter；LangChain4j adapter 可沿用官方制品。上游源码已对齐 1.9.10（`f36ee0679`）。
+保留 LangGraph4j 的 Java 包名与 API，支持 Spring Boot 2/3/4 的组合。Java 8 分支尽量回迁较高版本；Java 17+ 的源码开发版包含本仓核心、DynamoDB Saver 和 Spring AI adapter；LangChain4j adapter 和 AgentExecutor 也随本仓构建。上游源码已对齐 1.9.10（`f36ee0679`）。
 
 | 分支 | 已验 Spring Boot / JDK | LangGraph4j 核心 / LangChain4j adapter（源码） | LangChain4j（源码） | Spring AI（源码） | 本仓已发布 BOM |
 | --- | --- | --- | --- | --- | --- |
-| `main` | 4.2.0 / 17、25 | 开发版使用本仓 core / 官方1.9.9 adapter | 官方1.23.0 | `2.1.1-jdk25-SNAPSHOT` | [1.9.9-jdk25-20261119](https://central.sonatype.com/artifact/cn.iocoder.langgraph4j/langgraph4j-bom/1.9.9-jdk25-20261119) |
-| `main-jdk17` | 3.5.15 / 17、25 | 开发版使用本仓 core / 官方1.9.9 adapter | 官方1.23.0 | `2.1.1-jdk17-SNAPSHOT` | [1.9.9-jdk17-20261119](https://central.sonatype.com/artifact/cn.iocoder.langgraph4j/langgraph4j-bom/1.9.9-jdk17-20261119) |
+| `main` | 4.2.0 / 17、25 | 本仓 core / 本仓 adapter | 芋道 `1.25.0-SNAPSHOT` | `2.1.1-jdk25-SNAPSHOT` | [1.9.9-jdk25-20261119](https://central.sonatype.com/artifact/cn.iocoder.langgraph4j/langgraph4j-bom/1.9.9-jdk25-20261119) |
+| `main-jdk17` | 3.5.15 / 17、25 | 本仓 core / 本仓 adapter | 芋道 `1.25.0-SNAPSHOT` | `2.1.1-jdk17-SNAPSHOT` | [1.9.9-jdk17-20261119](https://central.sonatype.com/artifact/cn.iocoder.langgraph4j/langgraph4j-bom/1.9.9-jdk17-20261119) |
 | `main-jdk8` | 2.7.18 / 8 | 本仓1.9.10-jdk8-SNAPSHOT | 本仓 `1.25.0-jdk8-SNAPSHOT` / `1.25.0-beta35-jdk8-SNAPSHOT` | `2.1.1-jdk8-SNAPSHOT` | 本表的 JDK 8 快照从源码安装 |
 
 当前分支为 `main`。Maven Central 已发布 [1.9.9-jdk25-20261119](https://central.sonatype.com/artifact/cn.iocoder.langgraph4j/langgraph4j-bom/1.9.9-jdk25-20261119)，使用 `cn.iocoder.langgraph4j:langgraph4j-bom`。源码开发版本为 `1.9.10-jdk25-SNAPSHOT`。
 
 ## 如何使用
 
-在应用的 `dependencyManagement` 中导入当前分支 BOM：
+从源码安装芋道 LangChain4j 1.25.0 制品后，在应用中导入当前分支的开发版 BOM：
 
 ```xml
 <dependencyManagement>
@@ -26,7 +28,7 @@
         <dependency>
             <groupId>cn.iocoder.langgraph4j</groupId>
             <artifactId>langgraph4j-bom</artifactId>
-            <version>1.9.9-jdk25-20261119</version>
+            <version>1.9.10-jdk25-SNAPSHOT</version>
             <type>pom</type>
             <scope>import</scope>
         </dependency>
@@ -34,7 +36,7 @@
 </dependencyManagement>
 ```
 
-按模型框架选择 adapter。将芋道核心与官方 LangChain4j adapter 或官方 Saver 搭配时，在每个相应的官方依赖上排除 `org.bsc.langgraph4j:langgraph4j-core`，避免类路径重复。BOM 管理下列依赖的版本：
+按模型框架选择 adapter。将芋道核心与官方 Saver 搭配时，在每个相应的官方依赖上排除 `org.bsc.langgraph4j:langgraph4j-core`，避免类路径重复。BOM 管理下列依赖的版本：
 
 ```xml
 <dependency>
@@ -48,18 +50,12 @@
 </dependency>
 <!-- LangChain4j 路线；按需选择，也可同时使用两条路线 -->
 <dependency>
-    <groupId>org.bsc.langgraph4j</groupId>
-    <artifactId>langgraph4j-langchain4j</artifactId>
-    <exclusions>
-        <exclusion>
-            <groupId>org.bsc.langgraph4j</groupId>
-            <artifactId>langgraph4j-core</artifactId>
-        </exclusion>
-    </exclusions>
+    <groupId>cn.iocoder.langgraph4j</groupId>
+    <artifactId>langgraph4j-langchain4j-agentexecutor</artifactId>
 </dependency>
 ```
 
-模型 provider 仍需按需添加，例如 Spring AI 路线的 `cn.iocoder.spring-ai:spring-ai-openai`；LangChain4j 路线在 Java 8 用 `cn.iocoder.langchain4j:langchain4j-open-ai`，Java 17+ 用 `dev.langchain4j:langchain4j-open-ai`。对应版本由 BOM 管理。使用一种路线时无需添加另一种 adapter。
+模型 provider 仍需按需添加，例如 Spring AI 路线的 `cn.iocoder.spring-ai:spring-ai-openai`；LangChain4j 路线用 `cn.iocoder.langchain4j:langchain4j-open-ai`。对应版本由 BOM 管理。使用一种路线时无需添加另一种 adapter。
 
 Boot 2 使用官方 `spring-boot-starter-parent` 时，还需设置以下属性，避免父 POM 直接管理的旧版本覆盖兼容要求：
 

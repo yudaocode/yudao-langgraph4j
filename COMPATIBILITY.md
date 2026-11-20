@@ -2,8 +2,8 @@
 
 | 分支 | Spring Boot / 运行 JDK | 图核心 / LangChain4j adapter | LangChain4j | Spring AI | 本仓BOM / Spring AI adapter |
 | --- | --- | --- | --- | --- | --- |
-| `main` | 4.x / 17、25 | 官方1.9.9 | 官方1.23.0 | cn.iocoder.spring-ai:2.1.1-jdk25-SNAPSHOT | cn.iocoder.langgraph4j:1.9.10-jdk25-SNAPSHOT |
-| `main-jdk17` | 3.x / 17、25 | 官方1.9.9 | 官方1.23.0 | cn.iocoder.spring-ai:2.1.1-jdk17-SNAPSHOT | cn.iocoder.langgraph4j:1.9.10-jdk17-SNAPSHOT |
+| `main` | 4.x / 17、25 | 芋道 core / adapter | 芋道 1.25.0-SNAPSHOT | cn.iocoder.spring-ai:2.1.1-jdk25-SNAPSHOT | cn.iocoder.langgraph4j:1.9.10-jdk25-SNAPSHOT |
+| `main-jdk17` | 3.x / 17、25 | 芋道 core / adapter | 芋道 1.25.0-SNAPSHOT | cn.iocoder.spring-ai:2.1.1-jdk17-SNAPSHOT | cn.iocoder.langgraph4j:1.9.10-jdk17-SNAPSHOT |
 | `main-jdk8` | 2.x / 8 | 本仓1.9.10-jdk8-SNAPSHOT | 本仓1.24.0 stable / beta34-jdk8 | cn.iocoder.spring-ai:2.1.1-jdk8-SNAPSHOT | cn.iocoder.langgraph4j:1.9.10-jdk8-SNAPSHOT |
 
 
@@ -11,13 +11,13 @@
 
 Upstream LangGraph4j commit: `bbce202845fe99660fcee29a7dd7a5acb4100199` (1.9.9).
 Java 8 LangChain4j backport baseline: upstream commit `886c258b91090d41c941e69ab58edf6aa020a9c9` (1.24.0/beta34 development tree).
-Java 17+ deliberately uses official LangChain4j 1.23.0 matching upstream graph adapters.
+Java 17+ uses the Yudao LangChain4j 1.25.0 source line and the matching graph adapter and AgentExecutor.
 ArtifactIds and Java packages are retained; fork artifacts use distinct `cn.iocoder.*` groups.
 No Maven Central deployment has been performed. Versions retain upstream baseline numbers, add the isolated JDK route and use a date suffix on release; see VERSIONING.md.
 
 ## Included modules and verification
 
-- main / main-jdk17: parent + BOM + `spring-ai/spring-ai-core`; production graph core and LangChain4j adapter are official 1.9.9. Spring AI adapter unit suite: 18 tests, zero failures/errors/skips on Java17; Boot4 adapter also tested on Java25.
+- main / main-jdk17: parent, BOM, graph core, DynamoDB Saver, Spring AI adapter, LangChain4j adapter and AgentExecutor. Spring AI adapter unit suite: 18 tests, zero failures/errors/skips on Java17; Boot4 adapter also tested on Java25.
 - main-jdk8: parent + BOM + `langgraph4j-java8-compat` + `async-generator` + `langgraph4j-core` + both adapter children plus filesystem, SQLite, Redis and PostgreSQL savers (11 modules). Native8 async74, core261, LangChain4j15 and Spring AI21 tests passed (zero failures/errors/skips, component gates). Tests include streaming, tools, serialization, concurrent graph behavior, executor cleanup, JSON schema and duration parsing.
 - Identical standalone Java consumer source on Boot2/Java8, Boot3/Java17 and25, Boot4/Java17 and25: two tests per combination. Real Spring contexts, local HTTP model responses, graph execution, MemorySaver checkpoint and framework Jackson message restoration. Responses are local fixtures, not real cloud models.
 - Java8 runtime closure is audited for class-file level and statically referenced Java8/SLF4J APIs. Optional native Java9 Flow adapters and guarded legacy SLF4J binders in third-party jars remain documented audit findings; they are not executed on the verified Java8 path.

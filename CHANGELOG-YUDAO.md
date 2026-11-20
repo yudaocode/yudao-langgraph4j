@@ -1,0 +1,6 @@
+# 芋道兼容版变更记录
+
+## 未发布
+
+- Boot 3 和 4 的默认构建纳入芋道 LangChain4j adapter 和 AgentExecutor，使用 `cn.iocoder.langchain4j` 的 1.25.0 源码线。
+- 独立消费者在 JDK 17、25 验证双 adapter 共用一份 graph core、聊天消息检查点序列化和连续两轮工具调用。

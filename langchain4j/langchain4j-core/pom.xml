@@ -3,9 +3,9 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>org.bsc.langgraph4j</groupId>
+        <groupId>cn.iocoder.langgraph4j</groupId>
         <artifactId>langgraph4j-parent</artifactId>
-        <version>1.9.10</version>
+        <version>1.9.10-jdk25-SNAPSHOT</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
@@ -24,28 +24,28 @@
     <dependencies>
 
         <dependency>
-            <groupId>dev.langchain4j</groupId>
+            <groupId>cn.iocoder.langchain4j</groupId>
             <artifactId>langchain4j</artifactId>
             <version>${langchain4j.version}</version>
         </dependency>
 
         <!-- Source: https://mvnrepository.com/artifact/dev.langchain4j/langchain4j-skills -->
         <dependency>
-            <groupId>dev.langchain4j</groupId>
+            <groupId>cn.iocoder.langchain4j</groupId>
             <artifactId>langchain4j-skills</artifactId>
             <version>${langchain4j.beta}</version>
             <scope>compile</scope>
         </dependency>
 
         <dependency>
-            <groupId>dev.langchain4j</groupId>
+            <groupId>cn.iocoder.langchain4j</groupId>
             <artifactId>langchain4j-mcp</artifactId>
             <version>${langchain4j.beta}</version>
             <scope>provided</scope>
         </dependency>
 
         <dependency>
-            <groupId>org.bsc.langgraph4j</groupId>
+            <groupId>cn.iocoder.langgraph4j</groupId>
             <artifactId>langgraph4j-core</artifactId>
             <version>${project.version}</version>
         </dependency>
