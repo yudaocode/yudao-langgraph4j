@@ -4,12 +4,12 @@
 > 完整版本规则与预览命名见 [VERSIONING.md](VERSIONING.md)。
 
 
-保留 LangGraph4j 的 Java 包名与 API，支持 Spring Boot 2/3/4 的组合。Java 8 分支尽量回迁较高版本；Java 17+ 优先复用官方核心和 LangChain4j adapter，仅维护 Spring AI 适配层。上游源码基线为 1.9.9（`bbce202845fe99660fcee29a7dd7a5acb4100199`）。
+保留 LangGraph4j 的 Java 包名与 API，支持 Spring Boot 2/3/4 的组合。Java 8 分支尽量回迁较高版本；Java 17+ 的源码开发版包含本仓核心、DynamoDB Saver 和 Spring AI adapter；LangChain4j adapter 可沿用官方制品。上游源码基线为 1.9.9（`bbce202845fe99660fcee29a7dd7a5acb4100199`）。
 
 | 分支 | Spring Boot / 运行 JDK | 图核心 / LangChain4j adapter | LangChain4j | Spring AI | 本仓BOM / Spring AI adapter |
 | --- | --- | --- | --- | --- | --- |
-| `main` | 4.x / 17、25 | 官方1.9.9 | 官方1.23.0 | `2.1.0-jdk25-preview-20261119` | [1.9.9-jdk25-20261119](https://central.sonatype.com/artifact/cn.iocoder.langgraph4j/langgraph4j-bom/1.9.9-jdk25-20261119) |
-| `main-jdk17` | 3.x / 17、25 | 官方1.9.9 | 官方1.23.0 | `2.1.0-jdk17-preview-20261118` | [1.9.9-jdk17-20261119](https://central.sonatype.com/artifact/cn.iocoder.langgraph4j/langgraph4j-bom/1.9.9-jdk17-20261119) |
+| `main` | 4.x / 17、25 | 开发版使用本仓 core / 官方1.9.9 adapter | 官方1.23.0 | `2.1.0-jdk25-preview-20261119` | [1.9.9-jdk25-20261119](https://central.sonatype.com/artifact/cn.iocoder.langgraph4j/langgraph4j-bom/1.9.9-jdk25-20261119) |
+| `main-jdk17` | 3.x / 17、25 | 开发版使用本仓 core / 官方1.9.9 adapter | 官方1.23.0 | `2.1.0-jdk17-preview-20261118` | [1.9.9-jdk17-20261119](https://central.sonatype.com/artifact/cn.iocoder.langgraph4j/langgraph4j-bom/1.9.9-jdk17-20261119) |
 | `main-jdk8` | 2.x / 8 | 本仓1.9.9-jdk8-SNAPSHOT | 本仓1.24.0 stable / beta34-jdk8 | cn.iocoder.spring-ai:2.1.0-jdk8-SNAPSHOT | cn.iocoder.langgraph4j:1.9.9-jdk8-SNAPSHOT |
 
 当前分支为 `main-jdk17`。Maven Central 已发布 [1.9.9-jdk17-20261119](https://central.sonatype.com/artifact/cn.iocoder.langgraph4j/langgraph4j-bom/1.9.9-jdk17-20261119)，使用 `cn.iocoder.langgraph4j:langgraph4j-bom`。源码开发版本为 `1.9.9-jdk17-SNAPSHOT`。
@@ -92,11 +92,11 @@ DSL 导出已完成 Java8 /17 /25 验证，按需添加（版本由当前分支 
 
 ## 可选 DynamoDB saver
 
-DynamoDB saver 已完成真实 JDK8/17/25 容器测试，按需引入（版本由当前分支 BOM 管理）：
+父子链功能使用本地安装的 `cn.iocoder.langgraph4j:langgraph4j-bom:1.9.9-jdk17-SNAPSHOT`，并引入同分支的 Saver。
 
 ```xml
 <dependency>
-    <groupId>org.bsc.langgraph4j</groupId>
+    <groupId>cn.iocoder.langgraph4j</groupId>
     <artifactId>langgraph4j-dynamodb-saver</artifactId>
 </dependency>
 ```
