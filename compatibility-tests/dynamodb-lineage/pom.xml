@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>cn.iocoder.langgraph4j.compatibility</groupId>
     <artifactId>dynamodb-lineage-consumer</artifactId>
-    <version>1.9.9-jdk17-SNAPSHOT</version>
+    <version>1.9.10-jdk17-SNAPSHOT</version>
     <properties>
         <boot.version>3.5.15</boot.version>
         <aws.sdk.version>2.27.21</aws.sdk.version>

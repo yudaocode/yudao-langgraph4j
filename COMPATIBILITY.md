@@ -2,9 +2,9 @@
 
 | 分支 | Spring Boot / 运行 JDK | 图核心 / LangChain4j adapter | LangChain4j | Spring AI | 本仓BOM / Spring AI adapter |
 | --- | --- | --- | --- | --- | --- |
-| `main` | 4.x / 17、25 | 官方1.9.9 | 官方1.23.0 | cn.iocoder.spring-ai:2.1.0-jdk25-SNAPSHOT | cn.iocoder.langgraph4j:1.9.9-jdk25-SNAPSHOT |
-| `main-jdk17` | 3.x / 17、25 | 官方1.9.9 | 官方1.23.0 | cn.iocoder.spring-ai:2.1.0-jdk17-SNAPSHOT | cn.iocoder.langgraph4j:1.9.9-jdk17-SNAPSHOT |
-| `main-jdk8` | 2.x / 8 | 本仓1.9.9-jdk8-SNAPSHOT | 本仓1.24.0 stable / beta34-jdk8 | cn.iocoder.spring-ai:2.1.0-jdk8-SNAPSHOT | cn.iocoder.langgraph4j:1.9.9-jdk8-SNAPSHOT |
+| `main` | 4.x / 17、25 | 官方1.9.9 | 官方1.23.0 | cn.iocoder.spring-ai:2.1.1-jdk25-SNAPSHOT | cn.iocoder.langgraph4j:1.9.10-jdk25-SNAPSHOT |
+| `main-jdk17` | 3.x / 17、25 | 官方1.9.9 | 官方1.23.0 | cn.iocoder.spring-ai:2.1.1-jdk17-SNAPSHOT | cn.iocoder.langgraph4j:1.9.10-jdk17-SNAPSHOT |
+| `main-jdk8` | 2.x / 8 | 本仓1.9.10-jdk8-SNAPSHOT | 本仓1.24.0 stable / beta34-jdk8 | cn.iocoder.spring-ai:2.1.1-jdk8-SNAPSHOT | cn.iocoder.langgraph4j:1.9.10-jdk8-SNAPSHOT |
 
 
 ## Source and coordinates

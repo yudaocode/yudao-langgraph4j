@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>cn.iocoder.langgraph4j</groupId>
     <artifactId>langgraph4j-parent</artifactId>
-    <version>1.9.9-jdk17-SNAPSHOT</version>
+    <version>1.9.10-jdk17-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>langgraph4j::parent</name>
     <url>https://github.com/yudaocode/yudao-langgraph4j</url>
@@ -48,7 +48,7 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <langchain4j.version>1.23.0</langchain4j.version>
         <langchain4j.beta>1.23.0-beta33</langchain4j.beta>
-        <spring-ai.version>2.1.0-jdk17-SNAPSHOT</spring-ai.version>
+        <spring-ai.version>2.1.1-jdk17-SNAPSHOT</spring-ai.version>
         <ag-ui.version>0.1.1</ag-ui.version>
         <flatten-maven-plugin.version>1.5.0</flatten-maven-plugin.version>
         <spring-boot.version>3.5.15</spring-boot.version>
@@ -90,7 +90,7 @@
             <dependency>
                 <groupId>cn.iocoder.spring-ai</groupId>
                 <artifactId>spring-ai-bom</artifactId>
-                <version>2.1.0-jdk17-SNAPSHOT</version>
+                <version>2.1.1-jdk17-SNAPSHOT</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
