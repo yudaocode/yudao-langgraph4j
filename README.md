@@ -12,15 +12,15 @@
 
 | 分支 | 已验 Spring Boot / JDK | LangGraph4j 核心 / LangChain4j adapter（源码） | LangChain4j（源码） | Spring AI（源码） | 本仓已发布 BOM |
 | --- | --- | --- | --- | --- | --- |
-| `main` | 4.2.0 / 17、25 | 本仓 core / 本仓 adapter | 芋道 `1.25.0-SNAPSHOT` | `2.1.1-jdk25-SNAPSHOT` | [1.9.9-jdk25-20261119](https://central.sonatype.com/artifact/cn.iocoder.langgraph4j/langgraph4j-bom/1.9.9-jdk25-20261119) |
-| `main-jdk17` | 3.5.15 / 17、25 | 本仓 core / 本仓 adapter | 芋道 `1.25.0-SNAPSHOT` | `2.1.1-jdk17-SNAPSHOT` | [1.9.9-jdk17-20261119](https://central.sonatype.com/artifact/cn.iocoder.langgraph4j/langgraph4j-bom/1.9.9-jdk17-20261119) |
+| `main` | 4.2.0 / 17、25 | 本仓 core / 本仓 adapter | 芋道 `1.25.0-SNAPSHOT` | `2.1.1-jdk25-SNAPSHOT` | [1.9.10-jdk25-preview-20261120](https://central.sonatype.com/artifact/cn.iocoder.langgraph4j/langgraph4j-bom/1.9.10-jdk25-preview-20261120) |
+| `main-jdk17` | 3.5.15 / 17、25 | 本仓 core / 本仓 adapter | 芋道 `1.25.0-SNAPSHOT` | `2.1.1-jdk17-SNAPSHOT` | [1.9.10-jdk17-preview-20261120](https://central.sonatype.com/artifact/cn.iocoder.langgraph4j/langgraph4j-bom/1.9.10-jdk17-preview-20261120) |
 | `main-jdk8` | 2.7.18 / 8 | 本仓1.9.10-jdk8-SNAPSHOT | 本仓 `1.25.0-jdk8-SNAPSHOT` / `1.25.0-beta35-jdk8-SNAPSHOT` | `2.1.1-jdk8-SNAPSHOT` | 本表的 JDK 8 快照从源码安装 |
 
-当前分支为 `main`。Maven Central 已发布 [1.9.9-jdk25-20261119](https://central.sonatype.com/artifact/cn.iocoder.langgraph4j/langgraph4j-bom/1.9.9-jdk25-20261119)，使用 `cn.iocoder.langgraph4j:langgraph4j-bom`。源码开发版本为 `1.9.10-jdk25-SNAPSHOT`。
+当前分支为 `main`。Maven Central 已发布 [1.9.10-jdk25-preview-20261120](https://central.sonatype.com/artifact/cn.iocoder.langgraph4j/langgraph4j-bom/1.9.10-jdk25-preview-20261120)，使用 `cn.iocoder.langgraph4j:langgraph4j-bom`。源码开发版本为 `1.9.10-jdk25-SNAPSHOT`。
 
 ## 如何使用
 
-从源码安装芋道 LangChain4j 1.25.0 制品后，在应用中导入当前分支的开发版 BOM：
+在应用中导入当前分支的发布版 BOM，按需选择模型 adapter。
 
 ```xml
 <dependencyManagement>
@@ -28,7 +28,7 @@
         <dependency>
             <groupId>cn.iocoder.langgraph4j</groupId>
             <artifactId>langgraph4j-bom</artifactId>
-            <version>1.9.10-jdk25-SNAPSHOT</version>
+            <version>1.9.10-jdk25-preview-20261120</version>
             <type>pom</type>
             <scope>import</scope>
         </dependency>
