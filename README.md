@@ -1,18 +1,20 @@
 # yudao-langgraph4j 兼容版
 
+本分支已用 Boot 4.2.0 的独立消费者验证 DynamoDB 父子链，保留此前的续接和分叉行为。
+
 > 版本命名：保留当前源码基线的官方版本号；共用现代制品不加 JDK 后缀，隔离维护的兼容路线添加 `jdk8` / `jdk17` / `jdk25`。SNAPSHOT 尚未发布 Maven Central。JDK 路线后缀不等于最低字节码版本，框架依赖仍按 Boot 版本选择。
 > 完整版本规则与预览命名见 [VERSIONING.md](VERSIONING.md)。
 
 
-保留 LangGraph4j 的 Java 包名与 API，支持 Spring Boot 2/3/4 的组合。Java 8 分支尽量回迁较高版本；Java 17+ 的源码开发版包含本仓核心、DynamoDB Saver 和 Spring AI adapter；LangChain4j adapter 可沿用官方制品。上游源码基线为 1.9.9（`bbce202845fe99660fcee29a7dd7a5acb4100199`）。
+保留 LangGraph4j 的 Java 包名与 API，支持 Spring Boot 2/3/4 的组合。Java 8 分支尽量回迁较高版本；Java 17+ 的源码开发版包含本仓核心、DynamoDB Saver 和 Spring AI adapter；LangChain4j adapter 可沿用官方制品。上游源码已对齐 1.9.10（`f36ee0679`）。
 
 | 分支 | Spring Boot / 运行 JDK | 图核心 / LangChain4j adapter | LangChain4j | Spring AI | 本仓BOM / Spring AI adapter |
 | --- | --- | --- | --- | --- | --- |
-| `main` | 4.x / 17、25 | 开发版使用本仓 core / 官方1.9.9 adapter | 官方1.23.0 | `2.1.0-jdk25-preview-20261119` | [1.9.9-jdk25-20261119](https://central.sonatype.com/artifact/cn.iocoder.langgraph4j/langgraph4j-bom/1.9.9-jdk25-20261119) |
+| `main` | 4.2 / 17、25 | 开发版使用本仓 core / 官方1.9.9 adapter | 官方1.23.0 | `2.1.0-jdk25-preview-20261119` | [1.9.9-jdk25-20261119](https://central.sonatype.com/artifact/cn.iocoder.langgraph4j/langgraph4j-bom/1.9.9-jdk25-20261119) |
 | `main-jdk17` | 3.x / 17、25 | 开发版使用本仓 core / 官方1.9.9 adapter | 官方1.23.0 | `2.1.0-jdk17-preview-20261118` | [1.9.9-jdk17-20261119](https://central.sonatype.com/artifact/cn.iocoder.langgraph4j/langgraph4j-bom/1.9.9-jdk17-20261119) |
-| `main-jdk8` | 2.x / 8 | 本仓1.9.9-jdk8-SNAPSHOT | 本仓1.24.0 stable / beta34-jdk8 | cn.iocoder.spring-ai:2.1.0-jdk8-SNAPSHOT | cn.iocoder.langgraph4j:1.9.9-jdk8-SNAPSHOT |
+| `main-jdk8` | 2.x / 8 | 本仓1.9.10-jdk8-SNAPSHOT | 本仓1.24.0 stable / beta34-jdk8 | cn.iocoder.spring-ai:2.1.1-jdk8-SNAPSHOT | cn.iocoder.langgraph4j:1.9.10-jdk8-SNAPSHOT |
 
-当前分支为 `main`。Maven Central 已发布 [1.9.9-jdk25-20261119](https://central.sonatype.com/artifact/cn.iocoder.langgraph4j/langgraph4j-bom/1.9.9-jdk25-20261119)，使用 `cn.iocoder.langgraph4j:langgraph4j-bom`。源码开发版本为 `1.9.9-jdk25-SNAPSHOT`。
+当前分支为 `main`。Maven Central 已发布 [1.9.9-jdk25-20261119](https://central.sonatype.com/artifact/cn.iocoder.langgraph4j/langgraph4j-bom/1.9.9-jdk25-20261119)，使用 `cn.iocoder.langgraph4j:langgraph4j-bom`。源码开发版本为 `1.9.10-jdk25-SNAPSHOT`。
 
 ## 如何使用
 
@@ -64,7 +66,7 @@ Boot 2 使用官方 `spring-boot-starter-parent` 时，还需设置以下属性�
 
 ## 可选 checkpoint saver
 
-MySQL、MongoDB、CockroachDB 已纳入兼容验证。Boot3/4 + JDK17/25 复用官方 `org.bsc.langgraph4j` 的1.9.9制品；Boot2/JDK8 使用本仓 `cn.iocoder.langgraph4j` 的1.9.9-jdk8-SNAPSHOT。当前分支BOM已管理对应版本，按需添加：
+MySQL、MongoDB、CockroachDB 已纳入兼容验证。Boot3/4 + JDK17/25 复用官方 `org.bsc.langgraph4j` 的1.9.9制品；Boot2/JDK8 使用本仓 `cn.iocoder.langgraph4j` 的1.9.10-jdk8-SNAPSHOT。当前分支BOM已管理对应版本，按需添加：
 
 ```xml
 <dependency>
@@ -92,7 +94,7 @@ DSL 导出已完成 Java8 /17 /25 验证，按需添加（版本由当前分支 
 
 ## 可选 Hazelcast Saver
 
-Boot 4 分支支持使用 JDK 17 或 25 构建 Hazelcast 5.7.0 的 Saver。启用 `hazelcast-saver` profile，将模块安装到本地 Maven 仓后使用 `cn.iocoder.langgraph4j:langgraph4j-hazelcast-saver:1.9.9-jdk25-SNAPSHOT`。使用 `IMap` 时应用显式添加同版本的 `com.hazelcast:hazelcast`。使用 Jackson 序列化时由应用提供 Jackson 2。
+Boot 4 分支支持使用 JDK 17 或 25 构建 Hazelcast 5.7.0 的 Saver。启用 `hazelcast-saver` profile，将模块安装到本地 Maven 仓后使用 `cn.iocoder.langgraph4j:langgraph4j-hazelcast-saver:1.9.10-jdk25-SNAPSHOT`。使用 `IMap` 时应用显式添加同版本的 `com.hazelcast:hazelcast`。使用 Jackson 序列化时由应用提供 Jackson 2。
 
 ```sh
 ./mvnw -Phazelcast-saver -pl :langgraph4j-hazelcast-saver -am install
@@ -110,7 +112,7 @@ Boot 4 分支支持使用 JDK 17 或 25 构建 Hazelcast 5.7.0 的 Saver。启�
 
 ## 可选 DynamoDB saver
 
-父子链功能使用本地安装的 `cn.iocoder.langgraph4j:langgraph4j-bom:1.9.9-jdk25-SNAPSHOT`，并引入同分支的 Saver。
+父子链功能使用本地安装的 `cn.iocoder.langgraph4j:langgraph4j-bom:1.9.10-jdk25-SNAPSHOT`，并引入同分支的 Saver。
 
 ```xml
 <dependency>
@@ -119,7 +121,7 @@ Boot 4 分支支持使用 JDK 17 或 25 构建 Hazelcast 5.7.0 的 Saver。启�
 </dependency>
 ```
 
-使用 `cn.iocoder.langgraph4j:langgraph4j-dynamodb-saver:1.9.9-jdk25-SNAPSHOT`，与本分支同版本的 `langgraph4j-core` 配套。通过 `DynamoDBSaver` 传入已配置的 `DynamoDbClient` 与状态序列化器。启用 S3 offload 时额外引入 AWS SDK `s3` 并提供 `S3Client`。Graph 会把实际载入的检查点或本轮上一个检查点记录为新条目的父检查点。使用带旧检查点 ID 的 `RunnableConfig` 与 `GraphInput.resume(...)` 可以继续旧状态并形成分支。旧数据缺少父 ID 时仍可读取，后续执行会从实际载入的检查点续接。使用官方扩展时，依赖树中应只保留一套 `langgraph4j-core` Java 类。见 [DynamoDB Local 验证](compatibility-tests/dynamodb-lineage)。
+使用 `cn.iocoder.langgraph4j:langgraph4j-dynamodb-saver:1.9.10-jdk25-SNAPSHOT`，与本分支同版本的 `langgraph4j-core` 配套。通过 `DynamoDBSaver` 传入已配置的 `DynamoDbClient` 与状态序列化器。启用 S3 offload 时额外引入 AWS SDK `s3` 并提供 `S3Client`。Graph 会把实际载入的检查点或本轮上一个检查点记录为新条目的父检查点。使用带旧检查点 ID 的 `RunnableConfig` 与 `GraphInput.resume(...)` 可以继续旧状态并形成分支。旧数据缺少父 ID 时仍可读取，后续执行会从实际载入的检查点续接。使用官方扩展时，依赖树中应只保留一套 `langgraph4j-core` Java 类。见 [DynamoDB Local 验证](compatibility-tests/dynamodb-lineage)。
 
 ## 可选 OpenTelemetry
 
@@ -160,7 +162,7 @@ Take a look to [What's new in release 1.9](https://langgraph4j.github.io/langgra
 
 | Date         | Release        | info
 |--------------|----------------| ---
-| Nov 7, 2026 | `1.9.9` | last release
+| Nov 17, 2026 | `1.9.10` | last release
 
 
 | Release line | Java baseline | Notes |
@@ -321,7 +323,7 @@ Make sure you are using Java 17 or later.
 **Latest Stable Version (Recommended):**
 ```xml
 <properties>
-    <langgraph4j.version>1.9.9</langgraph4j.version> <!-- Check for the actual latest version -->
+    <langgraph4j.version>1.9.10</langgraph4j.version> <!-- Check for the actual latest version -->
 </properties>
 
 <!-- Optional: Add the Bill of Materials (BOM) to manage langgraph4j module versions -->
@@ -353,7 +355,7 @@ If you want to use the latest unreleased features, you can use a snapshot versio
 <dependency>
     <groupId>org.bsc.langgraph4j</groupId>
     <artifactId>langgraph4j-core</artifactId>
-    <version>1.9.9</version> <!-- Or the current snapshot version -->
+    <version>1.9.10</version> <!-- Or the current snapshot version -->
 </dependency>
 ```
 You might need to configure your `settings.xml` or `pom.xml` to include the Sonatype OSS snapshots repository:
