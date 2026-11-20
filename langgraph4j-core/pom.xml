@@ -4,7 +4,7 @@
     <parent>
         <groupId>cn.iocoder.langgraph4j</groupId>
         <artifactId>langgraph4j-parent</artifactId>
-        <version>1.9.9-jdk8-SNAPSHOT</version>
+        <version>1.9.10-jdk8-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
     <artifactId>langgraph4j-core</artifactId>
@@ -17,7 +17,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <gson.version>2.10.1</gson.version>
         <jackson.version>2.21.1</jackson.version>
-        <async.generator>1.9.9-jdk8-SNAPSHOT</async.generator>
+        <async.generator>1.9.10-jdk8-SNAPSHOT</async.generator>
     </properties>
     <dependencies>
         <dependency>
@@ -28,7 +28,7 @@
         <dependency>
             <groupId>cn.iocoder.spring-ai</groupId>
             <artifactId>spring-ai-jspecify-compat</artifactId>
-            <version>2.1.0-jdk8-SNAPSHOT</version>
+            <version>2.1.1-jdk8-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
@@ -64,7 +64,7 @@
         <dependency>
             <groupId>cn.iocoder.langgraph4j</groupId>
             <artifactId>langgraph4j-java8-compat</artifactId>
-            <version>1.9.9-jdk8-SNAPSHOT</version>
+            <version>1.9.10-jdk8-SNAPSHOT</version>
         </dependency>
     </dependencies>
     <dependencyManagement>

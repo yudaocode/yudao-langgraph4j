@@ -2,9 +2,9 @@
 
 | 分支 | Spring Boot / 运行 JDK | 图核心 / LangChain4j adapter | LangChain4j | Spring AI | 本仓BOM / Spring AI adapter |
 | --- | --- | --- | --- | --- | --- |
-| `main` | 4.x / 17、25 | 官方1.9.9 | 官方1.23.0 | cn.iocoder.spring-ai:2.1.0-jdk25-SNAPSHOT | cn.iocoder.langgraph4j:1.9.9-jdk25-SNAPSHOT |
-| `main-jdk17` | 3.x / 17、25 | 官方1.9.9 | 官方1.23.0 | cn.iocoder.spring-ai:2.1.0-jdk17-SNAPSHOT | cn.iocoder.langgraph4j:1.9.9-jdk17-SNAPSHOT |
-| `main-jdk8` | 2.x / 8 | 本仓1.9.9-jdk8-SNAPSHOT | 本仓1.24.0 stable / beta34-jdk8 | cn.iocoder.spring-ai:2.1.0-jdk8-SNAPSHOT | cn.iocoder.langgraph4j:1.9.9-jdk8-SNAPSHOT |
+| `main` | 4.x / 17、25 | 官方1.9.9 | 官方1.23.0 | cn.iocoder.spring-ai:2.1.1-jdk25-SNAPSHOT | cn.iocoder.langgraph4j:1.9.10-jdk25-SNAPSHOT |
+| `main-jdk17` | 3.x / 17、25 | 官方1.9.9 | 官方1.23.0 | cn.iocoder.spring-ai:2.1.1-jdk17-SNAPSHOT | cn.iocoder.langgraph4j:1.9.10-jdk17-SNAPSHOT |
+| `main-jdk8` | 2.x / 8 | 本仓1.9.10-jdk8-SNAPSHOT | 本仓1.24.0 stable / beta34-jdk8 | cn.iocoder.spring-ai:2.1.1-jdk8-SNAPSHOT | cn.iocoder.langgraph4j:1.9.10-jdk8-SNAPSHOT |
 
 
 ## Source and coordinates
@@ -111,7 +111,7 @@ The 18-module build on native Java 8 reports 594 tests, zero failures or errors,
 
 ## Spring AI Agent Executor on Java 8
 
-Use `cn.iocoder.langgraph4j:langgraph4j-springai-agentexecutor` with this branch's BOM and Spring AI `2.1.0-jdk8-SNAPSHOT`. The library keeps the upstream model, tool and graph interfaces. Its Spring runtime uses the Spring Boot 2.7 generation.
+Use `cn.iocoder.langgraph4j:langgraph4j-springai-agentexecutor` with this branch's BOM and Spring AI `2.1.1-jdk8-SNAPSHOT`. The library keeps the upstream model, tool and graph interfaces. Its Spring runtime uses the Spring Boot 2.7 generation.
 
 The native JDK 8 default build covers 19 modules and 597 cases with one previously disabled upstream case. Three component tests cover approval-edge resumption with an external tool result and UTF-8 skill loading. The independent Boot 2.7 application verifies both Agent Executors against local HTTP model responses over two checkpoint turns. Studio, Javelit and TypeSafe/JBang demo sources keep their own framework requirements.
 

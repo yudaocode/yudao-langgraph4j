@@ -4,7 +4,7 @@
     <parent>
         <groupId>cn.iocoder.langgraph4j</groupId>
         <artifactId>langgraph4j-parent</artifactId>
-        <version>1.9.9-jdk8-SNAPSHOT</version>
+        <version>1.9.10-jdk8-SNAPSHOT</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
     <artifactId>langgraph4j-langchain4j</artifactId>
@@ -20,25 +20,25 @@
         <dependency>
             <groupId>cn.iocoder.langchain4j</groupId>
             <artifactId>langchain4j</artifactId>
-            <version>1.24.0-jdk8-SNAPSHOT</version>
+            <version>1.25.0-jdk8-SNAPSHOT</version>
         </dependency>
         <!-- Source: https://mvnrepository.com/artifact/dev.langchain4j/langchain4j-skills -->
         <dependency>
             <groupId>cn.iocoder.langchain4j</groupId>
             <artifactId>langchain4j-skills</artifactId>
-            <version>1.24.0-beta34-jdk8-SNAPSHOT</version>
+            <version>1.25.0-beta35-jdk8-SNAPSHOT</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>cn.iocoder.langchain4j</groupId>
             <artifactId>langchain4j-mcp</artifactId>
-            <version>1.24.0-beta34-jdk8-SNAPSHOT</version>
+            <version>1.25.0-beta35-jdk8-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>cn.iocoder.langgraph4j</groupId>
             <artifactId>langgraph4j-core</artifactId>
-            <version>1.9.9-jdk8-SNAPSHOT</version>
+            <version>1.9.10-jdk8-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
@@ -48,7 +48,7 @@
         <dependency>
             <groupId>cn.iocoder.langgraph4j</groupId>
             <artifactId>langgraph4j-java8-compat</artifactId>
-            <version>1.9.9-jdk8-SNAPSHOT</version>
+            <version>1.9.10-jdk8-SNAPSHOT</version>
         </dependency>
     </dependencies>
     <build>

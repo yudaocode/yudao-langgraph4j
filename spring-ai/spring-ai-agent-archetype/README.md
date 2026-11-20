@@ -6,7 +6,7 @@
 mvn org.apache.maven.plugins:maven-archetype-plugin:3.4.1:generate \
   -DarchetypeGroupId=cn.iocoder.langgraph4j \
   -DarchetypeArtifactId=spring-ai-agent-archetype \
-  -DarchetypeVersion=1.9.9-jdk8-SNAPSHOT \
+  -DarchetypeVersion=1.9.10-jdk8-SNAPSHOT \
   -DgroupId=com.example -DartifactId=agent-demo -Dpackage=com.example.agent \
   -Dversion=1.0.0-SNAPSHOT -DinteractiveMode=false
 ```
@@ -33,7 +33,7 @@ This command generates the project with predefined properties.
 mvn archetype:generate \
   -DarchetypeGroupId=org.bsc.langgraph4j \
   -DarchetypeArtifactId=spring-ai-agent-archetype \
-  -DarchetypeVersion=1.9.9
+  -DarchetypeVersion=1.9.10
 ```
 
 **Parameters:**
@@ -54,7 +54,7 @@ Alternatively, you can run the command in interactive mode and provide the value
 mvn archetype:generate \
   -DarchetypeGroupId=org.bsc.langgraph4j \
   -DarchetypeArtifactId=spring-ai-agent-archetype \
-  -DarchetypeVersion=1.9.9
+  -DarchetypeVersion=1.9.10
 ```
 
 Maven will then prompt you to enter the `groupId`, `artifactId`, `version`, and `package` for your new project.

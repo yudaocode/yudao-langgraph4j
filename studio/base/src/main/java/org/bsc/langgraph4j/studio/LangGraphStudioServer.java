@@ -86,7 +86,7 @@ public interface LangGraphStudioServer extends LG4JLoggable {
 
         private static ObjectMapper objectMapperFromGraph(StateGraph<? extends AgentState> graph) {
             final ObjectMapper result;
-            if (graph.getStateSerializer() instanceof JacksonStateSerializer<?> jsonSerializer) {
+            if (graph.stateSerializer() instanceof JacksonStateSerializer<?> jsonSerializer) {
                 result = jsonSerializer.objectMapper().copy();
 
             } else {
@@ -505,7 +505,7 @@ public interface LangGraphStudioServer extends LG4JLoggable {
                 var cacheEntry = instance.cache().get(persistentConfig);
 
                 final Map<String, Object> candidateDataMap;
-                if ( /*resume && */ instance.graph().getStateSerializer() instanceof PlainTextStateSerializer<?> textSerializer) {
+                if ( /*resume && */ instance.graph().stateSerializer() instanceof PlainTextStateSerializer<?> textSerializer) {
 
                     try( var reader = new InputStreamReader(req.getInputStream(), StandardCharsets.UTF_8)) {
 

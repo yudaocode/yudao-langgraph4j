@@ -4,7 +4,7 @@
     <parent>
         <groupId>cn.iocoder.langgraph4j</groupId>
         <artifactId>langgraph4j-parent</artifactId>
-        <version>1.9.9-jdk8-SNAPSHOT</version>
+        <version>1.9.10-jdk8-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
     <artifactId>langgraph4j-java8-compat</artifactId>
@@ -12,7 +12,7 @@
         <dependency>
             <groupId>cn.iocoder.langchain4j</groupId>
             <artifactId>langchain4j-java8-compat</artifactId>
-            <version>1.24.0-jdk8-SNAPSHOT</version>
+            <version>1.25.0-jdk8-SNAPSHOT</version>
         </dependency>
     </dependencies>
 </project>

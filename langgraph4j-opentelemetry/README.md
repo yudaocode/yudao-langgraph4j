@@ -1,6 +1,6 @@
 # Java8 compatibility usage
 
-Use `cn.iocoder.langgraph4j:langgraph4j-opentelemetry:1.9.9-jdk8-SNAPSHOT` after importing the fork BOM.
+Use `cn.iocoder.langgraph4j:langgraph4j-opentelemetry:1.9.10-jdk8-SNAPSHOT` after importing the fork BOM.
 Build with JDK17 and run on JDK8; use original Java packages.
 The default17-module serial native8 gate passed547 cases (zero failures/errors, one upstream DynamoDB skip).
 This module passed7 local SDK/protocol cases plus4 separately enabled upstream cases with remote exporters disabled.
@@ -41,7 +41,7 @@ Add the dependency:
 <dependency>
   <groupId>org.bsc.langgraph4j</groupId>
   <artifactId>langgraph4j-opentelemetry</artifactId>
-  <version>1.9.9</version>
+  <version>1.9.10</version>
 </dependency>
 ```
 

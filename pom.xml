@@ -4,12 +4,12 @@
     <parent>
         <groupId>cn.iocoder.langchain4j</groupId>
         <artifactId>langchain4j-parent</artifactId>
-        <version>1.24.0-beta34-jdk8-SNAPSHOT</version>
+        <version>1.25.0-beta35-jdk8-SNAPSHOT</version>
         <relativePath/>
     </parent>
     <groupId>cn.iocoder.langgraph4j</groupId>
     <artifactId>langgraph4j-parent</artifactId>
-    <version>1.9.9-jdk8-SNAPSHOT</version>
+    <version>1.9.10-jdk8-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>langgraph4j::parent</name>
     <url>https://github.com/yudaocode/yudao-langgraph4j</url>
@@ -52,9 +52,9 @@
         <maven.compiler.target>8</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <langchain4j.version>1.24.0-jdk8-SNAPSHOT</langchain4j.version>
-        <langchain4j.beta>1.24.0-beta34-jdk8-SNAPSHOT</langchain4j.beta>
-        <spring-ai.version>2.1.0-jdk8-SNAPSHOT</spring-ai.version>
+        <langchain4j.version>1.25.0-jdk8-SNAPSHOT</langchain4j.version>
+        <langchain4j.beta>1.25.0-beta35-jdk8-SNAPSHOT</langchain4j.beta>
+        <spring-ai.version>2.1.1-jdk8-SNAPSHOT</spring-ai.version>
         <ag-ui.version>0.1.1</ag-ui.version>
         <flatten-maven-plugin.version>1.5.0</flatten-maven-plugin.version>
         <maven.compiler.release>8</maven.compiler.release>
